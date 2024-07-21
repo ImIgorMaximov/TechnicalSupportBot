@@ -127,3 +127,17 @@ func getStandaloneNextStepKeyboard() tgbotapi.ReplyKeyboardMarkup {
 		),
 	)
 }
+
+func getStandaloneDownloadPackages() tgbotapi.ReplyKeyboardMarkup {
+	return tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Готово"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Возникли сложности/ошибки"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Назад"),
+		),
+	)
+}
