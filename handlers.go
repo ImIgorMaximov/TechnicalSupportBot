@@ -7,13 +7,19 @@ import (
 var previousState = make(map[int64]string)
 
 func handleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	chatID := update.Message.Chat.ID
+
 	switch update.Message.Text {
 	case "/start":
 		sendWelcomeMessage(bot, update.Message.Chat.ID)
 	case "Инструкции по продуктам":
 		sendProductInstructions(bot, update.Message.Chat.ID)
 	case "Частное Облако":
-		sendPrivateCloudOptions(bot, update.Message.Chat.ID)
+		if previousState[chatID] == "deployment" {
+			sendProductDeploymentInstructions(bot, chatID, "Частное Облако")
+		} else {
+			sendPrivateCloudOptions(bot, chatID)
+		}
 	case "Системные требования":
 		sendSystemRequirements(bot, update.Message.Chat.ID)
 	case "Руководство по установке":
@@ -28,6 +34,12 @@ func handleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		handleBackButton(bot, update.Message.Chat.ID)
 	case "Связаться с инженером тех. поддержки":
 		sendSupportEngineerContact(bot, update.Message.Chat.ID)
+	case "Развертывание продуктов":
+		sendDeploymentOptions(bot, update.Message.Chat.ID)
+	case "Standalone":
+		sendStandaloneRequirements(bot, chatID, "Частное Облако")
+	case "Cluster":
+		sendClusterDevelopmentMessage(bot, update.Message.Chat.ID)
 	}
 }
 
@@ -117,7 +129,7 @@ func sendAdminGuide(bot *tgbotapi.BotAPI, chatID int64) {
 }
 
 func sendSupportEngineerContact(bot *tgbotapi.BotAPI, chatID int64) {
-	msg := tgbotapi.NewMessage(chatID, "Технический пресейл Игорь - ТГ: @IgorMaksimov2000 / Почта: igor.maksimov@myoffice.team \n")
+	msg := tgbotapi.NewMessage(chatID, "Технический пресейл Игорь - \nТГ: @IgorMaksimov2000\nПочта: igor.maksimov@myoffice.team \n")
 	msg.ReplyMarkup = getBackKeyboard()
 	bot.Send(msg)
 }
