@@ -40,6 +40,10 @@ func handleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		sendStandaloneRequirements(bot, chatID, "Частное Облако")
 	case "Cluster":
 		sendClusterDevelopmentMessage(bot, update.Message.Chat.ID)
+	case "Далее":
+		sendStandaloneDownloadPackages(bot, update.Message.Chat.ID)
+	case "Возникли сложности/ошибки":
+		sendErrorMessage(bot, update.Message.Chat.ID)
 	}
 }
 
@@ -131,5 +135,11 @@ func sendAdminGuide(bot *tgbotapi.BotAPI, chatID int64) {
 func sendSupportEngineerContact(bot *tgbotapi.BotAPI, chatID int64) {
 	msg := tgbotapi.NewMessage(chatID, "Технический пресейл Игорь - \nТГ: @IgorMaksimov2000\nПочта: igor.maksimov@myoffice.team \n")
 	msg.ReplyMarkup = getBackKeyboard()
+	bot.Send(msg)
+}
+
+func sendErrorMessage(bot *tgbotapi.BotAPI, chatID int64) {
+	errorMessage := "Направьте описание проблемы или скриншот ошибки инженеру \nТГ: @IgorMaksimov2000\nПочта: igor.maksimov@myoffice.team \n"
+	msg := tgbotapi.NewMessage(chatID, errorMessage)
 	bot.Send(msg)
 }
