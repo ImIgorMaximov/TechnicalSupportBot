@@ -1,10 +1,10 @@
-package main
+package keyboards
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func getMainKeyboard() tgbotapi.ReplyKeyboardMarkup {
+func GetMainKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Инструкции по продуктам"),
@@ -18,7 +18,7 @@ func getMainKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	)
 }
 
-func getProductInstructionsKeyboard() tgbotapi.ReplyKeyboardMarkup {
+func GetProductKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Частное Облако"),
@@ -41,7 +41,7 @@ func getProductInstructionsKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	)
 }
 
-func getPrivateCloudKeyboard() tgbotapi.ReplyKeyboardMarkup {
+func GetInstructionsKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Системные требования"),
@@ -58,7 +58,7 @@ func getPrivateCloudKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	)
 }
 
-func getInstallationGuideKeyboard() tgbotapi.ReplyKeyboardMarkup {
+func GetInstallationGuideKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("PGS"),
@@ -72,7 +72,7 @@ func getInstallationGuideKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	)
 }
 
-func getBackKeyboard() tgbotapi.ReplyKeyboardMarkup {
+func GetBackKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Назад"),
@@ -80,30 +80,8 @@ func getBackKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	)
 }
 
-func getProductDeploymentKeyboard() tgbotapi.ReplyKeyboardMarkup {
-	return tgbotapi.NewReplyKeyboard(
-		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("Частное Облако"),
-		),
-		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("Squadus"),
-		),
-		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("Mailion"),
-		),
-		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("Почта 2"),
-		),
-		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("Стандартный"),
-		),
-		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("Назад"),
-		),
-	)
-}
 
-func getInstallationTypeKeyboard() tgbotapi.ReplyKeyboardMarkup {
+func GetInstallationTypeKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Standalone"),
@@ -117,7 +95,7 @@ func getInstallationTypeKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	)
 }
 
-func getStandaloneNextStepKeyboard() tgbotapi.ReplyKeyboardMarkup {
+func GetNextStepKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Далее"),
@@ -128,13 +106,13 @@ func getStandaloneNextStepKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	)
 }
 
-func getStandaloneDownloadPackages() tgbotapi.ReplyKeyboardMarkup {
+func GetCompleteOrquestion() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Готово"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("Возникли сложности/ошибки"),
+			tgbotapi.NewKeyboardButton("Возникли вопросы/ошибки"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Назад"),
