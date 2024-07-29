@@ -25,6 +25,9 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	case "Mailion":
 		sendInstructions(bot, chatID, "mailion")
 		previousState[chatID] = "mailion"
+	case "Почта 3":
+		sendInstructions(bot, chatID, "mail3")
+		previousState[chatID] = "mail3"
 	case "Системные требования":
 		handleSystemRequirements(bot, chatID)
 	case "Руководство по установке":
@@ -66,6 +69,9 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "requirementsMailion", "installationGuideMailion", "adminGuideMailion":
 		sendInstructions(bot, chatID, "mailion")
 		previousState[chatID] = "mailion"
+	case "requirementsMail3", "installationGuideMail3", "adminGuideMail3":
+		sendInstructions(bot, chatID, "mail3")
+		previousState[chatID] = "mail3"
 	default:
 		sendWelcomeMessage(bot, chatID)
 		previousState[chatID] = "start"
@@ -82,6 +88,9 @@ func handleSystemRequirements(bot *tgbotapi.BotAPI, chatID int64) {
 	} else if previousState[chatID] == "mailion" {
 		sendSystemRequirementsMailion(bot, chatID)
 		previousState[chatID] = "requirementsMailion"
+	} else if previousState[chatID] == "mail3" {
+		sendSystemRequirementsMail3(bot, chatID)
+		previousState[chatID] = "requirementsMail3"
 	}
 }
 
@@ -95,6 +104,9 @@ func handleInstallationGuide(bot *tgbotapi.BotAPI, chatID int64) {
 	} else if previousState[chatID] == "mailion" {
 		sendInstallationGuideMailion(bot, chatID)
 		previousState[chatID] = "installationGuideMailion"
+	} else if previousState[chatID] == "mail3" {
+		sendInstallationGuideMail3(bot, chatID)
+		previousState[chatID] = "installationGuideMail3"
 	}
 }
 
@@ -108,5 +120,8 @@ func handleAdminGuide(bot *tgbotapi.BotAPI, chatID int64) {
 	} else if previousState[chatID] == "mailion" {
 		sendAdminGuideMailion(bot, chatID)
 		previousState[chatID] = "adminGuideMailion"
+	} else if previousState[chatID] == "mail3" {
+		sendAdminGuideMailion(bot, chatID)
+		previousState[chatID] = "adminGuideMail3"
 	}
 }
