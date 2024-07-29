@@ -17,14 +17,15 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		sendProduct(bot, chatID)
 		previousState[chatID] = "product"
 	case "Частное Облако":
-		sendInstructions(bot, chatID)
+		sendInstructions(bot, chatID, "privateCloud")
 		previousState[chatID] = "privateCloud"
+	case "Squadus":
+		sendInstructions(bot, chatID, "squadus")
+		previousState[chatID] = "squadus"
 	case "Системные требования":
-		sendSystemRequirementsPivateCloud(bot, chatID)
-		previousState[chatID] = "requirementsPrivateCloud"
+		handleSystemRequirements(bot, chatID)
 	case "Руководство по установке":
-		sendInstallationGuideOptionsPrivateCloud(bot, chatID)
-		previousState[chatID] = "installationGuidePrivateCloud"
+		handleInstallationGuide(bot, chatID)
 	case "PGS":
 		sendPGSInstallationGuide(bot, chatID)
 		previousState[chatID] = "pgs"
@@ -32,8 +33,7 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		sendCOInstallationGuide(bot, chatID)
 		previousState[chatID] = "co"
 	case "Руководство по администрированию":
-		sendAdminGuidePrivateCloud(bot, chatID)
-		previousState[chatID] = "adminGuide"
+		handleAdminGuide(bot, chatID)
 	case "Назад":
 		handleBackButton(bot, chatID)
 	case "Связаться с инженером тех. поддержки":
@@ -43,25 +43,55 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 }
 
 func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
-    currentMenu := previousState[chatID]
-    switch currentMenu {
-    case "product":
-        sendWelcomeMessage(bot, chatID)
-        previousState[chatID] = "start"
-    case "privateCloud":
-        sendProduct(bot, chatID)
-        previousState[chatID] = "product"
-    case "requirementsPrivateCloud":
-        sendInstructions(bot, chatID)
-        previousState[chatID] = "privateCloud"
-    case "installationGuidePrivateCloud":
-        sendInstructions(bot, chatID)
-        previousState[chatID] = "privateCloud"
-    case "pgs", "co":
-        sendInstallationGuideOptionsPrivateCloud(bot, chatID)
-        previousState[chatID] = "installationGuidePrivateCloud"
-    default:
-        sendWelcomeMessage(bot, chatID)
-        previousState[chatID] = "start"
-    }
+	currentMenu := previousState[chatID]
+	switch currentMenu {
+	case "product":
+		sendWelcomeMessage(bot, chatID)
+		previousState[chatID] = "start"
+	case "privateCloud", "squadus":
+		sendProduct(bot, chatID)
+		previousState[chatID] = "product"
+	case "requirementsPrivateCloud", "installationGuidePrivateCloud", "adminGuidePrivateCloud":
+		sendInstructions(bot, chatID, "privateCloud")
+		previousState[chatID] = "privateCloud"
+	case "pgs", "co":
+		sendInstallationGuideOptionsPrivateCloud(bot, chatID)
+		previousState[chatID] = "installationGuidePrivateCloud"
+	case "requirementsSquadus", "installationGuideSquadus", "adminGuideSquadus":
+		sendInstructions(bot, chatID, "squadus")
+		previousState[chatID] = "squadus"
+	default:
+		sendWelcomeMessage(bot, chatID)
+		previousState[chatID] = "start"
+	}
+}
+
+func handleSystemRequirements(bot *tgbotapi.BotAPI, chatID int64) {
+	if previousState[chatID] == "privateCloud" {
+		sendSystemRequirementsPivateCloud(bot, chatID)
+		previousState[chatID] = "requirementsPrivateCloud"
+	} else if previousState[chatID] == "squadus" {
+		sendSystemRequirementsSquadus(bot, chatID)
+		previousState[chatID] = "requirementsSquadus"
+	}
+}
+
+func handleInstallationGuide(bot *tgbotapi.BotAPI, chatID int64) {
+	if previousState[chatID] == "privateCloud" {
+		sendInstallationGuideOptionsPrivateCloud(bot, chatID)
+		previousState[chatID] = "installationGuidePrivateCloud"
+	} else if previousState[chatID] == "squadus" {
+		sendInstallationGuideSquadus(bot, chatID)
+		previousState[chatID] = "installationGuideSquadus"
+	}
+}
+
+func handleAdminGuide(bot *tgbotapi.BotAPI, chatID int64) {
+	if previousState[chatID] == "privateCloud" {
+		sendAdminGuidePrivateCloud(bot, chatID)
+		previousState[chatID] = "adminGuidePrivateCloud"
+	} else if previousState[chatID] == "squadus" {
+		sendAdminGuideSquadus(bot, chatID)
+		previousState[chatID] = "adminGuideSquadus"
+	}
 }

@@ -27,8 +27,8 @@ func sendProduct(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendInstructions(bot *tgbotapi.BotAPI, chatID int64) {
-	previousState[chatID] = "private_cloud"
+func sendInstructions(bot *tgbotapi.BotAPI, chatID int64, product string) {
+	previousState[chatID] = product
 	chooseFunction := "Что подсказать? \n" +
 		"- Cистемные требования \n" +
 		"- Руководство по установке \n" +
