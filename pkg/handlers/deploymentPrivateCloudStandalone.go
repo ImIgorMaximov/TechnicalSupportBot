@@ -43,6 +43,6 @@ func sendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
         "python3 -m pip install yamllint \n" +
         "На этом все :) Двигаемся дальше..\n"
     msg := tgbotapi.NewMessage(chatID, downloadPackages)
-    msg.ReplyMarkup = keyboards.GetStandaloneDownloadPackages()
+    msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
     bot.Send(msg)
 }
