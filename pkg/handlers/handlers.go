@@ -45,6 +45,17 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	case "Связаться с инженером тех. поддержки":
 		sendSupportEngineerContact(bot, chatID)
 		previousState[chatID] = "supportContact"
+	case "Standalone":
+		sendStandaloneRequirements(bot, chatID, "Standalone")
+		previousState[chatID] = "standaloneRequirements"
+	case "Cluster":
+		sendClusterDevelopmentMessage(bot, chatID)
+		previousState[chatID] = "clusterDevelopment"
+	case "Далее":
+		if previousState[chatID] == "standaloneRequirements" {
+			sendStandaloneDownloadPackages(bot, chatID)
+			previousState[chatID] = "standaloneDownloadPackages"
+		}
 	}
 }
 
@@ -72,6 +83,18 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "requirementsMail3", "installationGuideMail3", "adminGuideMail3":
 		sendInstructions(bot, chatID, "mail3")
 		previousState[chatID] = "mail3"
+	case "deploymentOptions":
+		sendWelcomeMessage(bot, chatID)
+		previousState[chatID] = "start"
+	case "standaloneRequirements":
+		sendDeploymentOptions(bot, chatID)
+		previousState[chatID] = "deploymentOptions"
+	case "standaloneDownloadPackages":
+		sendStandaloneRequirements(bot, chatID, "Standalone")
+		previousState[chatID] = "standaloneRequirements"
+	case "clusterDevelopment":
+		sendDeploymentOptions(bot, chatID)
+		previousState[chatID] = "deploymentOptions"
 	default:
 		sendWelcomeMessage(bot, chatID)
 		previousState[chatID] = "start"

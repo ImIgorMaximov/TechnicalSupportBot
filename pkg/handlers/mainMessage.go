@@ -27,6 +27,15 @@ func sendProduct(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+func sendDeploymentOptions(bot *tgbotapi.BotAPI, chatID int64) {
+    previousState[chatID] = "deployment_options"
+
+    deploymentMessage := "Выберите тип инсталляции:"
+    msg := tgbotapi.NewMessage(chatID, deploymentMessage)
+    msg.ReplyMarkup = keyboards.GetDeploymentOptionsKeyboard()
+    bot.Send(msg)
+}
+
 func sendInstructions(bot *tgbotapi.BotAPI, chatID int64, product string) {
 	previousState[chatID] = product
 	chooseFunction := "Что подсказать? \n" +
