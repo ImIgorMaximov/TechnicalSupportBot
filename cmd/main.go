@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 	"os"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"technicalSupportBot/pkg/handlers"
 )
 
 func main() {
@@ -29,7 +29,7 @@ func main() {
 
 	for update := range updates {
 		if update.Message != nil {
-			handleUpdate(bot, update)
+			handlers.HandleUpdate(bot, update)
 		}
 	}
 }
