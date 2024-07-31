@@ -51,12 +51,21 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		sendStandaloneRequirements(bot, chatID, "Standalone")
 		previousState[chatID] = "standaloneRequirements"
 	case "Далее":
-		if previousState[chatID] == "standaloneRequirements" {
-			sendStandaloneDownloadPackages(bot, chatID)
-			previousState[chatID] = "standaloneDownloadPackages"
-		}
+		handleNextStep(bot, chatID)
 	}
 }
+
+func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
+	switch previousState[chatID] {
+	case "standaloneRequirements":
+		sendStandaloneDownloadPackages(bot, chatID)
+		previousState[chatID] = "standaloneDownloadPackages"
+	case "standaloneDownloadPackages":
+		sendStandaloneDownloadDistribution(bot, chatID)
+		previousState[chatID] = "standaloneDownloadDistribution"
+	}
+}
+
 
 func handlePrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
     if previousState[chatID] == "instr" {
@@ -104,6 +113,9 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "standaloneDownloadPackages":
 		sendStandaloneRequirements(bot, chatID, "Standalone")
 		previousState[chatID] = "standaloneRequirements"
+	case "standaloneDownloadDistribution":
+		sendStandaloneDownloadPackages(bot, chatID)
+		previousState[chatID] = "standaloneDownloadPackages"
 	case "clusterDevelopment":
 		sendDeploymentOptions(bot, chatID)
 		previousState[chatID] = "deploymentOptions"

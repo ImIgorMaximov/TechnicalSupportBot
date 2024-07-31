@@ -46,3 +46,19 @@ func sendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
     msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
     bot.Send(msg)
 }
+
+func sendStandaloneDownloadDistribution(bot *tgbotapi.BotAPI, chatID int64) {
+    downloadPackages := "Первая установка будет произведена на машину PGS.\n" +
+        "После установки необходимых пакетов на машине operator подготовьте архив, который выдается инженером @IgorMaksimov или Аккаунт Менеджером.\n" +
+        "Далее создайте директорию с помощью команды: \n" +
+        "mkdir install_MyOffice_PGS\n\n" +
+        "Распакуйте данный архив командой:\n" +
+        "tar xf MyOffice_PGS_version.tgz -C install_MyOffice_PGS \n" +
+        "*vesion - введите соответствующую версию продукта \n\n" +
+        "После этого перейдите в каталог install_MyOffice_PGS: \n" +
+        "cd install_MyOffice_PGS\n" +
+		"Далее начнем заполнять конфигурационные файлы!:)\n"
+    msg := tgbotapi.NewMessage(chatID, downloadPackages)
+    msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+    bot.Send(msg)
+}

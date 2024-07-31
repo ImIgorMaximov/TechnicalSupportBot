@@ -89,6 +89,9 @@ func GetStandaloneNextStepKeyboard() tgbotapi.ReplyKeyboardMarkup {
 			tgbotapi.NewKeyboardButton("Далее"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
+            tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+        ),
+		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Назад"),
 		),
 	)
