@@ -51,8 +51,12 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		previousState[chatID] = "standaloneRequirements"
 	case "Готово":
 		handleNextStep(bot, chatID)
+	case "Все Окей":
+		handleNextStep(bot, chatID)
 	case "Проверить корректность сертификатов и ключа":
 		sendIsCertificates(bot, chatID)
+	case "Пример конфига hosts.yml":
+		sendPGSConfig(bot, chatID)
 	case "Далее":
 		handleNextStep(bot, chatID)
 	}
@@ -75,6 +79,9 @@ func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
 	case "standaloneDownloadDistribution":
 		sendCertificatesAndKeys(bot, chatID)
 		previousState[chatID] = "certificatesAndKeys"
+	case "certificatesAndKeys":
+		sendStandalonePGSConfigure(bot, chatID)
+		previousState[chatID] = "pgsConfigure"
 	}
 }
 
@@ -117,6 +124,9 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "certificatesAndKeys":
 		sendStandaloneDownloadDistribution(bot, chatID)
 		previousState[chatID] = "standaloneDownloadDistribution"
+	case "pgsConfigure":
+		sendCertificatesAndKeys(bot, chatID)
+		previousState[chatID] = "certificatesAndKeys"
 	case "clusterDevelopment":
 		sendDeploymentOptions(bot, chatID)
 		previousState[chatID] = "deploymentOptions"
