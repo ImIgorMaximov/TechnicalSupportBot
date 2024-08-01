@@ -114,6 +114,23 @@ func GetIsCertificatesKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	)
 }
 
+func GetPGSStandaloneConfig() tgbotapi.ReplyKeyboardMarkup {
+	return tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Все Окей"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+            tgbotapi.NewKeyboardButton("Пример конфига hosts.yml"),
+        ),
+		tgbotapi.NewKeyboardButtonRow(
+            tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+        ),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Назад"),
+		),
+	)
+}
+
 func GetBackKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"os"
+    "log"
     tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
     "technicalSupportBot/pkg/keyboards"
 )
@@ -80,8 +82,7 @@ func sendStandaloneDownloadDistribution(bot *tgbotapi.BotAPI, chatID int64) {
         "tar xf MyOffice_PGS_version.tgz -C install_MyOffice_PGS \n" +
         "*vesion - введите соответствующую версию продукта \n\n" +
         "После этого перейдите в каталог install_MyOffice_PGS: \n" +
-        "cd install_MyOffice_PGS\n" +
-		"Далее начнем заполнять конфигурационные файлы!:)\n"
+        "cd install_MyOffice_PGS\n" 
     msg := tgbotapi.NewMessage(chatID, downloadPackages)
     msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
     bot.Send(msg)
@@ -106,4 +107,67 @@ func sendCertificatesAndKeys(bot *tgbotapi.BotAPI, chatID int64) {
     bot.Send(msg)
 }
 
+func sendStandalonePGSConfigure(bot *tgbotapi.BotAPI, chatID int64) {
+    pgsConfigure := "Необходимо скопировать шаблон файла inventory в корневой каталог дистрибутива и заполнить секции hosts и vars.\n\n" +
+        "Операция копирования выполняется с помощью команды:\n" +
+        "cp /root/install_MyOffice_PGS/inventory/hosts-sa.yaml hosts.yml \n" +
+        "Далее заполним файл hosts.yml в редакторе (Например, vim): \n" +
+        "vim /root/install_MyOffice_PGS/hosts.yml\n\n" +
+        "*При необходимости выберите пример конфига, нажав соответствующую кнопку. \n\n" +
+        "В секцию hosts добавьте доменное имя вашего PGS-сервера: \n" +
+        "hosts:\n" +
+        "\tpgs.myoffice-app.ru: \n" +
+        "Аналогично проделать с другими сервисами: search, redis, storage, nginx, etcd...\n" +
+		"Далее в секцию vars необходимо заполнить следующие переменные:\n" +
+		"DEFAULT_DOMAIN: \"myoffice-app.ru\"\n" +
+		"ENV: \"\" - *если используется переменная окружения\n" +
+		"Сгенерируйте и внесите пароли для сервисов (команда: pwgen 13 7) : \n" +
+		"KEYCLOAK_PASSWORD: \"81mToSPFJ8ezr8\"\n" +
+		"KEYCLOAK_REALM_PASSWORD: \"MVh2PiA2S5cPk\"\n" +
+		"KEYCLOAK_POSTGRES_PASSWORD: \"7Afd3G12P5VyUg\"\n" +
+		"ARANGODB_PASSWORD: \"55ab8qk7ES4P4LX\"\n" +
+		"RABBITMQ_PASSWORD: \"BdyYgDwLLY8M5U9\"\n" + 
+		"REDIS_PASSWORD: \"S73uo3iH3qFRdnf\"\n" +
+		"GRAFANA_ADMIN_PASSWORD: \"oPpKvc6We3mES6\"\n\n" +
+		"В секции co заполнить \"FS App encryption settings\" : \n" +
+		"FS_APP_ENCRYPTION_SALT: \"2DD4E59B582AF71F\"\n" +
+		"AUTH_ENCRYPTION_SALT: \"2DD4E59B582AF71F\"\n" +
+		"APP_ADMIN_PASSWORD: \"6dbYv6qVJrqiVB\"\n"
+    msg := tgbotapi.NewMessage(chatID, pgsConfigure)
+    msg.ReplyMarkup = keyboards.GetPGSStandaloneConfig()
+    bot.Send(msg)
+}
 
+func sendPGSConfig(bot *tgbotapi.BotAPI, chatID int64) {
+	filePath := "/home/admin-msk/MyOfficeConfig/hosts.yml"
+
+	// Проверяем, существует ли файл
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		msg := tgbotapi.NewMessage(chatID, "Файл не найден.")
+		if _, err := bot.Send(msg); err != nil {
+			log.Println("Error sending message:", err)
+		}
+		return
+	}
+
+	// Открываем файл для отправки
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Println("Error opening file:", err)
+		msg := tgbotapi.NewMessage(chatID, "Не удалось открыть файл.")
+		if _, err := bot.Send(msg); err != nil {
+			log.Println("Error sending message:", err)
+		}
+		return
+	}
+	defer file.Close()
+
+	// Отправляем файл пользователю
+	document := tgbotapi.NewDocument(chatID, tgbotapi.FileReader{
+		Name:   "hosts.yml",
+		Reader: file,
+	})
+	if _, err := bot.Send(document); err != nil {
+		log.Println("Error sending document:", err)
+	}
+}
