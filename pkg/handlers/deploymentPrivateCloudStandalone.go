@@ -47,6 +47,17 @@ func sendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
     bot.Send(msg)
 }
 
+func sendPrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64) {
+	downloadPackages := "Необходимо убедиться, что публичные ключи машин PGS и CO находятся на машине Operator в папке /root/.ssh/authorized_keys.\n" +
+        "Если ключи отсутствуют, создайте пары ключей на машинах PGS и CO с помощью команды: \n\n" +
+        "ssh-keygen\n\n" +
+        "Затем скопируйте публичные ключи из файлов /root/.ssh/id_rsa.pub на машину Operator в папку /root/.ssh/authorized_keys:\n\n" +
+        "ssh-copy-id -i /root/.ssh/id_rsa.pub root@<IP_адрес_или_домен_машины_Operator> \n"
+    msg := tgbotapi.NewMessage(chatID, downloadPackages)
+    msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+    bot.Send(msg)
+}
+
 func sendStandaloneDownloadDistribution(bot *tgbotapi.BotAPI, chatID int64) {
     downloadPackages := "Первая установка будет произведена на машину PGS.\n" +
         "После установки необходимых пакетов на машине operator подготовьте архив, который выдается инженером @IgorMaksimov или Аккаунт Менеджером.\n" +

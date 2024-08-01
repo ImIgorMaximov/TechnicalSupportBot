@@ -43,7 +43,6 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		handleBackButton(bot, chatID)
 	case "Связаться с инженером тех. поддержки":
 		sendSupportEngineerContact(bot, chatID)
-		previousState[chatID] = "supportContact"
 	case "Развертывание продуктов":
 		sendProduct(bot, chatID)
 		previousState[chatID] = "deploy"
@@ -60,12 +59,14 @@ func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
 	case "standaloneRequirements":
 		sendStandaloneDownloadPackages(bot, chatID)
 		previousState[chatID] = "standaloneDownloadPackages"
-	case "standaloneDownloadPackages":
+	case "privateKeyInsert":
 		sendStandaloneDownloadDistribution(bot, chatID)
 		previousState[chatID] = "standaloneDownloadDistribution"
+	case "standaloneDownloadPackages":
+		sendPrivateKeyInsert(bot, chatID)
+		previousState[chatID] = "privateKeyInsert"
 	}
 }
-
 
 func handlePrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
     if previousState[chatID] == "instr" {
@@ -113,9 +114,12 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "standaloneDownloadPackages":
 		sendStandaloneRequirements(bot, chatID, "Standalone")
 		previousState[chatID] = "standaloneRequirements"
-	case "standaloneDownloadDistribution":
+	case "privateKeyInsert":
 		sendStandaloneDownloadPackages(bot, chatID)
 		previousState[chatID] = "standaloneDownloadPackages"
+	case "standaloneDownloadDistribution":
+		sendPrivateKeyInsert(bot, chatID)
+		previousState[chatID] = "privateKeyInsert"
 	case "clusterDevelopment":
 		sendDeploymentOptions(bot, chatID)
 		previousState[chatID] = "deploymentOptions"
