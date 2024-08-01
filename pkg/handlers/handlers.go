@@ -60,11 +60,14 @@ func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
 		sendStandaloneDownloadPackages(bot, chatID)
 		previousState[chatID] = "standaloneDownloadPackages"
 	case "privateKeyInsert":
-		sendStandaloneDownloadDistribution(bot, chatID)
-		previousState[chatID] = "standaloneDownloadDistribution"
+		sendDNSOptions(bot, chatID)
+		previousState[chatID] = "standaloneDNSOptions"
 	case "standaloneDownloadPackages":
 		sendPrivateKeyInsert(bot, chatID)
 		previousState[chatID] = "privateKeyInsert"
+	case "standaloneDNSOptions":
+		sendStandaloneDownloadDistribution(bot, chatID)
+		previousState[chatID] = "standaloneDownloadDistribution"
 	}
 }
 
@@ -118,6 +121,9 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 		sendStandaloneDownloadPackages(bot, chatID)
 		previousState[chatID] = "standaloneDownloadPackages"
 	case "standaloneDownloadDistribution":
+		sendDNSOptions(bot, chatID)
+		previousState[chatID] = "standaloneDNSOptions"
+	case "standaloneDNSOptions":
 		sendPrivateKeyInsert(bot, chatID)
 		previousState[chatID] = "privateKeyInsert"
 	case "clusterDevelopment":
