@@ -24,7 +24,7 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	case "Mailion":
 		sendInstructions(bot, chatID, "mailion")
 		previousState[chatID] = "mailion"
-	case "Почта 3":
+	case "Почта":
 		sendInstructions(bot, chatID, "mail3")
 		previousState[chatID] = "mail3"
 	case "Системные требования":
@@ -49,6 +49,10 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	case "Standalone":
 		sendStandaloneRequirements(bot, chatID, "Standalone")
 		previousState[chatID] = "standaloneRequirements"
+	case "Готово":
+		handleNextStep(bot, chatID)
+	case "Проверить корректность сертификатов и ключа":
+		sendIsCertificates(bot, chatID)
 	case "Далее":
 		handleNextStep(bot, chatID)
 	}
@@ -60,22 +64,18 @@ func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
 		sendStandaloneDownloadPackages(bot, chatID)
 		previousState[chatID] = "standaloneDownloadPackages"
 	case "privateKeyInsert":
-		sendStandaloneDownloadDistribution(bot, chatID)
-		previousState[chatID] = "standaloneDownloadDistribution"
+		sendDNSOptions(bot, chatID)
+		previousState[chatID] = "standaloneDNSOptions"
 	case "standaloneDownloadPackages":
 		sendPrivateKeyInsert(bot, chatID)
 		previousState[chatID] = "privateKeyInsert"
+	case "standaloneDNSOptions":
+		sendStandaloneDownloadDistribution(bot, chatID)
+		previousState[chatID] = "standaloneDownloadDistribution"
+	case "standaloneDownloadDistribution":
+		sendCertificatesAndKeys(bot, chatID)
+		previousState[chatID] = "certificatesAndKeys"
 	}
-}
-
-func handlePrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
-    if previousState[chatID] == "instr" {
-        sendInstructions(bot, chatID, "privateCloud")
-        previousState[chatID] = "privateCloud"
-    } else if previousState[chatID] == "deploy" {
-        sendDeploymentOptions(bot, chatID)
-        previousState[chatID] = "privateCloudDeploy"
-    }
 }
 
 func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
@@ -102,24 +102,21 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "requirementsMailion", "installationGuideMailion", "adminGuideMailion":
 		sendInstructions(bot, chatID, "mailion")
 		previousState[chatID] = "mailion"
-	case "requirementsMail3", "installationGuideMail3", "adminGuideMail3":
-		sendInstructions(bot, chatID, "mail3")
-		previousState[chatID] = "mail3"
+	case "requirementsMail", "installationGuideMail", "adminGuideMail":
+		sendInstructions(bot, chatID, "mail")
+		previousState[chatID] = "mail"
 	case "deploymentOptions":
 		sendWelcomeMessage(bot, chatID)
-		previousState[chatID] = "start"
-	case "standaloneRequirements":
-		sendDeploymentOptions(bot, chatID)
-		previousState[chatID] = "deploymentOptions"
-	case "standaloneDownloadPackages":
-		sendStandaloneRequirements(bot, chatID, "Standalone")
-		previousState[chatID] = "standaloneRequirements"
-	case "privateKeyInsert":
-		sendStandaloneDownloadPackages(bot, chatID)
 		previousState[chatID] = "standaloneDownloadPackages"
 	case "standaloneDownloadDistribution":
+		sendDNSOptions(bot, chatID)
+		previousState[chatID] = "standaloneDNSOptions"
+	case "standaloneDNSOptions":
 		sendPrivateKeyInsert(bot, chatID)
 		previousState[chatID] = "privateKeyInsert"
+	case "certificatesAndKeys":
+		sendStandaloneDownloadDistribution(bot, chatID)
+		previousState[chatID] = "standaloneDownloadDistribution"
 	case "clusterDevelopment":
 		sendDeploymentOptions(bot, chatID)
 		previousState[chatID] = "deploymentOptions"
@@ -127,6 +124,16 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 		sendWelcomeMessage(bot, chatID)
 		previousState[chatID] = "start"
 	}
+}
+
+func handlePrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
+    if previousState[chatID] == "instr" {
+        sendInstructions(bot, chatID, "privateCloud")
+        previousState[chatID] = "privateCloud"
+    } else if previousState[chatID] == "deploy" {
+        sendDeploymentOptions(bot, chatID)
+        previousState[chatID] = "privateCloudDeploy"
+    }
 }
 
 func handleSystemRequirements(bot *tgbotapi.BotAPI, chatID int64) {
@@ -141,7 +148,7 @@ func handleSystemRequirements(bot *tgbotapi.BotAPI, chatID int64) {
 		previousState[chatID] = "requirementsMailion"
 	} else if previousState[chatID] == "mail3" {
 		sendSystemRequirementsMail3(bot, chatID)
-		previousState[chatID] = "requirementsMail3"
+		previousState[chatID] = "requirementsMail"
 	}
 }
 
@@ -157,7 +164,7 @@ func handleInstallationGuide(bot *tgbotapi.BotAPI, chatID int64) {
 		previousState[chatID] = "installationGuideMailion"
 	} else if previousState[chatID] == "mail3" {
 		sendInstallationGuideMail3(bot, chatID)
-		previousState[chatID] = "installationGuideMail3"
+		previousState[chatID] = "installationGuideMail"
 	}
 }
 
@@ -173,6 +180,6 @@ func handleAdminGuide(bot *tgbotapi.BotAPI, chatID int64) {
 		previousState[chatID] = "adminGuideMailion"
 	} else if previousState[chatID] == "mail3" {
 		sendAdminGuideMail3(bot, chatID)
-		previousState[chatID] = "adminGuideMail3"
+		previousState[chatID] = "adminGuideMail"
 	}
 }

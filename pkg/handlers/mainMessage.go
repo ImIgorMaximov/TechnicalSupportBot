@@ -48,8 +48,25 @@ func sendInstructions(bot *tgbotapi.BotAPI, chatID int64, product string) {
 	bot.Send(msg)
 }
 
+func sendIsCertificates(bot *tgbotapi.BotAPI, chatID int64) {
+	isCertificates := "Проверка сертификата сервера (server.crt): \n" +
+		"openssl x509 -in server.crt -text -noout \n" +
+		"Проверка цепочки сертификатов (ca.crt): \n" +
+		"openssl x509 -in ca.crt -text -noout \n" +
+		"Проверка приватного ключа (server.nopass.key): \n" +
+		"openssl rsa -in server.nopass.key -check \n"
+	msg := tgbotapi.NewMessage(chatID, isCertificates)
+	bot.Send(msg)
+}
+
 func sendSupportEngineerContact(bot *tgbotapi.BotAPI, chatID int64) {
-	errorMessage := "Направьте описание проблемы или скриншот ошибки инженеру \nТГ: @IgorMaksimov2000\nПочта: igor.maksimov@myoffice.team \n"
+	errorMessage := "Направьте описание проблемы или ошибки инженеру \nТГ: @IgorMaksimov2000\nПочта: igor.maksimov@myoffice.team \n\n" +
+		"Формат сообщения должен включать: \n" +
+		"1. Описание ошибки/вопроса.\n" +
+		"2. Выводы команд pip3 list и ansible --version. (Выполненные в корневой директории инсталляции, например, /root/install_pgs) \n" +
+		"3. Конфигурационные файлы, которые были использованы при инсталляции. (Например, hosts.yml для PGS, hosts.yml/main.yml для CO) \n" +
+		"4. Логи ошибок (Например, для развертывания СО сервера это будет файл deploy_co.log). \n\n" +
+		"Спасибо! Инженер ответит вам в течение 10 минут. \n"
 	msg := tgbotapi.NewMessage(chatID, errorMessage)
 	bot.Send(msg)
 }

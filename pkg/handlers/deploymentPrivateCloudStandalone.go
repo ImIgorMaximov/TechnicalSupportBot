@@ -48,12 +48,25 @@ func sendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
 }
 
 func sendPrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64) {
-	downloadPackages := "Необходимо убедиться, что публичные ключи машин PGS и CO находятся на машине Operator в папке /root/.ssh/authorized_keys.\n" +
+	privateKeyInsert := "Необходимо убедиться, что публичные ключи машин PGS и CO находятся на машине Operator в папке /root/.ssh/authorized_keys.\n" +
         "Если ключи отсутствуют, создайте пары ключей на машинах PGS и CO с помощью команды: \n\n" +
         "ssh-keygen\n\n" +
         "Затем скопируйте публичные ключи из файлов /root/.ssh/id_rsa.pub на машину Operator в папку /root/.ssh/authorized_keys:\n\n" +
         "ssh-copy-id -i /root/.ssh/id_rsa.pub root@<IP_адрес_или_домен_машины_Operator> \n"
-    msg := tgbotapi.NewMessage(chatID, downloadPackages)
+    msg := tgbotapi.NewMessage(chatID, privateKeyInsert)
+    msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+    bot.Send(msg)
+}
+
+func sendDNSOptions(bot *tgbotapi.BotAPI, chatID int64) {
+	dns := "Перед началом установки необходимо настроить DNS-сервер, указав адрес сервера установки Nginx.\n" +
+        "В случае использования переменной окружения (env) в конфигурационном файле hosts.yml записи будут иметь вид: \n\n" +
+        "admin-<env>.<default_domain> - Адрес веб-панели администрирования PGS \n" +
+		"pgs-<env>.<default_domain> - Адрес точки входа для API\n\n" +
+        "Если переменная окружения (env) не задана, записи примут вид:\n\n" +
+        "admin.<default_domain>\n" +
+		"pgs.<default_domain>\n\n" 
+    msg := tgbotapi.NewMessage(chatID,dns)
     msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
     bot.Send(msg)
 }
@@ -73,3 +86,24 @@ func sendStandaloneDownloadDistribution(bot *tgbotapi.BotAPI, chatID int64) {
     msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
     bot.Send(msg)
 }
+
+func sendCertificatesAndKeys(bot *tgbotapi.BotAPI, chatID int64) {
+    certificatesAndKeys := "Для работы веб-интерфейса PGS необходима установка SSL-сертификатов.\n" +
+		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
+        "Сертификаты необходимо разместить в каталоге, соответствующему доменному имени PGS.\n\n" +
+        "Напримере домена myoffice-app.ru : \n" +
+        "cd /root/install_MyOffice_PGS/certificates\n" +
+        "mkdir myoffice-app.ru\n\n" +
+        "Вставьте серитификаты в директорию, соответствующую вашему доменному имени.\n\n Список необходимых сертификатов: \n" +
+        "server.crt - содержит SSL-сертификат для *.<default_domain> и все промежуточные сертификаты, кроме корневого доверенного. \n" +
+        "server.nopass.key - Приватный ключ сертификата, не требующий кодовой фразы. \n" +
+        "ca.crt - файл сертификата удостоверяющего центра.\n\n" +
+		"Проверить наличия сертификатов и ключа:\n" +
+		"ls -la /root/install_MyOffice_PGS/certificates/myoffice-app.ru\n\n" +
+		"Далее начинаем заполнять конфигурационные файлы!:)\n"
+    msg := tgbotapi.NewMessage(chatID, certificatesAndKeys)
+    msg.ReplyMarkup = keyboards.GetIsCertificatesKeyboard()
+    bot.Send(msg)
+}
+
+
