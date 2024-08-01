@@ -138,6 +138,17 @@ func sendStandalonePGSConfigure(bot *tgbotapi.BotAPI, chatID int64) {
     bot.Send(msg)
 }
 
+func sendPGSDeploy(bot *tgbotapi.BotAPI, chatID int64) {
+	pgsDeploy := "Для запуска установки PGS необходимо перейти в каталог /root/install_MyOffice_PGS/ и выполнить следующую команду:\n" +
+        "./deploy.sh hosts.yml\n\n" +
+		"Ожидаем результат! При возниковении ошибок при инсталляции обращайтесь к инженеру!\n" 
+    msg := tgbotapi.NewMessage(chatID, pgsDeploy)
+    msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+    bot.Send(msg)
+}
+
+
+
 func sendPGSConfig(bot *tgbotapi.BotAPI, chatID int64) {
 	filePath := "/home/admin-msk/MyOfficeConfig/hosts.yml"
 
