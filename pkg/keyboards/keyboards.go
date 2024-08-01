@@ -97,6 +97,23 @@ func GetStandaloneNextStepKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	)
 }
 
+func GetIsCertificatesKeyboard() tgbotapi.ReplyKeyboardMarkup {
+	return tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Готово"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+            tgbotapi.NewKeyboardButton("Проверить корректность сертификатов и ключа"),
+        ),
+		tgbotapi.NewKeyboardButtonRow(
+            tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+        ),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Назад"),
+		),
+	)
+}
+
 func GetBackKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(

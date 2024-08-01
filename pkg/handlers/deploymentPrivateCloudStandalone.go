@@ -87,3 +87,23 @@ func sendStandaloneDownloadDistribution(bot *tgbotapi.BotAPI, chatID int64) {
     bot.Send(msg)
 }
 
+func sendCertificatesAndKeys(bot *tgbotapi.BotAPI, chatID int64) {
+    certificatesAndKeys := "Для работы веб-интерфейса PGS необходима установка SSL-сертификатов.\n" +
+		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
+        "Сертификаты необходимо разместить в каталоге, соответствующему доменному имени PGS.\n\n" +
+        "Напримере домена myoffice-app.ru : \n" +
+        "cd /root/install_MyOffice_PGS/certificates\n" +
+        "mkdir myoffice-app.ru\n\n" +
+        "Вставьте серитификаты в директорию, соответствующую вашему доменному имени.\n\n Список необходимых сертификатов: \n" +
+        "server.crt - содержит SSL-сертификат для *.<default_domain> и все промежуточные сертификаты, кроме корневого доверенного. \n" +
+        "server.nopass.key - Приватный ключ сертификата, не требующий кодовой фразы. \n" +
+        "ca.crt - файл сертификата удостоверяющего центра.\n\n" +
+		"Проверить наличия сертификатов и ключа:\n" +
+		"ls -la /root/install_MyOffice_PGS/certificates/myoffice-app.ru\n\n" +
+		"Далее начинаем заполнять конфигурационные файлы!:)\n"
+    msg := tgbotapi.NewMessage(chatID, certificatesAndKeys)
+    msg.ReplyMarkup = keyboards.GetIsCertificatesKeyboard()
+    bot.Send(msg)
+}
+
+

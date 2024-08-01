@@ -48,6 +48,17 @@ func sendInstructions(bot *tgbotapi.BotAPI, chatID int64, product string) {
 	bot.Send(msg)
 }
 
+func sendIsCertificates(bot *tgbotapi.BotAPI, chatID int64) {
+	isCertificates := "Проверка сертификата сервера (server.crt): \n" +
+		"openssl x509 -in server.crt -text -noout \n" +
+		"Проверка цепочки сертификатов (ca.crt): \n" +
+		"openssl x509 -in ca.crt -text -noout \n" +
+		"Проверка приватного ключа (server.nopass.key): \n" +
+		"openssl rsa -in server.nopass.key -check \n"
+	msg := tgbotapi.NewMessage(chatID, isCertificates)
+	bot.Send(msg)
+}
+
 func sendSupportEngineerContact(bot *tgbotapi.BotAPI, chatID int64) {
 	errorMessage := "Направьте описание проблемы или ошибки инженеру \nТГ: @IgorMaksimov2000\nПочта: igor.maksimov@myoffice.team \n\n" +
 		"Формат сообщения должен включать: \n" +
