@@ -15,10 +15,9 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		previousState[chatID] = "start"
 	case "Инструкции по продуктам":
 		sendProduct(bot, chatID)
-		previousState[chatID] = "product"
+		previousState[chatID] = "instr"
 	case "Частное Облако":
-		sendInstructions(bot, chatID, "privateCloud")
-		previousState[chatID] = "privateCloud"
+		handlePrivateCloud(bot, chatID)
 	case "Squadus":
 		sendInstructions(bot, chatID, "squadus")
 		previousState[chatID] = "squadus"
@@ -44,30 +43,53 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		handleBackButton(bot, chatID)
 	case "Связаться с инженером тех. поддержки":
 		sendSupportEngineerContact(bot, chatID)
-		previousState[chatID] = "supportContact"
+	case "Развертывание продуктов":
+		sendProduct(bot, chatID)
+		previousState[chatID] = "deploy"
 	case "Standalone":
 		sendStandaloneRequirements(bot, chatID, "Standalone")
 		previousState[chatID] = "standaloneRequirements"
-	case "Cluster":
-		sendClusterDevelopmentMessage(bot, chatID)
-		previousState[chatID] = "clusterDevelopment"
 	case "Далее":
-		if previousState[chatID] == "standaloneRequirements" {
-			sendStandaloneDownloadPackages(bot, chatID)
-			previousState[chatID] = "standaloneDownloadPackages"
-		}
+		handleNextStep(bot, chatID)
 	}
+}
+
+func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
+	switch previousState[chatID] {
+	case "standaloneRequirements":
+		sendStandaloneDownloadPackages(bot, chatID)
+		previousState[chatID] = "standaloneDownloadPackages"
+	case "privateKeyInsert":
+		sendStandaloneDownloadDistribution(bot, chatID)
+		previousState[chatID] = "standaloneDownloadDistribution"
+	case "standaloneDownloadPackages":
+		sendPrivateKeyInsert(bot, chatID)
+		previousState[chatID] = "privateKeyInsert"
+	}
+}
+
+func handlePrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
+    if previousState[chatID] == "instr" {
+        sendInstructions(bot, chatID, "privateCloud")
+        previousState[chatID] = "privateCloud"
+    } else if previousState[chatID] == "deploy" {
+        sendDeploymentOptions(bot, chatID)
+        previousState[chatID] = "privateCloudDeploy"
+    }
 }
 
 func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	currentMenu := previousState[chatID]
 	switch currentMenu {
-	case "product":
+	case "instr":
+		sendWelcomeMessage(bot, chatID)
+		previousState[chatID] = "start"
+	case "deploy":
 		sendWelcomeMessage(bot, chatID)
 		previousState[chatID] = "start"
 	case "privateCloud", "squadus", "mailion":
 		sendProduct(bot, chatID)
-		previousState[chatID] = "product"
+		previousState[chatID] = "instr"
 	case "requirementsPrivateCloud", "installationGuidePrivateCloud", "adminGuidePrivateCloud":
 		sendInstructions(bot, chatID, "privateCloud")
 		previousState[chatID] = "privateCloud"
@@ -92,6 +114,12 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "standaloneDownloadPackages":
 		sendStandaloneRequirements(bot, chatID, "Standalone")
 		previousState[chatID] = "standaloneRequirements"
+	case "privateKeyInsert":
+		sendStandaloneDownloadPackages(bot, chatID)
+		previousState[chatID] = "standaloneDownloadPackages"
+	case "standaloneDownloadDistribution":
+		sendPrivateKeyInsert(bot, chatID)
+		previousState[chatID] = "privateKeyInsert"
 	case "clusterDevelopment":
 		sendDeploymentOptions(bot, chatID)
 		previousState[chatID] = "deploymentOptions"
@@ -144,7 +172,7 @@ func handleAdminGuide(bot *tgbotapi.BotAPI, chatID int64) {
 		sendAdminGuideMailion(bot, chatID)
 		previousState[chatID] = "adminGuideMailion"
 	} else if previousState[chatID] == "mail3" {
-		sendAdminGuideMailion(bot, chatID)
+		sendAdminGuideMail3(bot, chatID)
 		previousState[chatID] = "adminGuideMail3"
 	}
 }

@@ -43,6 +43,33 @@ func sendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
         "python3 -m pip install yamllint \n" +
         "На этом все :) Двигаемся дальше..\n"
     msg := tgbotapi.NewMessage(chatID, downloadPackages)
-    msg.ReplyMarkup = keyboards.GetStandaloneDownloadPackages()
+    msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+    bot.Send(msg)
+}
+
+func sendPrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64) {
+	downloadPackages := "Необходимо убедиться, что публичные ключи машин PGS и CO находятся на машине Operator в папке /root/.ssh/authorized_keys.\n" +
+        "Если ключи отсутствуют, создайте пары ключей на машинах PGS и CO с помощью команды: \n\n" +
+        "ssh-keygen\n\n" +
+        "Затем скопируйте публичные ключи из файлов /root/.ssh/id_rsa.pub на машину Operator в папку /root/.ssh/authorized_keys:\n\n" +
+        "ssh-copy-id -i /root/.ssh/id_rsa.pub root@<IP_адрес_или_домен_машины_Operator> \n"
+    msg := tgbotapi.NewMessage(chatID, downloadPackages)
+    msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+    bot.Send(msg)
+}
+
+func sendStandaloneDownloadDistribution(bot *tgbotapi.BotAPI, chatID int64) {
+    downloadPackages := "Первая установка будет произведена на машину PGS.\n" +
+        "После установки необходимых пакетов на машине operator подготовьте архив, который выдается инженером @IgorMaksimov или Аккаунт Менеджером.\n" +
+        "Далее создайте директорию с помощью команды: \n" +
+        "mkdir install_MyOffice_PGS\n\n" +
+        "Распакуйте данный архив командой:\n" +
+        "tar xf MyOffice_PGS_version.tgz -C install_MyOffice_PGS \n" +
+        "*vesion - введите соответствующую версию продукта \n\n" +
+        "После этого перейдите в каталог install_MyOffice_PGS: \n" +
+        "cd install_MyOffice_PGS\n" +
+		"Далее начнем заполнять конфигурационные файлы!:)\n"
+    msg := tgbotapi.NewMessage(chatID, downloadPackages)
+    msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
     bot.Send(msg)
 }
