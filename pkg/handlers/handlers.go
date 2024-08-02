@@ -13,6 +13,9 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	case "/start":
 		sendWelcomeMessage(bot, chatID)
 		previousState[chatID] = "start"
+	case "В главное меню":
+		sendWelcomeMessage(bot, chatID)
+		previousState[chatID] = "mainMenu"
 	case "Инструкции по продуктам":
 		sendProduct(bot, chatID)
 		previousState[chatID] = "instr"
@@ -59,6 +62,10 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		sendPGSConfig(bot, chatID)
 	case "Далее":
 		handleNextStep(bot, chatID)
+	case "Установка CO":
+		handleNextStep(bot, chatID)
+	case "Распаковка ISO образа":
+		sendUnzippingISO(bot, chatID)
 	}
 }
 
@@ -85,6 +92,9 @@ func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
 	case "pgsConfigure":
 		sendPGSDeploy(bot, chatID)
 		previousState[chatID] = "pgsDeploy"
+	case "pgsDeploy":
+		sendCOInstallation(bot, chatID)
+		previousState[chatID] = "coInstallation"
 	}
 }
 
@@ -133,6 +143,9 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "pgsDeploy":
 		sendStandalonePGSConfigure(bot, chatID)
 		previousState[chatID] = "pgsConfigure"
+	case "coInstallation":
+		sendPGSDeploy(bot, chatID)
+		previousState[chatID] = "pgsDeploy"
 	case "clusterDevelopment":
 		sendDeploymentOptions(bot, chatID)
 		previousState[chatID] = "deploymentOptions"

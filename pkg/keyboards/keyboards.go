@@ -30,7 +30,7 @@ func GetProductKeyboard() tgbotapi.ReplyKeyboardMarkup {
 			tgbotapi.NewKeyboardButton("Mailion"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("Почта 3"),
+			tgbotapi.NewKeyboardButton("Почта"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Назад"),
@@ -93,6 +93,40 @@ func GetStandaloneNextStepKeyboard() tgbotapi.ReplyKeyboardMarkup {
         ),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Назад"),
+		),
+	)
+}
+
+func GetUnzippingISOKeyboard() tgbotapi.ReplyKeyboardMarkup {
+	return tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Далее"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Распаковка ISO образа"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+            tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+        ),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Назад"),
+		),
+	)
+}
+
+func GetCOInstallation() tgbotapi.ReplyKeyboardMarkup {
+	return tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Установка CO"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+            tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+        ),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Назад"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("В главное меню"),
 		),
 	)
 }
