@@ -161,6 +161,22 @@ func sendCOInstallation(bot *tgbotapi.BotAPI, chatID int64) {
     bot.Send(msg)
 }
 
+func sendCOScripts(bot *tgbotapi.BotAPI, chatID int64) {
+	coScripts := "Выполните запуск скриптов в директории /root:\n" +
+		"bash co_ansible_bin_version.run \n" +
+		"После завершения установки необходимо убедиться, что список содержит сообщения [ OK ] или [CHANGE] \n\n" +
+		"Далее выполните запуск скрипта с хранилищем Docker-контейнеров:\n" +
+		"bash co_infra_version.run \n\n" +
+		"После завершения установки необходимо убедиться, что список содержит сообщения [ OK ] или [CHANGE]\n\n" +
+		"Перейти в каталог ~/install_co/ :\n" +
+		"cd ~/install_co\n" +
+		"Начинаем заполнять конфигурационные файлы..\n"
+        
+    msg := tgbotapi.NewMessage(chatID, coScripts)
+    msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+    bot.Send(msg)
+}
+
 func sendPGSConfig(bot *tgbotapi.BotAPI, chatID int64) {
 	filePath := "/home/admin-msk/MyOfficeConfig/hosts.yml"
 

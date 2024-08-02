@@ -95,6 +95,9 @@ func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
 	case "pgsDeploy":
 		sendCOInstallation(bot, chatID)
 		previousState[chatID] = "coInstallation"
+	case "coInstallation":
+		sendCOScripts(bot, chatID)
+		previousState[chatID] = "coScripts"
 	}
 }
 
@@ -146,7 +149,10 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "coInstallation":
 		sendPGSDeploy(bot, chatID)
 		previousState[chatID] = "pgsDeploy"
-	case "clusterDevelopment":
+	case "coScripts":
+		sendCOInstallation(bot, chatID)
+		previousState[chatID] = "coInstallation"
+	case "standaloneRequirements":
 		sendDeploymentOptions(bot, chatID)
 		previousState[chatID] = "deploymentOptions"
 	default:
