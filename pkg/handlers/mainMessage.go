@@ -12,7 +12,7 @@ func sendWelcomeMessage(bot *tgbotapi.BotAPI, chatID int64) {
 		"Выберите необходимую функцию:\n" +
 		"1. Инструкции по продуктам.\n" +
 		"2. Развертывание продуктов. \n" +
-		"3. Рассчет сайзинга продуктов. \n" +
+		"3. Расчет сайзинга продуктов. \n" +
 		"4. Связаться с инженером тех. поддержки.\n"
 	msg := tgbotapi.NewMessage(chatID, welcomeMessage)
 	msg.ReplyMarkup = keyboards.GetMainKeyboard()
@@ -56,6 +56,14 @@ func sendIsCertificates(bot *tgbotapi.BotAPI, chatID int64) {
 		"Проверка приватного ключа (server.nopass.key): \n" +
 		"openssl rsa -in server.nopass.key -check \n"
 	msg := tgbotapi.NewMessage(chatID, isCertificates)
+	bot.Send(msg)
+}
+
+func sendUnzippingISO(bot *tgbotapi.BotAPI, chatID int64) {
+	unzippingISO := "Для разархивирования образа .iso используется инструмент \"bsdtar\": \n" +
+		"apt-get install bsdtar \n" +
+		"bsdtar -xvf путь_к_файлу.iso -C директория_для_извлечения \n"
+	msg := tgbotapi.NewMessage(chatID, unzippingISO)
 	bot.Send(msg)
 }
 

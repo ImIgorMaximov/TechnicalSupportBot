@@ -143,11 +143,23 @@ func sendPGSDeploy(bot *tgbotapi.BotAPI, chatID int64) {
         "./deploy.sh hosts.yml\n\n" +
 		"Ожидаем результат! При возниковении ошибок при инсталляции обращайтесь к инженеру!\n" 
     msg := tgbotapi.NewMessage(chatID, pgsDeploy)
-    msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+    msg.ReplyMarkup = keyboards.GetCOInstallation()
     bot.Send(msg)
 }
 
-
+func sendCOInstallation(bot *tgbotapi.BotAPI, chatID int64) {
+	coInstallation := "Переходим к установке и настройке CO (Сервер совместного редактирования)\n" +
+		"На машину operator перенести дистрибутив CO, который выдается инженером @IgorMaksimov или Аккаунт Менеджером. \n\n" +
+		"Данный дистрибутив (.iso) включает: \n" +
+		"co_ansible_bin_version.run - файл с подсистемой управления конфигурациями;\n" +
+		"co_infra_version.run - файл с хранилищем образов Docker\n\n" +
+		"*Для распаковки дистрибутива .iso, нажмите соответствующую кнопку.\n\n" +
+		"Далее выполним запуск скриптов..\n"
+        
+    msg := tgbotapi.NewMessage(chatID, coInstallation)
+    msg.ReplyMarkup = keyboards.GetUnzippingISOKeyboard()
+    bot.Send(msg)
+}
 
 func sendPGSConfig(bot *tgbotapi.BotAPI, chatID int64) {
 	filePath := "/home/admin-msk/MyOfficeConfig/hosts.yml"
