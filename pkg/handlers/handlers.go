@@ -54,12 +54,16 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		previousState[chatID] = "standaloneRequirements"
 	case "Готово":
 		handleNextStep(bot, chatID)
-	case "Все Окей! Деплоим!":
+	case "Запустить деплой":
 		handleNextStep(bot, chatID)
 	case "Проверить корректность сертификатов и ключа":
 		sendIsCertificates(bot, chatID)
-	case "Пример конфига hosts.yml":
-		sendPGSConfig(bot, chatID)
+	case "Пример конфига PGS - hosts.yml":
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyofficeConfig/", "hostsPGS.yml")
+	case "Пример конфига CO - main.yml":
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyofficeConfig/", "mainCO.yml")
+	case "Пример конфига CO - hosts.yml":
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyofficeConfig/", "hostsCO.yml")
 	case "Далее":
 		handleNextStep(bot, chatID)
 	case "Установка CO":
@@ -96,8 +100,8 @@ func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
 		sendCOInstallation(bot, chatID)
 		previousState[chatID] = "coInstallation"
 	case "coInstallation":
-		sendCOScripts(bot, chatID)
-		previousState[chatID] = "coScripts"
+		sendCOConfigure(bot, chatID)
+		previousState[chatID] = "coConfigure"
 	}
 }
 
@@ -149,7 +153,7 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "coInstallation":
 		sendPGSDeploy(bot, chatID)
 		previousState[chatID] = "pgsDeploy"
-	case "coScripts":
+	case "coConfigure":
 		sendCOInstallation(bot, chatID)
 		previousState[chatID] = "coInstallation"
 	case "standaloneRequirements":
@@ -162,13 +166,13 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 }
 
 func handlePrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
-    if previousState[chatID] == "instr" {
-        sendInstructions(bot, chatID, "privateCloud")
-        previousState[chatID] = "privateCloud"
-    } else if previousState[chatID] == "deploy" {
-        sendDeploymentOptions(bot, chatID)
-        previousState[chatID] = "privateCloudDeploy"
-    }
+	if previousState[chatID] == "instr" {
+		sendInstructions(bot, chatID, "privateCloud")
+		previousState[chatID] = "privateCloud"
+	} else if previousState[chatID] == "deploy" {
+		sendDeploymentOptions(bot, chatID)
+		previousState[chatID] = "privateCloudDeploy"
+	}
 }
 
 func handleSystemRequirements(bot *tgbotapi.BotAPI, chatID int64) {

@@ -89,8 +89,8 @@ func GetStandaloneNextStepKeyboard() tgbotapi.ReplyKeyboardMarkup {
 			tgbotapi.NewKeyboardButton("Далее"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
-            tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
-        ),
+			tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+		),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Назад"),
 		),
@@ -106,8 +106,8 @@ func GetUnzippingISOKeyboard() tgbotapi.ReplyKeyboardMarkup {
 			tgbotapi.NewKeyboardButton("Распаковка ISO образа"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
-            tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
-        ),
+			tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+		),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Назад"),
 		),
@@ -120,8 +120,8 @@ func GetCOInstallation() tgbotapi.ReplyKeyboardMarkup {
 			tgbotapi.NewKeyboardButton("Установка CO"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
-            tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
-        ),
+			tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+		),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Назад"),
 		),
@@ -137,11 +137,11 @@ func GetIsCertificatesKeyboard() tgbotapi.ReplyKeyboardMarkup {
 			tgbotapi.NewKeyboardButton("Готово"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
-            tgbotapi.NewKeyboardButton("Проверить корректность сертификатов и ключа"),
-        ),
+			tgbotapi.NewKeyboardButton("Проверить корректность сертификатов и ключа"),
+		),
 		tgbotapi.NewKeyboardButtonRow(
-            tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
-        ),
+			tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+		),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Назад"),
 		),
@@ -151,14 +151,34 @@ func GetIsCertificatesKeyboard() tgbotapi.ReplyKeyboardMarkup {
 func GetPGSStandaloneConfig() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("Все Окей! Деплоим!"),
+			tgbotapi.NewKeyboardButton("Запустить деплой"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
-            tgbotapi.NewKeyboardButton("Пример конфига hosts.yml"),
-        ),
+			tgbotapi.NewKeyboardButton("Пример конфига PGS - hosts.yml"),
+		),
 		tgbotapi.NewKeyboardButtonRow(
-            tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
-        ),
+			tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Назад"),
+		),
+	)
+}
+
+func GetCOStandaloneConfigKeyboard() tgbotapi.ReplyKeyboardMarkup {
+	return tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Готово"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Пример конфига CO - hosts.yml"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Пример конфига CO - main.yml"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+		),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Назад"),
 		),
