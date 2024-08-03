@@ -59,11 +59,11 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	case "Проверить корректность сертификатов и ключа":
 		sendIsCertificates(bot, chatID)
 	case "Пример конфига PGS - hosts.yml":
-		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/", "hostsPGS.yml")
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsPGS.yml", "hostsPGS.yml")
 	case "Пример конфига CO - main.yml":
-		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/", "mainCO.yml")
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/mainCO.yml", "mainCO.yml")
 	case "Пример конфига CO - hosts.yml":
-		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/", "hostsCO.yml")
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsCO.yml", "hostsCO.yml")
 	case "Далее":
 		handleNextStep(bot, chatID)
 	case "Установка CO":
@@ -102,7 +102,11 @@ func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
 	case "coInstallation":
 		sendCOConfigure(bot, chatID)
 		previousState[chatID] = "coConfigure"
+	case "coConfigure":
+		sendCODeploy(bot, chatID)
+		previousState[chatID] = "coDeploy"
 	}
+
 }
 
 func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
@@ -159,6 +163,9 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "standaloneRequirements":
 		sendDeploymentOptions(bot, chatID)
 		previousState[chatID] = "deploymentOptions"
+	case "coDeploy":
+		sendCOConfigure(bot, chatID)
+		previousState[chatID] = "coConfigure"
 	default:
 		sendWelcomeMessage(bot, chatID)
 		previousState[chatID] = "start"

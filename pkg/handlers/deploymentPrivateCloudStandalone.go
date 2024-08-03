@@ -141,7 +141,7 @@ func sendStandalonePGSConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 func sendPGSDeploy(bot *tgbotapi.BotAPI, chatID int64) {
 	pgsDeploy := "Для запуска установки PGS необходимо перейти в каталог /root/install_MyOffice_PGS/ и выполнить следующую команду:\n" +
 		"./deploy.sh hosts.yml\n\n" +
-		"Ожидаем результат! При возниковении ошибок при инсталляции обращайтесь к инженеру!\n"
+		"Ожидаем результат! При возниковении ошибок обращайтесь к инженеру!\n"
 	msg := tgbotapi.NewMessage(chatID, pgsDeploy)
 	msg.ReplyMarkup = keyboards.GetCOInstallation()
 	bot.Send(msg)
@@ -215,5 +215,14 @@ func sendCOConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 
 	msg := tgbotapi.NewMessage(chatID, coConfigure)
 	msg.ReplyMarkup = keyboards.GetCOStandaloneConfigKeyboard()
+	bot.Send(msg)
+}
+
+func sendCODeploy(bot *tgbotapi.BotAPI, chatID int64) {
+	coDeploy := "Для запуска установки CO необходимо перейти в каталог /root/install_co/ и выполнить следующую команду:\n" +
+		"ansible-playbook playbooks/main.yml --diff\n\n" +
+		"Ожидаем результат! При возниковении ошибок обращайтесь к инженеру!\n"
+	msg := tgbotapi.NewMessage(chatID, coDeploy)
+	msg.ReplyMarkup = keyboards.GetFinishKeyboard()
 	bot.Send(msg)
 }
