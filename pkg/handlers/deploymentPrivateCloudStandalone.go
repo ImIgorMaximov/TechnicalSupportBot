@@ -188,7 +188,7 @@ func sendCOConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 		"Заполните переменные окружения: \n" +
 		"domain_name: \"myoffice-app.ru\" \n" +
 		"При использовании domain_env co_domain_module примет ввид: \n" +
-		"co_domain_module: \"{service}-{domain}\" \n" +
+		"co_domain_module: \"{service}-{domain}\" \n\n" +
 		"В docker_daemon_parameters: ->  insecure-registries: [\"operator.myoffice-app.ru:5000\"] внесите домен оператора\n\n" +
 		"Аналогично в docker_image_registry: \"operator.myoffice-app.ru:5000\"\n\n" +
 		"Сгенерируйте пароль для etcd_browser_password: \"ail8Et8uiph5iegahqui\" (pwgen 20 1)\n\n" +
@@ -197,7 +197,7 @@ func sendCOConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 		"Сгенерируйте пароль для redis_password: \"zohh4thie9IjaGhue5le\" (pwgen 20 1)\n\n" +
 		"Сгенерируйте пароль для openresty_api_password: \"gpQfhLNLdvp82Y\" (pwgen 20 1)\n\n" +
 		"Сгенерируйте пароль для openresty_mail_oauth2_client_secret: \"Nae9ea7ohgieVa8A\" (pwgen 16 1)\n\n" +
-		"Измените значения переменных fs_api_url, fs_app_url, fs_card_url домен PGS машины: \n" +
+		"Измените значения переменных fs_api_url, fs_app_url, fs_card_url на домен PGS машины: \n" +
 		"fs_api_url: \"https://pgs.myoffice-app.ru/pgsapi\" \n" +
 		"fs_app_url: \"https://pgs.myoffice-app.ru/pgsapi\" \n" +
 		"fs_card_url: \"https://pgs.myoffice-app.ru/pgsapi\" \n\n" +
@@ -214,6 +214,6 @@ func sendCOConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 		"*При необходимости выберите пример конфига, нажав соответствующую кнопку. \n"
 
 	msg := tgbotapi.NewMessage(chatID, coConfigure)
-	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+	msg.ReplyMarkup = keyboards.GetCOStandaloneConfigKeyboard()
 	bot.Send(msg)
 }

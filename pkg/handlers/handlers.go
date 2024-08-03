@@ -59,11 +59,11 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	case "Проверить корректность сертификатов и ключа":
 		sendIsCertificates(bot, chatID)
 	case "Пример конфига PGS - hosts.yml":
-		sendConfigFile(bot, chatID, "/home/admin-msk/MyofficeConfig/", "hostsPGS.yml")
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/", "hostsPGS.yml")
 	case "Пример конфига CO - main.yml":
-		sendConfigFile(bot, chatID, "/home/admin-msk/MyofficeConfig/", "mainCO.yml")
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/", "mainCO.yml")
 	case "Пример конфига CO - hosts.yml":
-		sendConfigFile(bot, chatID, "/home/admin-msk/MyofficeConfig/", "hostsCO.yml")
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/", "hostsCO.yml")
 	case "Далее":
 		handleNextStep(bot, chatID)
 	case "Установка CO":
