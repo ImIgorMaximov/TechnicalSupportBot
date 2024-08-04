@@ -32,7 +32,6 @@ func sendProduct(bot *tgbotapi.BotAPI, chatID int64) {
 }
 
 func sendDeploymentOptions(bot *tgbotapi.BotAPI, chatID int64) {
-	previousState[chatID] = "deployment_options"
 
 	deploymentMessage := "Выберите тип инсталляции:"
 	msg := tgbotapi.NewMessage(chatID, deploymentMessage)
@@ -71,7 +70,7 @@ func sendUnzippingISO(bot *tgbotapi.BotAPI, chatID int64) {
 }
 
 func sendSupportEngineerContact(bot *tgbotapi.BotAPI, chatID int64) {
-	errorMessage := "Направьте описание проблемы или ошибки инженеру \nТГ: @IgorMaksimov2000\nПочта: igor.maksimov@myoffice.team \n\n" +
+	errorMessage := "Направьте описание проблемы или вопроса инженеру \nТГ: @IgorMaksimov2000\nПочта: igor.maksimov@myoffice.team \n\n" +
 		"Формат сообщения должен включать: \n" +
 		"1. Описание ошибки/вопроса.\n" +
 		"2. Выводы команд pip3 list и ansible --version. (Выполненные в корневой директории инсталляции, например, /root/install_pgs) \n" +

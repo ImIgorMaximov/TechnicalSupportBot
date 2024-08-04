@@ -6,18 +6,18 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func sendStandaloneRequirements(bot *tgbotapi.BotAPI, chatID int64, product string) {
-	requirements := "Аппаратные и системные требования для установки Standalone Частное Облако c сайзингом:\n" +
+func sendStandaloneRequirements(bot *tgbotapi.BotAPI, chatID int64) {
+	requirements := "Аппаратные и системные требования для установки Standalone Частное Облако c сайзингом:\n\n" +
 		"Максимальное кол-во пользователей - 50; \n" +
 		"Количество одновременно активных пользователей - 10; \n" +
 		"Количество документов, редактируемых одновременно - 10; \n" +
 		"Дисковая квота пользователя в хранилище, Гб - 1; \n" +
 		"*Данный сайзинг является примером, для более детального расчета обратитесь к инженеру @IgorMaksimov2000\n\n" +
 		"Аппаратные требования: \n" +
-		"3 Виртуальные машины с ролями - operator (Для управления процессом установки), PGS (Система хранения данных), CO (Система редактирования и совместной работы)\n" +
+		"3 Виртуальные машины с ролями - operator (Для управления процессом установки), PGS (Система хранения данных), CO (Система редактирования и совместной работы)\n\n" +
 		"Operator: 1 (CPU, vCPU); 4 GB (RAM), 50 GB (SSD)\n" +
 		"PGS: 8 (CPU, vCPU); 20 GB (RAM), 150 GB (SSD)\n" +
-		"CO: 8 (CPU, vCPU); 20 GB (RAM), 100 GB (SSD)\n" +
+		"CO: 8 (CPU, vCPU); 20 GB (RAM), 100 GB (SSD)\n\n" +
 		"Cистемные требования (OS): \n" +
 		"- Astra Linux Special Edition 1.7 «Орел» (базовый);\n" +
 		"- РЕД ОС 7.3 Муром (версия ФСТЭК);\n" +
@@ -31,19 +31,18 @@ func sendStandaloneRequirements(bot *tgbotapi.BotAPI, chatID int64, product stri
 }
 
 func sendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
-	downloadPackages := "Отлично! Тачки подготовлены! Двигаемся дальше..\n" +
-		"PS. Вся установка и настройка будет производиться на машине operator на примере системы Astra Linux Special Edition 1.7 «Орел» (базовый);\n" +
+	standaloneDownloadPackages := "Вся установка и настройка будет производиться на машине operator на примере системы Astra Linux Special Edition 1.7 «Орел» (базовый);\n" +
 		"На ВМ c ролью operator обновите систему: \n" +
 		"sudo su\n" +
-		"apt update\n" +
+		"apt update\n\n" +
 		"Далее установим необходимые пакеты: \n" +
 		"apt install -y python3-pip \n" +
 		"python3 -m pip install ansible-core==2.11.12 \n" +
 		"python3 -m pip install ansible==4.9.0 \n" +
 		"python3 -m pip install jinja2==3.1.2 \n" +
-		"python3 -m pip install yamllint \n" +
+		"python3 -m pip install yamllint \n\n" +
 		"На этом все :) Двигаемся дальше..\n"
-	msg := tgbotapi.NewMessage(chatID, downloadPackages)
+	msg := tgbotapi.NewMessage(chatID, standaloneDownloadPackages)
 	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
 	bot.Send(msg)
 }
@@ -59,77 +58,77 @@ func sendPrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendDNSOptions(bot *tgbotapi.BotAPI, chatID int64) {
-	dns := "Перед началом установки необходимо настроить DNS-сервер, указав адрес сервера установки Nginx.\n" +
+func sendDNSOptionsPGS(bot *tgbotapi.BotAPI, chatID int64) {
+	dnsPGS := "Перед началом установки необходимо настроить DNS-сервер, указав адрес сервера установки Nginx.\n" +
 		"В случае использования переменной окружения (env) в конфигурационном файле hosts.yml записи будут иметь вид: \n\n" +
 		"admin-<env>.<default_domain> - Адрес веб-панели администрирования PGS \n" +
 		"pgs-<env>.<default_domain> - Адрес точки входа для API\n\n" +
 		"Если переменная окружения (env) не задана, записи примут вид:\n\n" +
 		"admin.<default_domain>\n" +
 		"pgs.<default_domain>\n\n"
-	msg := tgbotapi.NewMessage(chatID, dns)
+	msg := tgbotapi.NewMessage(chatID, dnsPGS)
 	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
 	bot.Send(msg)
 }
 
 func sendStandaloneDownloadDistribution(bot *tgbotapi.BotAPI, chatID int64) {
 	downloadPackages := "Первая установка будет произведена на машину PGS.\n" +
-		"После установки необходимых пакетов на машине operator подготовьте архив, который выдается инженером @IgorMaksimov или Аккаунт Менеджером.\n" +
-		"Далее создайте директорию с помощью команды: \n" +
+		"После установки необходимых пакетов на машине operator подготовьте архив, который выдается инженером или Аккаунт Менеджером.\n" +
+		"Далее создайте директорию с помощью команды: \n\n" +
 		"mkdir install_MyOffice_PGS\n\n" +
-		"Распакуйте данный архив командой:\n" +
+		"Распакуйте данный архив командой:\n\n" +
 		"tar xf MyOffice_PGS_version.tgz -C install_MyOffice_PGS \n" +
 		"*vesion - введите соответствующую версию продукта \n\n" +
-		"После этого перейдите в каталог install_MyOffice_PGS: \n" +
+		"После этого перейдите в каталог install_MyOffice_PGS: \n\n" +
 		"cd install_MyOffice_PGS\n"
 	msg := tgbotapi.NewMessage(chatID, downloadPackages)
 	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
 	bot.Send(msg)
 }
 
-func sendCertificatesAndKeys(bot *tgbotapi.BotAPI, chatID int64) {
-	certificatesAndKeys := "Для работы веб-интерфейса PGS необходима установка SSL-сертификатов.\n" +
+func sendCertificatesAndKeysPGS(bot *tgbotapi.BotAPI, chatID int64) {
+	certificatesAndKeysPGS := "Для работы веб-интерфейса PGS необходима установка SSL-сертификатов.\n" +
 		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
 		"Сертификаты необходимо разместить в каталоге, соответствующему доменному имени PGS.\n\n" +
-		"Напримере домена myoffice-app.ru : \n" +
+		"Напримере домена myoffice-app.ru : \n\n" +
 		"cd /root/install_MyOffice_PGS/certificates\n" +
 		"mkdir myoffice-app.ru\n\n" +
-		"Вставьте серитификаты в директорию, соответствующую вашему доменному имени.\n\n Список необходимых сертификатов: \n" +
+		"Вставьте серитификаты в директорию, соответствующую вашему доменному имени.\n\n Список необходимых сертификатов: \n\n" +
 		"server.crt - содержит SSL-сертификат для *.<default_domain> и все промежуточные сертификаты, кроме корневого доверенного. \n" +
 		"server.nopass.key - Приватный ключ сертификата, не требующий кодовой фразы. \n" +
 		"ca.crt - файл сертификата удостоверяющего центра.\n\n" +
-		"Проверить наличия сертификатов и ключа:\n" +
+		"Проверить наличия сертификатов и ключа:\n\n" +
 		"ls -la /root/install_MyOffice_PGS/certificates/myoffice-app.ru\n\n" +
 		"Далее начинаем заполнять конфигурационные файлы!:)\n"
-	msg := tgbotapi.NewMessage(chatID, certificatesAndKeys)
+	msg := tgbotapi.NewMessage(chatID, certificatesAndKeysPGS)
 	msg.ReplyMarkup = keyboards.GetIsCertificatesKeyboard()
 	bot.Send(msg)
 }
 
 func sendStandalonePGSConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 	pgsConfigure := "Необходимо скопировать шаблон файла inventory в корневой каталог дистрибутива и заполнить секции hosts и vars.\n\n" +
-		"Операция копирования выполняется с помощью команды:\n" +
-		"cp /root/install_MyOffice_PGS/inventory/hosts-sa.yaml hosts.yml \n" +
-		"Далее заполним файл hosts.yml : \n" +
+		"Операция копирования выполняется с помощью команды:\n\n" +
+		"cp /root/install_MyOffice_PGS/inventory/hosts-sa.yaml hosts.yml \n\n" +
+		"Далее заполним файл hosts.yml : \n\n" +
 		"vim /root/install_MyOffice_PGS/hosts.yml\n\n" +
 		"В секцию hosts добавьте доменное имя вашего PGS-сервера: \n" +
 		"hosts:\n" +
-		"\tpgs.myoffice-app.ru: \n" +
-		"Аналогично проделать с другими сервисами: search, redis, storage, nginx, etcd...\n" +
-		"Далее в секцию vars необходимо заполнить следующие переменные:\n" +
-		"DEFAULT_DOMAIN: \"myoffice-app.ru\"\n" +
-		"ENV: \"\" - *если используется переменная окружения\n" +
-		"Сгенерируйте и внесите пароли для сервисов (команда: pwgen 13 7) : \n" +
-		"KEYCLOAK_PASSWORD: \"81mToSPFJ8ezr8\"\n" +
-		"KEYCLOAK_REALM_PASSWORD: \"MVh2PiA2S5cPk\"\n" +
-		"KEYCLOAK_POSTGRES_PASSWORD: \"7Afd3G12P5VyUg\"\n" +
-		"ARANGODB_PASSWORD: \"55ab8qk7ES4P4LX\"\n" +
-		"RABBITMQ_PASSWORD: \"BdyYgDwLLY8M5U9\"\n" +
-		"REDIS_PASSWORD: \"S73uo3iH3qFRdnf\"\n" +
+		"\t\tpgs.myoffice-app.ru: \n" +
+		"Аналогично проделать с другими сервисами: search, redis, storage, nginx, etcd...\n\n" +
+		"Далее в секцию vars необходимо заполнить следующие переменные:\n\n" +
+		"DEFAULT_DOMAIN: \"myoffice-app.ru\"\n\n" +
+		"ENV: \"\" - *если используется переменная окружения\n\n" +
+		"Сгенерируйте и внесите пароли для сервисов (команда: pwgen 13 7) : \n\n" +
+		"KEYCLOAK_PASSWORD: \"81mToSPFJ8ezr8\"\n\n" +
+		"KEYCLOAK_REALM_PASSWORD: \"MVh2PiA2S5cPk\"\n\n" +
+		"KEYCLOAK_POSTGRES_PASSWORD: \"7Afd3G12P5VyUg\"\n\n" +
+		"ARANGODB_PASSWORD: \"55ab8qk7ES4P4LX\"\n\n" +
+		"RABBITMQ_PASSWORD: \"BdyYgDwLLY8M5U9\"\n\n" +
+		"REDIS_PASSWORD: \"S73uo3iH3qFRdnf\"\n\n" +
 		"GRAFANA_ADMIN_PASSWORD: \"oPpKvc6We3mES6\"\n\n" +
-		"В секции co заполнить \"FS App encryption settings\" : \n" +
-		"FS_APP_ENCRYPTION_SALT: \"2DD4E59B582AF71F\"\n" +
-		"AUTH_ENCRYPTION_SALT: \"2DD4E59B582AF71F\"\n" +
+		"В секции co заполнить \"FS App encryption settings\" : \n\n" +
+		"FS_APP_ENCRYPTION_SALT: \"2DD4E59B582AF71F\"\n\n" +
+		"AUTH_ENCRYPTION_SALT: \"2DD4E59B582AF71F\"\n\n" +
 		"APP_ADMIN_PASSWORD: \"6dbYv6qVJrqiVB\"\n\n" +
 		"*В примерах используется редактор vim \n" +
 		"*При необходимости выберите пример конфига, нажав соответствующую кнопку. \n"
@@ -139,35 +138,74 @@ func sendStandalonePGSConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 }
 
 func sendPGSDeploy(bot *tgbotapi.BotAPI, chatID int64) {
-	pgsDeploy := "Для запуска установки PGS необходимо перейти в каталог /root/install_MyOffice_PGS/ и выполнить следующую команду:\n" +
+	pgsDeploy := "Для запуска установки PGS необходимо перейти в каталог /root/install_MyOffice_PGS/ и выполнить следующую команду:\n\n" +
 		"./deploy.sh hosts.yml\n\n" +
-		"Ожидаем результат! При возниковении ошибок обращайтесь к инженеру!\n"
+		"Ожидаем результат! При возниковении ошибок или вопросов свяжитесь с инженером!\n"
 	msg := tgbotapi.NewMessage(chatID, pgsDeploy)
 	msg.ReplyMarkup = keyboards.GetCOInstallation()
 	bot.Send(msg)
 }
 
+func sendDNSOptionsCO(bot *tgbotapi.BotAPI, chatID int64) {
+	dnsCO := "Перед началом установки необходимо настроить DNS-сервер.\n" +
+		"В случае использования переменной окружения (env) в конфигурационном файле main.yml записи будут иметь вид: \n\n" +
+		"auth-<domain_env>.<domain_name> \n" +
+		"cdn-<domain_env>.<domain_name> \n" +
+		"coapi-<domain_env>.<domain_name> \n" +
+		"docs-<domain_env>.<domain_name> \n" +
+		"files-<domain_env>.<domain_name> \n" +
+		"links-<domain_env>.<domain_name> \n" +
+		"_https._tcp-<domain_env>.<domain_name> \n\n" +
+		"Если переменная окружения (env) не задана, записи примут вид:\n\n" +
+		"auth.<domain_name>\n" +
+		"cdn.<domain_name> \n" +
+		"coapi.<domain_name> \n" +
+		"docs.<domain_name> \n" +
+		"files.<domain_name> \n" +
+		"links.<domain_name> \n" +
+		"_https._tcp.<domain_name> \n"
+	msg := tgbotapi.NewMessage(chatID, dnsCO)
+	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+	bot.Send(msg)
+}
+
+func sendCertificatesAndKeysCO(bot *tgbotapi.BotAPI, chatID int64) {
+	certificatesAndKeysCO := "Для работы CO необходима установка SSL-сертификатов.\n" +
+		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
+		"Сертификаты необходимо разместить в каталоге certificates.\n\n" +
+		"cd /root/install_co/certificates\n" +
+		"Вставьте серитификаты в директорию certificates.\n\n Список необходимых сертификатов: \n\n" +
+		"server.crt - сертификат внешнего домена. \n" +
+		"server.nopass.key - ключ внешнего домена. \n" +
+		"ca.pem - цепочка сертификатов промежуточных центров сертификации.\n\n" +
+		"Проверить наличия сертификатов и ключа:\n" +
+		"ls -la /root/install_MyOffice_PGS/certificates/\n\n"
+	msg := tgbotapi.NewMessage(chatID, certificatesAndKeysCO)
+	msg.ReplyMarkup = keyboards.GetIsCertificatesKeyboard()
+	bot.Send(msg)
+}
+
 func sendCOInstallation(bot *tgbotapi.BotAPI, chatID int64) {
-	coInstallation := "Переходим к установке и настройке CO (Сервер совместного редактирования)\n" +
-		"На машину operator перенести дистрибутив CO, который выдается инженером @IgorMaksimov или Аккаунт Менеджером. \n\n" +
-		"Данный дистрибутив (.iso) включает: \n" +
+	coInstallation := "Переходим к установке и настройке CO (Сервер совместного редактирования).\n\n" +
+		"На машину operator перенести дистрибутив CO, который выдается инженером или Аккаунт Менеджером. \n\n" +
+		"Данный дистрибутив (.iso) включает: \n\n" +
 		"co_ansible_bin_version.run - файл с  подсистемой управления конфигурациями\n" +
 		"co_infra_version.run - файл с  с хранилищем Docker-контейнеров\n\n" +
-		"Далее выполните запуск скрипта с хранилищем Docker-контейнеров:\n" +
+		"Далее выполните запуск скрипта с хранилищем Docker-контейнеров:\n\n" +
 		"bash co_infra_version.run \n\n" +
 		"После завершения установки необходимо убедиться, что список содержит сообщения [ OK ] или [CHANGE]\n\n" +
-		"Далее выполните запуск скрипта co_ansible_bin_version.run :\n" +
+		"Далее выполните запуск скрипта co_ansible_bin_version.run :\n\n" +
 		"bash co_ansible_bin_version.run \n\n" +
 		"После завершения установки необходимо убедиться, что список содержит сообщения [ OK ] или [CHANGE]\n\n" +
-		"Перейдите в каталог /install_co/ :\n" +
+		"Перейдите в каталог /install_co/ :\n\n" +
 		"cd /root/install_co\n\n" +
-		"Скопируйте файл /root/install_co/contrib/co/ansible.cfg в /root/install_co/ :\n" +
+		"Скопируйте файл /root/install_co/contrib/co/ansible.cfg в /root/install_co/ :\n\n" +
 		"cp /root/install_co/contrib/co/ansible.cfg ansible.cfg\n\n" +
-		"Скопируйте файл /root/install_co/contrib/co/standalone/hosts.yml в /root/install_co/:\n" +
+		"Скопируйте файл /root/install_co/contrib/co/standalone/hosts.yml в /root/install_co/:\n\n" +
 		"cp /root/install_co/contrib/co/standalone/hosts.yml hosts.yml\n\n" +
-		"Создайте каталог co_setup/ в директории /root/install_co/group_vars/:\n" +
+		"Создайте каталог co_setup/ в директории /root/install_co/group_vars/:\n\n" +
 		"mkdir /root/install_co/group_vars/co_setup/\n\n" +
-		"Скопируйте в созданную директорию co_setup каталог с переменными для заполнения :\n" +
+		"Скопируйте в созданную директорию co_setup каталог с переменными для заполнения :\n\n" +
 		"cp -r /root/install_co/contrib/co/standalone/group_vars/co_setup/* /root/install_co/group_vars/co_setup/\n\n" +
 		"Далее начинаем заполнять конфигурационные файлы..\n"
 
@@ -181,7 +219,7 @@ func sendCOConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 		"vim /root/install_co/hosts.yml\n\n" +
 		"В секцию hosts добавьте доменное имя вашего CO-сервера: \n" +
 		"hosts:\n" +
-		"\tco.myoffice-app.ru: \n" +
+		"\t\tco.myoffice-app.ru: \n" +
 		"Операцию необходимо проделать со всеми сервисами: co_chatbot, co_etcd, co_mq, co_cvm, co_cu...\n\n" +
 		"Приступаем заполнять конфиг main.yml в директории /root/install_co/group_vars/co_setup :\n" +
 		"vim /root/install_co/group_vars/co_setup/main.yml\n\n" +
@@ -201,7 +239,7 @@ func sendCOConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 		"fs_api_url: \"https://pgs.myoffice-app.ru/pgsapi\" \n" +
 		"fs_app_url: \"https://pgs.myoffice-app.ru/pgsapi\" \n" +
 		"fs_card_url: \"https://pgs.myoffice-app.ru/pgsapi\" \n\n" +
-		"Сравните значения переменных из конфигурационного файла hosts.yml PGS, они должны сопвадать:\n" +
+		"Сравните значения переменных из конфигурационного файла hosts.yml PGS, они должны сопвадать:\n\n" +
 		"auth_encryption_key = AUTH_ENCRYPTION_KEY : \"D1A693EB309C968A6EBC41787703DAE3B9C69405E5AE0FE6BF9CE2FF36CB8343\" \n\n" +
 		"auth_encryption_iv = AUTH_ENCRYPTION_IV : \"7E3F053970AD7DE1A4394E10AE0F4022\" \n\n" +
 		"auth_encryption_salt = AUTH_ENCRYPTION_SALT : \"2DD4E59B582AF71F\" \n\n" +
@@ -219,9 +257,9 @@ func sendCOConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 }
 
 func sendCODeploy(bot *tgbotapi.BotAPI, chatID int64) {
-	coDeploy := "Для запуска установки CO необходимо перейти в каталог /root/install_co/ и выполнить следующую команду:\n" +
+	coDeploy := "Для запуска установки CO необходимо перейти в каталог /root/install_co/ и выполнить следующую команду:\n\n" +
 		"ansible-playbook playbooks/main.yml --diff\n\n" +
-		"Ожидаем результат! При возниковении ошибок обращайтесь к инженеру!\n"
+		"Ожидаем результат! При возниковении ошибок или вопросов обращайтесь к инженеру!\n"
 	msg := tgbotapi.NewMessage(chatID, coDeploy)
 	msg.ReplyMarkup = keyboards.GetFinishKeyboard()
 	bot.Send(msg)
