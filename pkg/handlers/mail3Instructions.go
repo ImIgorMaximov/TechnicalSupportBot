@@ -1,8 +1,9 @@
 package handlers
 
 import (
+	"technicalSupportBot/pkg/keyboards"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"technicalSupportBot/pkg/keyboards" 
 )
 
 func sendInstallationGuideMail3(bot *tgbotapi.BotAPI, chatID int64) {
@@ -19,5 +20,6 @@ func sendAdminGuideMail3(bot *tgbotapi.BotAPI, chatID int64) {
 
 func sendSystemRequirementsMail3(bot *tgbotapi.BotAPI, chatID int64) {
 	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/73b/jw9hnfqltqw3qmjg47lu33r1su0wdlst/MyOffice_Mail_3.0_System_Requirements.pdf \n")
+	msg.ReplyMarkup = keyboards.GetBackKeyboard()
 	bot.Send(msg)
 }

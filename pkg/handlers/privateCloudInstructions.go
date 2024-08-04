@@ -1,8 +1,9 @@
 package handlers
 
 import (
+	"technicalSupportBot/pkg/keyboards"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"technicalSupportBot/pkg/keyboards" 
 )
 
 func sendInstallationGuideOptionsPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
@@ -38,5 +39,6 @@ func sendAdminGuidePrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
 
 func sendSystemRequirementsPivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
 	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/e09/ejjo29n32sj1f93bwyoa5y0upppfbuux/MyOffice_Private_Cloud_3.0_System_Requirements.pdf \n")
+	msg.ReplyMarkup = keyboards.GetBackKeyboard()
 	bot.Send(msg)
 }
