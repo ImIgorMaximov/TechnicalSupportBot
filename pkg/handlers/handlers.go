@@ -28,8 +28,7 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		sendInstructions(bot, chatID, "mailion")
 		previousState[chatID] = "mailion"
 	case "Почта":
-		sendInstructions(bot, chatID, "mail3")
-		previousState[chatID] = "mail3"
+		handleMail(bot, chatID)
 	case "Системные требования":
 		handleSystemRequirements(bot, chatID)
 	case "Руководство по установке":
@@ -50,8 +49,7 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		sendProduct(bot, chatID)
 		previousState[chatID] = "deploy"
 	case "Standalone":
-		sendStandaloneRequirements(bot, chatID)
-		previousState[chatID] = "requirements"
+		handleStandaloneRequirements(bot, chatID)
 	case "Готово":
 		handleNextStep(bot, chatID)
 	case "Запустить деплой":
@@ -60,6 +58,8 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		sendIsCertificates(bot, chatID)
 	case "Пример конфига PGS - hosts.yml":
 		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsPGS.yml", "hostsPGS.yml")
+	case "Пример конфига PSN - hosts.yml":
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsPSN.yml", "hostsPSN.yml")
 	case "Пример конфига CO - main.yml":
 		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/mainCO.yml", "mainCO.yml")
 	case "Пример конфига CO - hosts.yml":
@@ -75,21 +75,35 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 
 func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
 	switch previousState[chatID] {
-	case "requirements":
+	case "reqPsn", "reqPrivateCloud":
 		sendStandaloneDownloadPackages(bot, chatID)
-		previousState[chatID] = "standaloneDownloadPackages"
+		handlePrivateKeyInsert(bot, chatID)
 	case "standaloneDownloadPackages":
-		sendPrivateKeyInsert(bot, chatID)
-		previousState[chatID] = "privateKeyInsert"
+		handlePrivateKeyInsert(bot, chatID)
 	case "privateKeyInsert":
 		sendDNSOptionsPGS(bot, chatID)
 		previousState[chatID] = "dnsPGS"
+	case "privateKeyInsertPSN":
+		sendDNSOptionsPSN(bot, chatID)
+		previousState[chatID] = "dnsPSN"
+	case "dnsPSN":
+		sendStandaloneDownloadDistributionPSN(bot, chatID)
+		previousState[chatID] = "standaloneDownloadDistributionPSN"
 	case "dnsPGS":
 		sendStandaloneDownloadDistribution(bot, chatID)
 		previousState[chatID] = "standaloneDownloadDistribution"
 	case "standaloneDownloadDistribution":
 		sendCertificatesAndKeysPGS(bot, chatID)
 		previousState[chatID] = "certificatesAndKeysPGS"
+	case "standaloneDownloadDistributionPSN":
+		sendCertificatesAndKeysPSN(bot, chatID)
+		previousState[chatID] = "certificatesAndKeysPSN"
+	case "certificatesAndKeysPSN":
+		sendStandalonePSNConfigure(bot, chatID)
+		previousState[chatID] = "psnConfigure"
+	case "psnConfigure":
+		sendPSNDeploy(bot, chatID)
+		previousState[chatID] = "psnDeploy"
 	case "certificatesAndKeysPGS":
 		sendStandalonePGSConfigure(bot, chatID)
 		previousState[chatID] = "pgsConfigure"
@@ -148,24 +162,36 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "standaloneDownloadDistribution":
 		sendDNSOptionsPGS(bot, chatID)
 		previousState[chatID] = "dnsPGS"
+	case "standaloneDownloadDistributionPSN":
+		sendDNSOptionsPSN(bot, chatID)
+		previousState[chatID] = "dnsPSN"
 	case "dnsPGS":
 		sendPrivateKeyInsert(bot, chatID)
 		previousState[chatID] = "privateKeyInsert"
 	case "standaloneDownloadPackages":
-		sendStandaloneRequirements(bot, chatID)
+		sendStandaloneRequirementsCO(bot, chatID)
 		previousState[chatID] = "requirements"
-	case "privateKeyInsert":
+	case "privateKeyInsert", "privateKeyInsertPSN":
 		sendStandaloneDownloadPackages(bot, chatID)
 		previousState[chatID] = "standaloneDownloadPackages"
 	case "certificatesAndKeysPGS":
 		sendStandaloneDownloadDistribution(bot, chatID)
 		previousState[chatID] = "standaloneDownloadDistribution"
+	case "certificatesAndKeysPSN":
+		sendStandaloneDownloadDistributionPSN(bot, chatID)
+		previousState[chatID] = "standaloneDownloadDistributionPSN"
+	case "psnConfigure":
+		sendCertificatesAndKeysPSN(bot, chatID)
+		previousState[chatID] = "certificatesAndKeysPSN"
 	case "pgsConfigure":
 		sendCertificatesAndKeysPGS(bot, chatID)
 		previousState[chatID] = "certificatesAndKeysPGS"
 	case "pgsDeploy":
 		sendStandalonePGSConfigure(bot, chatID)
 		previousState[chatID] = "pgsConfigure"
+	case "psnDeploy":
+		sendStandalonePSNConfigure(bot, chatID)
+		previousState[chatID] = "psnConfigure"
 	case "coInstallation":
 		sendPGSDeploy(bot, chatID)
 		previousState[chatID] = "pgsDeploy"
@@ -184,13 +210,43 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	}
 }
 
+func handlePrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64) {
+	if previousState[chatID] == "reqPrivateCloud" {
+		sendPrivateKeyInsert(bot, chatID)
+		previousState[chatID] = "privateKeyInsert"
+	} else if previousState[chatID] == "reqPsn" {
+		sendPrivateKeyInsertPSN(bot, chatID)
+		previousState[chatID] = "privateKeyInsertPSN"
+	}
+}
+
+func handleStandaloneRequirements(bot *tgbotapi.BotAPI, chatID int64) {
+	if previousState[chatID] == "privateCloud" {
+		sendStandaloneRequirementsCO(bot, chatID)
+		previousState[chatID] = "reqPrivateCloud"
+	} else if previousState[chatID] == "mail3" {
+		sendStandaloneRequirementsPSN(bot, chatID)
+		previousState[chatID] = "reqPsn"
+	}
+}
+
 func handlePrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
 	if previousState[chatID] == "instr" {
 		sendInstructions(bot, chatID, "privateCloud")
 		previousState[chatID] = "privateCloud"
 	} else if previousState[chatID] == "deploy" {
 		sendDeploymentOptions(bot, chatID)
-		previousState[chatID] = "privateCloudDeploy"
+		previousState[chatID] = "privateCloud"
+	}
+}
+
+func handleMail(bot *tgbotapi.BotAPI, chatID int64) {
+	if previousState[chatID] == "instr" {
+		sendInstructions(bot, chatID, "mail3")
+		previousState[chatID] = "mail3"
+	} else if previousState[chatID] == "deploy" {
+		sendDeploymentOptions(bot, chatID)
+		previousState[chatID] = "mail3"
 	}
 }
 
