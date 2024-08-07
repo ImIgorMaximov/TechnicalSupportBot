@@ -73,15 +73,17 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 
 func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
 	switch previousState[chatID] {
-	case "requirements":
+	case "reqPsn", "reqPrivateCloud":
 		sendStandaloneDownloadPackages(bot, chatID)
-		previousState[chatID] = "standaloneDownloadPackages"
+		handlePrivateKeyInsert(bot, chatID)
 	case "standaloneDownloadPackages":
-		sendPrivateKeyInsert(bot, chatID)
-		previousState[chatID] = "privateKeyInsert"
+		handlePrivateKeyInsert(bot, chatID)
 	case "privateKeyInsert":
 		sendDNSOptionsPGS(bot, chatID)
 		previousState[chatID] = "dnsPGS"
+	case "privateKeyInsertPSN":
+		sendDNSOptionsPSN(bot, chatID)
+		previousState[chatID] = "dnsPSN"
 	case "dnsPGS":
 		sendStandaloneDownloadDistribution(bot, chatID)
 		previousState[chatID] = "standaloneDownloadDistribution"
@@ -152,7 +154,7 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "standaloneDownloadPackages":
 		sendStandaloneRequirementsCO(bot, chatID)
 		previousState[chatID] = "requirements"
-	case "privateKeyInsert":
+	case "privateKeyInsert", "privateKeyInsertPSN":
 		sendStandaloneDownloadPackages(bot, chatID)
 		previousState[chatID] = "standaloneDownloadPackages"
 	case "certificatesAndKeysPGS":
@@ -182,13 +184,23 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	}
 }
 
+func handlePrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64) {
+	if previousState[chatID] == "reqPrivateCloud" {
+		sendPrivateKeyInsert(bot, chatID)
+		previousState[chatID] = "privateKeyInsert"
+	} else if previousState[chatID] == "reqPsn" {
+		sendPrivateKeyInsertPSN(bot, chatID)
+		previousState[chatID] = "privateKeyInsertPSN"
+	}
+}
+
 func handleStandaloneRequirements(bot *tgbotapi.BotAPI, chatID int64) {
 	if previousState[chatID] == "privateCloud" {
 		sendStandaloneRequirementsCO(bot, chatID)
-		previousState[chatID] = "requirements"
+		previousState[chatID] = "reqPrivateCloud"
 	} else if previousState[chatID] == "mail3" {
 		sendStandaloneRequirementsPSN(bot, chatID)
-		previousState[chatID] = "requirements"
+		previousState[chatID] = "reqPsn"
 	}
 }
 
