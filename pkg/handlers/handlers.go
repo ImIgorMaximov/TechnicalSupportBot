@@ -84,6 +84,9 @@ func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
 	case "privateKeyInsertPSN":
 		sendDNSOptionsPSN(bot, chatID)
 		previousState[chatID] = "dnsPSN"
+	case "dnsPSN":
+		sendStandaloneDownloadDistributionPSN(bot, chatID)
+		previousState[chatID] = "standaloneDownloadDistributionPSN"
 	case "dnsPGS":
 		sendStandaloneDownloadDistribution(bot, chatID)
 		previousState[chatID] = "standaloneDownloadDistribution"
@@ -148,6 +151,9 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "standaloneDownloadDistribution":
 		sendDNSOptionsPGS(bot, chatID)
 		previousState[chatID] = "dnsPGS"
+	case "standaloneDownloadDistributionPSN":
+		sendDNSOptionsPSN(bot, chatID)
+		previousState[chatID] = "dnsPSN"
 	case "dnsPGS":
 		sendPrivateKeyInsert(bot, chatID)
 		previousState[chatID] = "privateKeyInsert"

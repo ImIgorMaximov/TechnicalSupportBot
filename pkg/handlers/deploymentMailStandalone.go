@@ -42,7 +42,7 @@ func sendPrivateKeyInsertPSN(bot *tgbotapi.BotAPI, chatID int64) {
 }
 
 func sendDNSOptionsPSN(bot *tgbotapi.BotAPI, chatID int64) {
-	dnsPGS := "Перед началом установки необходимо настроить DNS-сервер.\n" +
+	dnsPSN := "Перед началом установки необходимо настроить DNS-сервер.\n" +
 		"В случае использования переменной окружения (env) в конфигурационном файле hosts.yml записи будут иметь вид: \n\n" +
 		"mailadmin-<env>.<default_domain> - Адрес веб-панели администрирования PSN \n" +
 		"autoconfig-<env>.<default_domain> - Адрес сервиса автоконфигурирования для подключения клиентов MyOffice\n" +
@@ -59,7 +59,21 @@ func sendDNSOptionsPSN(bot *tgbotapi.BotAPI, chatID int64) {
 		"imap.<default_domain>\n" +
 		"smtp.<default_domain>\n" +
 		"pbm.<default_domain>\n"
-	msg := tgbotapi.NewMessage(chatID, dnsPGS)
+	msg := tgbotapi.NewMessage(chatID, dnsPSN)
+	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+	bot.Send(msg)
+}
+
+func sendStandaloneDownloadDistributionPSN(bot *tgbotapi.BotAPI, chatID int64) {
+	standaloneDownloadDistributionPSN := "После установки необходимых пакетов на машине PSN или operator подготовьте архив, который выдается инженером или Аккаунт Менеджером.\n" +
+		"Далее создайте директорию с помощью команды: \n\n" +
+		"mkdir  install-psn\n\n" +
+		"Распакуйте данный архив командой:\n\n" +
+		"tar xvzf MyOffice_PSN_SRV-XXX.tgz -C install-psn \n" +
+		"*vesion - введите соответствующую версию продукта \n\n" +
+		"После этого перейдите в каталог install-psn: \n\n" +
+		"cd install-psn\n"
+	msg := tgbotapi.NewMessage(chatID, standaloneDownloadDistributionPSN)
 	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
 	bot.Send(msg)
 }
