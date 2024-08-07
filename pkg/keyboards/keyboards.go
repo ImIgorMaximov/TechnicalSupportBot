@@ -13,6 +13,9 @@ func GetMainKeyboard() tgbotapi.ReplyKeyboardMarkup {
 			tgbotapi.NewKeyboardButton("Развертывание продуктов"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Расчет сайзинга продуктов."),
+		),
+		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
 		),
 	)

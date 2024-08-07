@@ -6,7 +6,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func sendStandaloneRequirements(bot *tgbotapi.BotAPI, chatID int64) {
+func sendStandaloneRequirementsCO(bot *tgbotapi.BotAPI, chatID int64) {
 	requirements := "Аппаратные и системные требования для установки Standalone Частное Облако c сайзингом:\n\n" +
 		"Максимальное кол-во пользователей - 50; \n" +
 		"Количество одновременно активных пользователей - 10; \n" +
@@ -26,23 +26,6 @@ func sendStandaloneRequirements(bot *tgbotapi.BotAPI, chatID int64) {
 		"Нажмите далее для продолжения. :)\n"
 
 	msg := tgbotapi.NewMessage(chatID, requirements)
-	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
-	bot.Send(msg)
-}
-
-func sendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
-	standaloneDownloadPackages := "Вся установка и настройка будет производиться на машине operator на примере системы Astra Linux Special Edition 1.7 «Орел» (базовый);\n" +
-		"На ВМ c ролью operator обновите систему: \n" +
-		"sudo su\n" +
-		"apt update\n\n" +
-		"Далее установим необходимые пакеты: \n" +
-		"apt install -y python3-pip \n" +
-		"python3 -m pip install ansible-core==2.11.12 \n" +
-		"python3 -m pip install ansible==4.9.0 \n" +
-		"python3 -m pip install jinja2==3.1.2 \n" +
-		"python3 -m pip install yamllint \n\n" +
-		"На этом все :) Двигаемся дальше..\n"
-	msg := tgbotapi.NewMessage(chatID, standaloneDownloadPackages)
 	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
 	bot.Send(msg)
 }
@@ -177,7 +160,7 @@ func sendCertificatesAndKeysCO(bot *tgbotapi.BotAPI, chatID int64) {
 		"Вставьте серитификаты в директорию certificates.\n\n Список необходимых сертификатов: \n\n" +
 		"server.crt - сертификат внешнего домена. \n" +
 		"server.nopass.key - ключ внешнего домена. \n" +
-		"ca.pem - цепочка сертификатов промежуточных центров сертификации.\n\n" +
+		"ca.сrt - цепочка сертификатов промежуточных центров сертификации.\n\n" +
 		"Проверить наличия сертификатов и ключа:\n" +
 		"ls -la /root/install_MyOffice_PGS/certificates/\n\n"
 	msg := tgbotapi.NewMessage(chatID, certificatesAndKeysCO)

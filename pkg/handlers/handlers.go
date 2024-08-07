@@ -28,8 +28,7 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		sendInstructions(bot, chatID, "mailion")
 		previousState[chatID] = "mailion"
 	case "Почта":
-		sendInstructions(bot, chatID, "mail3")
-		previousState[chatID] = "mail3"
+		handleMail(bot, chatID)
 	case "Системные требования":
 		handleSystemRequirements(bot, chatID)
 	case "Руководство по установке":
@@ -50,8 +49,7 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		sendProduct(bot, chatID)
 		previousState[chatID] = "deploy"
 	case "Standalone":
-		sendStandaloneRequirements(bot, chatID)
-		previousState[chatID] = "requirements"
+		handleStandaloneRequirements(bot, chatID)
 	case "Готово":
 		handleNextStep(bot, chatID)
 	case "Запустить деплой":
@@ -152,7 +150,7 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 		sendPrivateKeyInsert(bot, chatID)
 		previousState[chatID] = "privateKeyInsert"
 	case "standaloneDownloadPackages":
-		sendStandaloneRequirements(bot, chatID)
+		sendStandaloneRequirementsCO(bot, chatID)
 		previousState[chatID] = "requirements"
 	case "privateKeyInsert":
 		sendStandaloneDownloadPackages(bot, chatID)
@@ -184,13 +182,33 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	}
 }
 
+func handleStandaloneRequirements(bot *tgbotapi.BotAPI, chatID int64) {
+	if previousState[chatID] == "privateCloud" {
+		sendStandaloneRequirementsCO(bot, chatID)
+		previousState[chatID] = "requirements"
+	} else if previousState[chatID] == "mail3" {
+		sendStandaloneRequirementsPSN(bot, chatID)
+		previousState[chatID] = "requirements"
+	}
+}
+
 func handlePrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
 	if previousState[chatID] == "instr" {
 		sendInstructions(bot, chatID, "privateCloud")
 		previousState[chatID] = "privateCloud"
 	} else if previousState[chatID] == "deploy" {
 		sendDeploymentOptions(bot, chatID)
-		previousState[chatID] = "privateCloudDeploy"
+		previousState[chatID] = "privateCloud"
+	}
+}
+
+func handleMail(bot *tgbotapi.BotAPI, chatID int64) {
+	if previousState[chatID] == "instr" {
+		sendInstructions(bot, chatID, "mail3")
+		previousState[chatID] = "mail3"
+	} else if previousState[chatID] == "deploy" {
+		sendDeploymentOptions(bot, chatID)
+		previousState[chatID] = "mail3"
 	}
 }
 

@@ -81,6 +81,23 @@ func sendSupportEngineerContact(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+func sendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
+	standaloneDownloadPackages := "Вся установка и настройка будет производиться на машине operator на примере системы Astra Linux Special Edition 1.7 «Орел» (базовый);\n" +
+		"На ВМ c ролью operator обновите систему: \n" +
+		"sudo su\n" +
+		"apt update\n\n" +
+		"Далее установим необходимые пакеты: \n" +
+		"apt install -y python3-pip \n" +
+		"python3 -m pip install ansible-core==2.11.12 \n" +
+		"python3 -m pip install ansible==4.9.0 \n" +
+		"python3 -m pip install jinja2==3.1.2 \n" +
+		"python3 -m pip install yamllint \n\n" +
+		"На этом все :) Двигаемся дальше..\n"
+	msg := tgbotapi.NewMessage(chatID, standaloneDownloadPackages)
+	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+	bot.Send(msg)
+}
+
 func sendConfigFile(bot *tgbotapi.BotAPI, chatID int64, filePath, fileName string) {
 	// Проверяем, существует ли файл
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
