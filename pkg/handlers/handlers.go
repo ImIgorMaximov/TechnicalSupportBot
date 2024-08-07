@@ -58,6 +58,8 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		sendIsCertificates(bot, chatID)
 	case "Пример конфига PGS - hosts.yml":
 		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsPGS.yml", "hostsPGS.yml")
+	case "Пример конфига PSN - hosts.yml":
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsPSN.yml", "hostsPSN.yml")
 	case "Пример конфига CO - main.yml":
 		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/mainCO.yml", "mainCO.yml")
 	case "Пример конфига CO - hosts.yml":
@@ -93,6 +95,15 @@ func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
 	case "standaloneDownloadDistribution":
 		sendCertificatesAndKeysPGS(bot, chatID)
 		previousState[chatID] = "certificatesAndKeysPGS"
+	case "standaloneDownloadDistributionPSN":
+		sendCertificatesAndKeysPSN(bot, chatID)
+		previousState[chatID] = "certificatesAndKeysPSN"
+	case "certificatesAndKeysPSN":
+		sendStandalonePSNConfigure(bot, chatID)
+		previousState[chatID] = "psnConfigure"
+	case "psnConfigure":
+		sendPSNDeploy(bot, chatID)
+		previousState[chatID] = "psnDeploy"
 	case "certificatesAndKeysPGS":
 		sendStandalonePGSConfigure(bot, chatID)
 		previousState[chatID] = "pgsConfigure"
@@ -166,12 +177,21 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "certificatesAndKeysPGS":
 		sendStandaloneDownloadDistribution(bot, chatID)
 		previousState[chatID] = "standaloneDownloadDistribution"
+	case "certificatesAndKeysPSN":
+		sendStandaloneDownloadDistributionPSN(bot, chatID)
+		previousState[chatID] = "standaloneDownloadDistributionPSN"
+	case "psnConfigure":
+		sendCertificatesAndKeysPSN(bot, chatID)
+		previousState[chatID] = "certificatesAndKeysPSN"
 	case "pgsConfigure":
 		sendCertificatesAndKeysPGS(bot, chatID)
 		previousState[chatID] = "certificatesAndKeysPGS"
 	case "pgsDeploy":
 		sendStandalonePGSConfigure(bot, chatID)
 		previousState[chatID] = "pgsConfigure"
+	case "psnDeploy":
+		sendStandalonePSNConfigure(bot, chatID)
+		previousState[chatID] = "psnConfigure"
 	case "coInstallation":
 		sendPGSDeploy(bot, chatID)
 		previousState[chatID] = "pgsDeploy"

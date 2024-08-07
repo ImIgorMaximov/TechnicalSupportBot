@@ -77,3 +77,63 @@ func sendStandaloneDownloadDistributionPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
 	bot.Send(msg)
 }
+
+func sendCertificatesAndKeysPSN(bot *tgbotapi.BotAPI, chatID int64) {
+	certificatesAndKeysPSN := "Для работы веб-интерфейса PSN необходима установка SSL-сертификатов.\n" +
+		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
+		"Сертификаты необходимо разместить в каталоге, соответствующему доменному имени PSN.\n\n" +
+		"Напримере домена myoffice-app.ru : \n\n" +
+		"cd /root/install-psn/certificates\n" +
+		"mkdir myoffice-app.ru\n\n" +
+		"Вставьте серитификаты в директорию, соответствующую вашему доменному имени.\n\n Список необходимых сертификатов: \n\n" +
+		"server.crt - содержит SSL-сертификат для *.<default_domain> и все промежуточные сертификаты, кроме корневого доверенного. \n" +
+		"server.nopass.key - Приватный ключ сертификата, не требующий кодовой фразы. \n" +
+		"ca.crt - файл сертификата удостоверяющего центра.\n\n" +
+		"Проверить наличия сертификатов и ключа:\n\n" +
+		"ls -la /root/install-psn/certificates/myoffice-app.ru\n\n" +
+		"Далее начинаем заполнять конфигурационные файлы!:)\n"
+	msg := tgbotapi.NewMessage(chatID, certificatesAndKeysPSN)
+	msg.ReplyMarkup = keyboards.GetIsCertificatesKeyboard()
+	bot.Send(msg)
+}
+
+func sendStandalonePSNConfigure(bot *tgbotapi.BotAPI, chatID int64) {
+	psnConfigure := "Заполним конфигурационный файл hosts.yml : \n\n" +
+		"vim /root/install-psn/inventory/hosts.yml\n\n" +
+		"В секцию hosts добавьте доменное имя вашего PGS-сервера: \n" +
+		"hosts:\n" +
+		"\t\tpsn.myoffice-app.ru: \n" +
+		"Аналогично проделать с другими сервисами: etcd, redis, postgres, ldap...\n\n" +
+		"Далее в секцию vars необходимо заполнить следующие переменные:\n\n" +
+		"external_domain: \"myoffice-app.ru\"\n\n" +
+		"domain_module: \"{service}-{domain}\" - при данном значении, когда между {service} и {domain} стоит дефис, то домен psn.myoffice-app.ru будет разрешаться admin-psn.myoffice-app.ru\n\n" +
+		"cert_path: \"certificates/myoffice-app.ru/\" - укажите директорию размещения сертификатов \n\n" +
+		"Сгенерируйте и внесите пароли для переменных (команда: pwgen 13 10) : \n\n" +
+		"postgres_superuser: \"1uUkvcjs6FLggc\"\n\n" +
+		"postgres_replica_user: \"fpRZwbRN5hoQPqM\"\n\n" +
+		"postgres_db_user: \"o6CPe2UDJffp4rw\"\n\n" +
+		"redis_user: \"sQKwsWBikHr81t\"\n\n" +
+		"rabbitmq_user: \"GGMQSzG4TMm5R37\"\n\n" +
+		"ds389_manager_user: \"1Je4tr1Srp2PXF1\"\n\n" +
+		"ds389_replicator_user: \"imnaBFw7u17zCt4\"\n\n" +
+		"dovecot_adm_user: \"kmgiyJ2TH8Mry9Z\"\n\n" +
+		"psnapi_adm_user: \"T8tSKZZK6eVGjU5\"\n\n" +
+		"etcd_browser_user: \"4svRPsCbzuaDxs\"\n\n" +
+		"db_secret_key: \"Qwerty1234567890\"\n\n" +
+		"internal_secret_key: \"Qwerty1234567890\"\n\n" +
+		"auth_jwt_key: \"Qwerty1234567890\"\n\n" +
+		"*В примерах используется редактор vim \n" +
+		"*При необходимости выберите пример конфига, нажав соответствующую кнопку. \n"
+	msg := tgbotapi.NewMessage(chatID, psnConfigure)
+	msg.ReplyMarkup = keyboards.GetPSNStandaloneConfig()
+	bot.Send(msg)
+}
+
+func sendPSNDeploy(bot *tgbotapi.BotAPI, chatID int64) {
+	psnDeploy := "Для запуска установки PSN необходимо перейти в каталог /root/install-psn/ и выполнить следующую команду:\n\n" +
+		"./deploy.sh inventory/hosts.yml\n\n" +
+		"Ожидаем результат! При возниковении ошибок или вопросов свяжитесь с инженером!\n"
+	msg := tgbotapi.NewMessage(chatID, psnDeploy)
+	msg.ReplyMarkup = keyboards.GetFinishKeyboard()
+	bot.Send(msg)
+}
