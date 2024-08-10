@@ -11,7 +11,7 @@ import (
 )
 
 func sendWelcomeMessage(bot *tgbotapi.BotAPI, chatID int64) {
-	previousState[chatID] = "main"
+	PreviousState[chatID] = "main"
 
 	welcomeMessage := "Добро пожаловать в чат бот тех. поддержки МойОфис! :) " +
 		"Выберите необходимую функцию:\n" +

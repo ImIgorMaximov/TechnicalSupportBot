@@ -1,4 +1,4 @@
-package handlers
+package deployment
 
 import (
 	"technicalSupportBot/pkg/keyboards"
@@ -6,7 +6,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func sendStandaloneRequirementsPSN(bot *tgbotapi.BotAPI, chatID int64) {
+func SendStandaloneRequirementsPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	requirements := "Аппаратные и системные требования для установки Standalone Почта c сайзингом:\n\n" +
 		"Максимальное кол-во пользователей - 50; \n" +
 		"Одновременно работающих пользователей, доля - 0,4; \n" +
@@ -30,7 +30,7 @@ func sendStandaloneRequirementsPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendPrivateKeyInsertPSN(bot *tgbotapi.BotAPI, chatID int64) {
+func SendPrivateKeyInsertPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	privateKeyInsertPSN := "Необходимо убедиться, что публичныЙ ключ на машине PSN находятся папке /root/.ssh/authorized_keys.\n" +
 		"Если ключ отсутствует, то создайте с помощью команды: \n\n" +
 		"ssh-keygen\n\n" +
@@ -41,7 +41,7 @@ func sendPrivateKeyInsertPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendDNSOptionsPSN(bot *tgbotapi.BotAPI, chatID int64) {
+func SendDNSOptionsPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	dnsPSN := "Перед началом установки необходимо настроить DNS-сервер.\n" +
 		"В случае использования переменной окружения (env) в конфигурационном файле hosts.yml записи будут иметь вид: \n\n" +
 		"mailadmin-<env>.<default_domain> - Адрес веб-панели администрирования PSN \n" +
@@ -64,7 +64,7 @@ func sendDNSOptionsPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendStandaloneDownloadDistributionPSN(bot *tgbotapi.BotAPI, chatID int64) {
+func SendStandaloneDownloadDistributionPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	standaloneDownloadDistributionPSN := "После установки необходимых пакетов на машине PSN или operator подготовьте архив, который выдается инженером или Аккаунт Менеджером.\n" +
 		"Далее создайте директорию с помощью команды: \n\n" +
 		"mkdir  install-psn\n\n" +
@@ -78,7 +78,7 @@ func sendStandaloneDownloadDistributionPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendCertificatesAndKeysPSN(bot *tgbotapi.BotAPI, chatID int64) {
+func SendCertificatesAndKeysPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	certificatesAndKeysPSN := "Для работы веб-интерфейса PSN необходима установка SSL-сертификатов.\n" +
 		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
 		"Сертификаты необходимо разместить в каталоге, соответствующему доменному имени PSN.\n\n" +
@@ -97,7 +97,7 @@ func sendCertificatesAndKeysPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendStandalonePSNConfigure(bot *tgbotapi.BotAPI, chatID int64) {
+func SendStandalonePSNConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 	psnConfigure := "Заполним конфигурационный файл hosts.yml : \n\n" +
 		"vim /root/install-psn/inventory/hosts.yml\n\n" +
 		"В секцию hosts добавьте доменное имя вашего PGS-сервера: \n" +
@@ -129,7 +129,7 @@ func sendStandalonePSNConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendPSNDeploy(bot *tgbotapi.BotAPI, chatID int64) {
+func SendPSNDeploy(bot *tgbotapi.BotAPI, chatID int64) {
 	psnDeploy := "Для запуска установки PSN необходимо перейти в каталог /root/install-psn/ и выполнить следующую команду:\n\n" +
 		"./deploy.sh inventory/hosts.yml\n\n" +
 		"Ожидаем результат! При возниковении ошибок или вопросов свяжитесь с инженером!\n"

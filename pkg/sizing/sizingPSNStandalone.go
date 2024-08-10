@@ -1,4 +1,4 @@
-package handlers
+package sizing
 
 import (
 	"fmt"
@@ -12,39 +12,40 @@ import (
 
 // Глобальная переменная для хранения введённых данных от пользователей
 var mailInputValues = make(map[int64][]string)
+var previousStateSizingPSNStandalone = make(map[int64]string)
 
 func HandleSizingMailStandalone(bot *tgbotapi.BotAPI, chatID int64) {
 	// Запрос данных у пользователя
 	msg := tgbotapi.NewMessage(chatID, "Введите количество пользователей (Например, 50):")
 	bot.Send(msg)
-	previousState[chatID] = "awaitingUserCountMail"
+	previousStateSizingPSNStandalone[chatID] = "awaitingUserCountMail"
 }
 
 // HandleUserInputMail обрабатывает ввод пользователя
 func HandleUserInputMail(bot *tgbotapi.BotAPI, chatID int64, userInput string) {
-	log.Println("Текущее состояние перед обработкой ввода:", previousState[chatID])
+	log.Println("Текущее состояние перед обработкой ввода:", previousStateSizingPSNStandalone[chatID])
 	log.Println("Полученное значение от пользователя:", userInput)
 
-	switch previousState[chatID] {
+	switch previousStateSizingPSNStandalone[chatID] {
 	case "awaitingUserCountMail":
 		mailInputValues[chatID] = []string{userInput} // Сохраняем первое значение
 		msg := tgbotapi.NewMessage(chatID, "Введите дисковую квоту пользователей в почте (ГБ) (Например, 2):")
 		bot.Send(msg)
-		previousState[chatID] = "awaitingDiskQuotaMail" // Обновляем состояние
+		previousStateSizingPSNStandalone[chatID] = "awaitingDiskQuotaMail" // Обновляем состояние
 		log.Println("Состояние изменено на awaitingDiskQuotaMail")
 
 	case "awaitingDiskQuotaMail":
 		mailInputValues[chatID] = append(mailInputValues[chatID], userInput) // Сохраняем второе значение
 		msg := tgbotapi.NewMessage(chatID, "Введите количество писем в сутки на пользователя (Например, 100):")
 		bot.Send(msg)
-		previousState[chatID] = "awaitingEmailsPerDayMail" // Обновляем состояние
+		previousStateSizingPSNStandalone[chatID] = "awaitingEmailsPerDayMail" // Обновляем состояние
 		log.Println("Состояние изменено на awaitingEmailsPerDayMail")
 
 	case "awaitingEmailsPerDayMail":
 		mailInputValues[chatID] = append(mailInputValues[chatID], userInput) // Сохраняем третье значение
 		msg := tgbotapi.NewMessage(chatID, "Введите коэффициент спама (Например, 0.1):")
 		bot.Send(msg)
-		previousState[chatID] = "awaitingSpamCoefficientMail" // Обновляем состояние
+		previousStateSizingPSNStandalone[chatID] = "awaitingSpamCoefficientMail" // Обновляем состояние
 		log.Println("Состояние изменено на awaitingSpamCoefficientMail")
 
 	case "awaitingSpamCoefficientMail":
@@ -104,10 +105,7 @@ func calculateAndSendMailSizing(bot *tgbotapi.BotAPI, chatID int64) {
 	// Отправка результата пользователю
 	resultMsg := fmt.Sprintf(
 		"Результаты расчета сайзинга для Почты (PSN) Standalone:\n\n"+
-			"Количество VM: %s\n"+
-			"CPU: %s\n"+
-			"RAM: %s GB\n"+
-			"SSD: %s GB",
+			"Компонент PSN : кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %s ГБ.\n",
 		vmCount, cpu, ram, ssd,
 	)
 	msg := tgbotapi.NewMessage(chatID, resultMsg)
@@ -120,6 +118,6 @@ func calculateAndSendMailSizing(bot *tgbotapi.BotAPI, chatID int64) {
 		log.Printf("Ошибка отправки клавиатуры: %v", err)
 	}
 	// Очистка состояния
-	previousState[chatID] = "sizingResultProvided"
+	previousStateSizingPSNStandalone[chatID] = "sizingResultProvided"
 	mailInputValues[chatID] = nil
 }
