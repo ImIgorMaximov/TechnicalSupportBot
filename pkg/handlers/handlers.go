@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"technicalSupportBot/pkg/instructions"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -45,10 +47,10 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	case "Руководство по установке":
 		handleInstallationGuide(bot, chatID)
 	case "PGS":
-		sendPGSInstallationGuide(bot, chatID)
+		instructions.SendPGSInstallationGuide(bot, chatID)
 		previousState[chatID] = "pgs"
 	case "CO":
-		sendCOInstallationGuide(bot, chatID)
+		instructions.SendCOInstallationGuide(bot, chatID)
 		previousState[chatID] = "co"
 	case "Руководство по администрированию":
 		handleAdminGuide(bot, chatID)
@@ -166,7 +168,7 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 		sendInstructions(bot, chatID)
 		previousState[chatID] = "privateCloud"
 	case "pgs", "co":
-		sendInstallationGuideOptionsPrivateCloud(bot, chatID)
+		instructions.SendInstallationGuideOptionsPrivateCloud(bot, chatID)
 		previousState[chatID] = "installationGuidePrivateCloud"
 	case "requirementsSquadus", "installationGuideSquadus", "adminGuideSquadus":
 		sendInstructions(bot, chatID)
@@ -279,48 +281,48 @@ func handleMail(bot *tgbotapi.BotAPI, chatID int64) {
 
 func handleSystemRequirements(bot *tgbotapi.BotAPI, chatID int64) {
 	if previousState[chatID] == "privateCloud" {
-		sendSystemRequirementsPivateCloud(bot, chatID)
+		instructions.SendSystemRequirementsPivateCloud(bot, chatID)
 		previousState[chatID] = "requirementsPrivateCloud"
 	} else if previousState[chatID] == "squadus" {
-		sendSystemRequirementsSquadus(bot, chatID)
+		instructions.SendSystemRequirementsSquadus(bot, chatID)
 		previousState[chatID] = "requirementsSquadus"
 	} else if previousState[chatID] == "mailion" {
-		sendSystemRequirementsMailion(bot, chatID)
+		instructions.SendSystemRequirementsMailion(bot, chatID)
 		previousState[chatID] = "requirementsMailion"
 	} else if previousState[chatID] == "mail" {
-		sendSystemRequirementsMail(bot, chatID)
+		instructions.SendSystemRequirementsMail(bot, chatID)
 		previousState[chatID] = "requirementsMail"
 	}
 }
 
 func handleInstallationGuide(bot *tgbotapi.BotAPI, chatID int64) {
 	if previousState[chatID] == "privateCloud" {
-		sendInstallationGuideOptionsPrivateCloud(bot, chatID)
+		instructions.SendInstallationGuideOptionsPrivateCloud(bot, chatID)
 		previousState[chatID] = "installationGuidePrivateCloud"
 	} else if previousState[chatID] == "squadus" {
-		sendInstallationGuideSquadus(bot, chatID)
+		instructions.SendInstallationGuideSquadus(bot, chatID)
 		previousState[chatID] = "installationGuideSquadus"
 	} else if previousState[chatID] == "mailion" {
-		sendInstallationGuideMailion(bot, chatID)
+		instructions.SendInstallationGuideMailion(bot, chatID)
 		previousState[chatID] = "installationGuideMailion"
 	} else if previousState[chatID] == "mail" {
-		sendInstallationGuideMail(bot, chatID)
+		instructions.SendInstallationGuideMail(bot, chatID)
 		previousState[chatID] = "installationGuideMail"
 	}
 }
 
 func handleAdminGuide(bot *tgbotapi.BotAPI, chatID int64) {
 	if previousState[chatID] == "privateCloud" {
-		sendAdminGuidePrivateCloud(bot, chatID)
+		instructions.SendAdminGuidePrivateCloud(bot, chatID)
 		previousState[chatID] = "adminGuidePrivateCloud"
 	} else if previousState[chatID] == "squadus" {
-		sendAdminGuideSquadus(bot, chatID)
+		instructions.SendAdminGuideSquadus(bot, chatID)
 		previousState[chatID] = "adminGuideSquadus"
 	} else if previousState[chatID] == "mailion" {
-		sendAdminGuideMailion(bot, chatID)
+		instructions.SendAdminGuideMailion(bot, chatID)
 		previousState[chatID] = "adminGuideMailion"
 	} else if previousState[chatID] == "mail" {
-		sendAdminGuideMail(bot, chatID)
+		instructions.SendAdminGuideMail(bot, chatID)
 		previousState[chatID] = "adminGuideMail"
 	}
 }
