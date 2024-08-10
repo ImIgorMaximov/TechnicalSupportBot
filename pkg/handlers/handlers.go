@@ -5,11 +5,14 @@ import (
 )
 
 var previousState = make(map[int64]string)
+var sizingOrDeployment = make(map[int64]string)
 
 func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	chatID := update.Message.Chat.ID
 
-	switch update.Message.Text {
+	text := update.Message.Text
+
+	switch text {
 	case "/start":
 		sendWelcomeMessage(bot, chatID)
 		previousState[chatID] = "start"
@@ -19,13 +22,21 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	case "Инструкции по продуктам":
 		sendProduct(bot, chatID)
 		previousState[chatID] = "instr"
+	case "Развертывание продуктов":
+		sendProduct(bot, chatID)
+		previousState[chatID] = "deploy"
+		sizingOrDeployment[chatID] = "deploy"
+	case "Расчет сайзинга продуктов":
+		sendProduct(bot, chatID)
+		previousState[chatID] = "sizing"
+		sizingOrDeployment[chatID] = "sizing"
 	case "Частное Облако":
 		handlePrivateCloud(bot, chatID)
 	case "Squadus":
-		sendInstructions(bot, chatID, "squadus")
+		sendInstructions(bot, chatID)
 		previousState[chatID] = "squadus"
 	case "Mailion":
-		sendInstructions(bot, chatID, "mailion")
+		sendInstructions(bot, chatID)
 		previousState[chatID] = "mailion"
 	case "Почта":
 		handleMail(bot, chatID)
@@ -45,11 +56,8 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		handleBackButton(bot, chatID)
 	case "Связаться с инженером тех. поддержки":
 		sendSupportEngineerContact(bot, chatID)
-	case "Развертывание продуктов":
-		sendProduct(bot, chatID)
-		previousState[chatID] = "deploy"
 	case "Standalone":
-		handleStandaloneRequirements(bot, chatID)
+		handleStandalone(bot, chatID)
 	case "Готово":
 		handleNextStep(bot, chatID)
 	case "Запустить деплой":
@@ -70,6 +78,14 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		handleNextStep(bot, chatID)
 	case "Распаковка ISO образа":
 		sendUnzippingISO(bot, chatID)
+	default:
+		// В этом блоке добавьте обработку для состояния, когда ожидается ввод пользователя
+		if previousState[chatID] == "awaitingUserCountPrivateCloud" ||
+			previousState[chatID] == "awaitingActiveUserCountPrivateCloud" ||
+			previousState[chatID] == "awaitingDocumentCountPrivateCloud" ||
+			previousState[chatID] == "awaitingStorageQuotaPrivateCloud" {
+			HandleUserInputPrivateCloud(bot, chatID, text)
+		}
 	}
 }
 
@@ -95,7 +111,10 @@ func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
 	case "standaloneDownloadDistribution":
 		sendCertificatesAndKeysPGS(bot, chatID)
 		previousState[chatID] = "certificatesAndKeysPGS"
-	case "standaloneDownloadDistributionPSN":
+		if sizingOrDeployment[chatID] == "sizing" && previousState[chatID] == "privateCloud" {
+			HandleSizingPrivateCloudStandalone(bot, chatID)
+			previousState[chatID] = "awaitingUserCountPrivateCloud"
+		}
 		sendCertificatesAndKeysPSN(bot, chatID)
 		previousState[chatID] = "certificatesAndKeysPSN"
 	case "certificatesAndKeysPSN":
@@ -142,19 +161,19 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 		sendProduct(bot, chatID)
 		previousState[chatID] = "instr"
 	case "requirementsPrivateCloud", "installationGuidePrivateCloud", "adminGuidePrivateCloud":
-		sendInstructions(bot, chatID, "privateCloud")
+		sendInstructions(bot, chatID)
 		previousState[chatID] = "privateCloud"
 	case "pgs", "co":
 		sendInstallationGuideOptionsPrivateCloud(bot, chatID)
 		previousState[chatID] = "installationGuidePrivateCloud"
 	case "requirementsSquadus", "installationGuideSquadus", "adminGuideSquadus":
-		sendInstructions(bot, chatID, "squadus")
+		sendInstructions(bot, chatID)
 		previousState[chatID] = "squadus"
 	case "requirementsMailion", "installationGuideMailion", "adminGuideMailion":
-		sendInstructions(bot, chatID, "mailion")
+		sendInstructions(bot, chatID)
 		previousState[chatID] = "mailion"
 	case "requirementsMail", "installationGuideMail", "adminGuideMail":
-		sendInstructions(bot, chatID, "mail")
+		sendInstructions(bot, chatID)
 		previousState[chatID] = "mail"
 	case "Standalone":
 		sendProduct(bot, chatID)
@@ -169,7 +188,7 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 		sendPrivateKeyInsert(bot, chatID)
 		previousState[chatID] = "privateKeyInsert"
 	case "standaloneDownloadPackages":
-		sendStandaloneRequirementsCO(bot, chatID)
+		sendStandaloneRequirementsPrivateCloud(bot, chatID)
 		previousState[chatID] = "requirements"
 	case "privateKeyInsert", "privateKeyInsertPSN":
 		sendStandaloneDownloadPackages(bot, chatID)
@@ -195,12 +214,6 @@ func handleBackButton(bot *tgbotapi.BotAPI, chatID int64) {
 	case "coInstallation":
 		sendPGSDeploy(bot, chatID)
 		previousState[chatID] = "pgsDeploy"
-	case "coConfigure":
-		sendCOInstallation(bot, chatID)
-		previousState[chatID] = "coInstallation"
-	case "requirements":
-		sendDeploymentOptions(bot, chatID)
-		previousState[chatID] = "Standalone"
 	case "coDeploy":
 		sendCOConfigure(bot, chatID)
 		previousState[chatID] = "coConfigure"
@@ -220,21 +233,30 @@ func handlePrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64) {
 	}
 }
 
-func handleStandaloneRequirements(bot *tgbotapi.BotAPI, chatID int64) {
-	if previousState[chatID] == "privateCloud" {
-		sendStandaloneRequirementsCO(bot, chatID)
-		previousState[chatID] = "reqPrivateCloud"
-	} else if previousState[chatID] == "mail3" {
-		sendStandaloneRequirementsPSN(bot, chatID)
-		previousState[chatID] = "reqPsn"
+func handleStandalone(bot *tgbotapi.BotAPI, chatID int64) {
+	action := sizingOrDeployment[chatID]
+
+	if action == "sizing" {
+		if previousState[chatID] == "privateCloud" {
+			previousState[chatID] = "awaitingUserCountPrivateCloud"
+			HandleSizingPrivateCloudStandalone(bot, chatID)
+		}
+	} else if action == "deploy" {
+		if previousState[chatID] == "privateCloud" {
+			sendStandaloneRequirementsPrivateCloud(bot, chatID)
+			previousState[chatID] = "reqPrivateCloud"
+		} else if previousState[chatID] == "mail" {
+			sendStandaloneRequirementsPSN(bot, chatID)
+			previousState[chatID] = "reqPsn"
+		}
 	}
 }
 
 func handlePrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
 	if previousState[chatID] == "instr" {
-		sendInstructions(bot, chatID, "privateCloud")
+		sendInstructions(bot, chatID)
 		previousState[chatID] = "privateCloud"
-	} else if previousState[chatID] == "deploy" {
+	} else if previousState[chatID] == "deploy" || previousState[chatID] == "sizing" {
 		sendDeploymentOptions(bot, chatID)
 		previousState[chatID] = "privateCloud"
 	}
@@ -242,11 +264,11 @@ func handlePrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
 
 func handleMail(bot *tgbotapi.BotAPI, chatID int64) {
 	if previousState[chatID] == "instr" {
-		sendInstructions(bot, chatID, "mail3")
-		previousState[chatID] = "mail3"
+		sendInstructions(bot, chatID)
+		previousState[chatID] = "mail"
 	} else if previousState[chatID] == "deploy" {
 		sendDeploymentOptions(bot, chatID)
-		previousState[chatID] = "mail3"
+		previousState[chatID] = "mail"
 	}
 }
 
@@ -260,8 +282,8 @@ func handleSystemRequirements(bot *tgbotapi.BotAPI, chatID int64) {
 	} else if previousState[chatID] == "mailion" {
 		sendSystemRequirementsMailion(bot, chatID)
 		previousState[chatID] = "requirementsMailion"
-	} else if previousState[chatID] == "mail3" {
-		sendSystemRequirementsMail3(bot, chatID)
+	} else if previousState[chatID] == "mail" {
+		sendSystemRequirementsMail(bot, chatID)
 		previousState[chatID] = "requirementsMail"
 	}
 }
@@ -276,8 +298,8 @@ func handleInstallationGuide(bot *tgbotapi.BotAPI, chatID int64) {
 	} else if previousState[chatID] == "mailion" {
 		sendInstallationGuideMailion(bot, chatID)
 		previousState[chatID] = "installationGuideMailion"
-	} else if previousState[chatID] == "mail3" {
-		sendInstallationGuideMail3(bot, chatID)
+	} else if previousState[chatID] == "mail" {
+		sendInstallationGuideMail(bot, chatID)
 		previousState[chatID] = "installationGuideMail"
 	}
 }
@@ -292,8 +314,8 @@ func handleAdminGuide(bot *tgbotapi.BotAPI, chatID int64) {
 	} else if previousState[chatID] == "mailion" {
 		sendAdminGuideMailion(bot, chatID)
 		previousState[chatID] = "adminGuideMailion"
-	} else if previousState[chatID] == "mail3" {
-		sendAdminGuideMail3(bot, chatID)
+	} else if previousState[chatID] == "mail" {
+		sendAdminGuideMail(bot, chatID)
 		previousState[chatID] = "adminGuideMail"
 	}
 }

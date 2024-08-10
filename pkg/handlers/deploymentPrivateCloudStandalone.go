@@ -6,7 +6,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func sendStandaloneRequirementsCO(bot *tgbotapi.BotAPI, chatID int64) {
+func sendStandaloneRequirementsPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
 	requirements := "Аппаратные и системные требования для установки Standalone Частное Облако c сайзингом:\n\n" +
 		"Максимальное кол-во пользователей - 50; \n" +
 		"Количество одновременно активных пользователей - 10; \n" +

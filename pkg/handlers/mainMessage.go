@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"strings"
 	"technicalSupportBot/pkg/keyboards"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -23,7 +25,6 @@ func sendWelcomeMessage(bot *tgbotapi.BotAPI, chatID int64) {
 }
 
 func sendProduct(bot *tgbotapi.BotAPI, chatID int64) {
-	previousState[chatID] = "production_instructions"
 
 	chooseProductMessage := "Выберите продукт:"
 	msg := tgbotapi.NewMessage(chatID, chooseProductMessage)
@@ -39,8 +40,7 @@ func sendDeploymentOptions(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendInstructions(bot *tgbotapi.BotAPI, chatID int64, product string) {
-	previousState[chatID] = product
+func sendInstructions(bot *tgbotapi.BotAPI, chatID int64) {
 	chooseFunction := "Что подсказать? \n" +
 		"- Cистемные требования \n" +
 		"- Руководство по установке \n" +
@@ -98,6 +98,11 @@ func sendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+func sendUnknownCommandMessage(bot *tgbotapi.BotAPI, chatID int64) {
+	msg := tgbotapi.NewMessage(chatID, "Неизвестная команда. Пожалуйста, выберите действие из меню.")
+	bot.Send(msg)
+}
+
 func sendConfigFile(bot *tgbotapi.BotAPI, chatID int64, filePath, fileName string) {
 	// Проверяем, существует ли файл
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
@@ -128,4 +133,16 @@ func sendConfigFile(bot *tgbotapi.BotAPI, chatID int64, filePath, fileName strin
 	if _, err := bot.Send(document); err != nil {
 		log.Println("Error sending document:", err)
 	}
+}
+
+func formatSizingResults(results map[string]map[string]string) string {
+	var sb strings.Builder
+	for component, data := range results {
+		sb.WriteString(fmt.Sprintf("%s:\n", component))
+		for key, value := range data {
+			sb.WriteString(fmt.Sprintf("%s: %s\n", key, value))
+		}
+		sb.WriteString("\n")
+	}
+	return sb.String()
 }
