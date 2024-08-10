@@ -1,4 +1,4 @@
-package handlers
+package sizing
 
 import (
 	"fmt"
@@ -12,39 +12,40 @@ import (
 
 // Глобальная переменная для хранения введённых данных от пользователей
 var userInputValues = make(map[int64][]string)
+var previousStateSizingPrivateCloudStandalone = make(map[int64]string)
 
 func HandleSizingPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64) {
 	// Запрос данных у пользователя
 	msg := tgbotapi.NewMessage(chatID, "Введите количество пользователей (Например, 50):")
 	bot.Send(msg)
-	previousState[chatID] = "awaitingUserCountPrivateCloud"
+	previousStateSizingPrivateCloudStandalone[chatID] = "awaitingUserCountPrivateCloud"
 }
 
 // HandleUserInputPrivateCloud обрабатывает ввод пользователя
 func HandleUserInputPrivateCloud(bot *tgbotapi.BotAPI, chatID int64, userInput string) {
-	log.Println("Текущее состояние перед обработкой ввода:", previousState[chatID])
+	log.Println("Текущее состояние перед обработкой ввода:", previousStateSizingPrivateCloudStandalone[chatID])
 	log.Println("Полученное значение от пользователя:", userInput)
 
-	switch previousState[chatID] {
+	switch previousStateSizingPrivateCloudStandalone[chatID] {
 	case "awaitingUserCountPrivateCloud":
 		userInputValues[chatID] = []string{userInput} // Сохраняем первое значение
 		msg := tgbotapi.NewMessage(chatID, "Введите количество одновременно активных пользователей (Например, 10):")
 		bot.Send(msg)
-		previousState[chatID] = "awaitingActiveUserCountPrivateCloud" // Обновляем состояние
+		previousStateSizingPrivateCloudStandalone[chatID] = "awaitingActiveUserCountPrivateCloud" // Обновляем состояние
 		log.Println("Состояние изменено на awaitingActiveUserCountPrivateCloud")
 
 	case "awaitingActiveUserCountPrivateCloud":
 		userInputValues[chatID] = append(userInputValues[chatID], userInput) // Сохраняем второе значение
 		msg := tgbotapi.NewMessage(chatID, "Введите количество редактируемых документов одновременно (Например, 10):")
 		bot.Send(msg)
-		previousState[chatID] = "awaitingDocumentCountPrivateCloud" // Обновляем состояние
+		previousStateSizingPrivateCloudStandalone[chatID] = "awaitingDocumentCountPrivateCloud" // Обновляем состояние
 		log.Println("Состояние изменено на awaitingDocumentCountPrivateCloud")
 
 	case "awaitingDocumentCountPrivateCloud":
 		userInputValues[chatID] = append(userInputValues[chatID], userInput) // Сохраняем третье значение
 		msg := tgbotapi.NewMessage(chatID, "Введите дисковую квоту пользователей в хранилище (ГБ) (Например, 2):")
 		bot.Send(msg)
-		previousState[chatID] = "awaitingStorageQuotaPrivateCloud" // Обновляем состояние
+		previousStateSizingPrivateCloudStandalone[chatID] = "awaitingStorageQuotaPrivateCloud" // Обновляем состояние
 		log.Println("Состояние изменено на awaitingStorageQuotaPrivateCloud")
 
 	case "awaitingStorageQuotaPrivateCloud":
@@ -67,7 +68,7 @@ func HandleNextInput(bot *tgbotapi.BotAPI, chatID int64, userInput string, nextM
 	userInputValues[chatID] = append(userInputValues[chatID], userInput)
 	msg := tgbotapi.NewMessage(chatID, nextMessage)
 	bot.Send(msg)
-	previousState[chatID] = nextState
+	previousStateSizingPrivateCloudStandalone[chatID] = nextState
 }
 
 // calculateAndSendSizing выполняет расчет и отправляет результат пользователю
@@ -122,9 +123,9 @@ func calculateAndSendSizing(bot *tgbotapi.BotAPI, chatID int64) {
 	// Отправка результата пользователю
 	resultMsg := fmt.Sprintf(
 		"Результаты расчета сайзинга для продукта Частное Облако Standalone:\n\n"+
-			"ВМ Operator: кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %s ГБ\n"+
-			"Компонент CO: кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %s ГБ\n"+
-			"Компонент PGS: кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %s ГБ",
+			"ВМ Operator: кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %s ГБ;\n"+
+			"Компонент CO: кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %s ГБ;\n"+
+			"Компонент PGS: кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %s ГБ.",
 		operatorVM, operatorCPU, operatorRAM, operatorSSD,
 		coVM, coCPU, coRAM, coSSD,
 		pgsVM, pgsCPU, pgsRAM, pgsSSD,
@@ -139,6 +140,6 @@ func calculateAndSendSizing(bot *tgbotapi.BotAPI, chatID int64) {
 		log.Printf("Ошибка отправки клавиатуры: %v", err)
 	}
 	// Очистка состояния
-	previousState[chatID] = "sizingResultProvided"
+	previousStateSizingPrivateCloudStandalone[chatID] = "sizingResultProvided"
 	userInputValues[chatID] = nil
 }

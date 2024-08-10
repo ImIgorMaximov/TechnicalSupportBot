@@ -1,4 +1,4 @@
-package handlers
+package deployment
 
 import (
 	"technicalSupportBot/pkg/keyboards"
@@ -6,7 +6,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func sendStandaloneRequirementsPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
+func SendStandaloneRequirementsPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
 	requirements := "Аппаратные и системные требования для установки Standalone Частное Облако c сайзингом:\n\n" +
 		"Максимальное кол-во пользователей - 50; \n" +
 		"Количество одновременно активных пользователей - 10; \n" +
@@ -30,7 +30,25 @@ func sendStandaloneRequirementsPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) 
 	bot.Send(msg)
 }
 
-func sendPrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64) {
+func SendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
+	downloadPackages := "Отлично! Тачки подготовлены! Двигаемся дальше..\n" +
+		"PS. Вся установка и настройка будет производиться на машине operator на примере системы Astra Linux Special Edition 1.7 «Орел» (базовый);\n" +
+		"На ВМ c ролью operator обновите систему: \n" +
+		"sudo su\n" +
+		"apt update\n" +
+		"Далее установим необходимые пакеты: \n" +
+		"apt install -y python3-pip \n" +
+		"python3 -m pip install ansible-core==2.11.12 \n" +
+		"python3 -m pip install ansible==4.9.0 \n" +
+		"python3 -m pip install jinja2==3.1.2 \n" +
+		"python3 -m pip install yamllint \n" +
+		"На этом все :) Двигаемся дальше..\n"
+	msg := tgbotapi.NewMessage(chatID, downloadPackages)
+	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+	bot.Send(msg)
+}
+
+func SendPrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64) {
 	privateKeyInsert := "Необходимо убедиться, что публичные ключи машин PGS и CO находятся на машине Operator в папке /root/.ssh/authorized_keys.\n" +
 		"Если ключи отсутствуют, создайте пары ключей на машинах PGS и CO с помощью команды: \n\n" +
 		"ssh-keygen\n\n" +
@@ -41,7 +59,7 @@ func sendPrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendDNSOptionsPGS(bot *tgbotapi.BotAPI, chatID int64) {
+func SendDNSOptionsPGS(bot *tgbotapi.BotAPI, chatID int64) {
 	dnsPGS := "Перед началом установки необходимо настроить DNS-сервер, указав адрес сервера установки Nginx.\n" +
 		"В случае использования переменной окружения (env) в конфигурационном файле hosts.yml записи будут иметь вид: \n\n" +
 		"admin-<env>.<default_domain> - Адрес веб-панели администрирования PGS \n" +
@@ -54,7 +72,7 @@ func sendDNSOptionsPGS(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendStandaloneDownloadDistribution(bot *tgbotapi.BotAPI, chatID int64) {
+func SendStandaloneDownloadDistribution(bot *tgbotapi.BotAPI, chatID int64) {
 	downloadPackages := "Первая установка будет произведена на машину PGS.\n" +
 		"После установки необходимых пакетов на машине operator подготовьте архив, который выдается инженером или Аккаунт Менеджером.\n" +
 		"Далее создайте директорию с помощью команды: \n\n" +
@@ -69,7 +87,7 @@ func sendStandaloneDownloadDistribution(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendCertificatesAndKeysPGS(bot *tgbotapi.BotAPI, chatID int64) {
+func SendCertificatesAndKeysPGS(bot *tgbotapi.BotAPI, chatID int64) {
 	certificatesAndKeysPGS := "Для работы веб-интерфейса PGS необходима установка SSL-сертификатов.\n" +
 		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
 		"Сертификаты необходимо разместить в каталоге, соответствующему доменному имени PGS.\n\n" +
@@ -88,7 +106,7 @@ func sendCertificatesAndKeysPGS(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendStandalonePGSConfigure(bot *tgbotapi.BotAPI, chatID int64) {
+func SendStandalonePGSConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 	pgsConfigure := "Необходимо скопировать шаблон файла inventory в корневой каталог дистрибутива и заполнить секции hosts и vars.\n\n" +
 		"Операция копирования выполняется с помощью команды:\n\n" +
 		"cp /root/install_MyOffice_PGS/inventory/hosts-sa.yaml hosts.yml \n\n" +
@@ -120,7 +138,7 @@ func sendStandalonePGSConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendPGSDeploy(bot *tgbotapi.BotAPI, chatID int64) {
+func SendPGSDeploy(bot *tgbotapi.BotAPI, chatID int64) {
 	pgsDeploy := "Для запуска установки PGS необходимо перейти в каталог /root/install_MyOffice_PGS/ и выполнить следующую команду:\n\n" +
 		"./deploy.sh hosts.yml\n\n" +
 		"Ожидаем результат! При возниковении ошибок или вопросов свяжитесь с инженером!\n"
@@ -129,7 +147,7 @@ func sendPGSDeploy(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendDNSOptionsCO(bot *tgbotapi.BotAPI, chatID int64) {
+func SendDNSOptionsCO(bot *tgbotapi.BotAPI, chatID int64) {
 	dnsCO := "Перед началом установки необходимо настроить DNS-сервер.\n" +
 		"В случае использования переменной окружения (env) в конфигурационном файле main.yml записи будут иметь вид: \n\n" +
 		"auth-<domain_env>.<domain_name> \n" +
@@ -152,7 +170,7 @@ func sendDNSOptionsCO(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendCertificatesAndKeysCO(bot *tgbotapi.BotAPI, chatID int64) {
+func SendCertificatesAndKeysCO(bot *tgbotapi.BotAPI, chatID int64) {
 	certificatesAndKeysCO := "Для работы CO необходима установка SSL-сертификатов.\n" +
 		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
 		"Сертификаты необходимо разместить в каталоге certificates.\n\n" +
@@ -168,7 +186,7 @@ func sendCertificatesAndKeysCO(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendCOInstallation(bot *tgbotapi.BotAPI, chatID int64) {
+func SendCOInstallation(bot *tgbotapi.BotAPI, chatID int64) {
 	coInstallation := "Переходим к установке и настройке CO (Сервер совместного редактирования).\n\n" +
 		"На машину operator перенести дистрибутив CO, который выдается инженером или Аккаунт Менеджером. \n\n" +
 		"Данный дистрибутив (.iso) включает: \n\n" +
@@ -197,7 +215,7 @@ func sendCOInstallation(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendCOConfigure(bot *tgbotapi.BotAPI, chatID int64) {
+func SendCOConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 	coConfigure := "Заполним файл hosts.yml в директории /root/install_co/:\n" +
 		"vim /root/install_co/hosts.yml\n\n" +
 		"В секцию hosts добавьте доменное имя вашего CO-сервера: \n" +
@@ -239,7 +257,7 @@ func sendCOConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func sendCODeploy(bot *tgbotapi.BotAPI, chatID int64) {
+func SendCODeploy(bot *tgbotapi.BotAPI, chatID int64) {
 	coDeploy := "Для запуска установки CO необходимо перейти в каталог /root/install_co/ и выполнить следующую команду:\n\n" +
 		"ansible-playbook playbooks/main.yml --diff\n\n" +
 		"Ожидаем результат! При возниковении ошибок или вопросов обращайтесь к инженеру!\n"
