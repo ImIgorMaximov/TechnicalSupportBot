@@ -119,12 +119,6 @@ func handleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
 	case "standaloneDownloadDistribution":
 		sendCertificatesAndKeysPGS(bot, chatID)
 		previousState[chatID] = "certificatesAndKeysPGS"
-		if sizingOrDeployment[chatID] == "sizing" && previousState[chatID] == "privateCloud" {
-			HandleSizingPrivateCloudStandalone(bot, chatID)
-			previousState[chatID] = "awaitingUserCountPrivateCloud"
-		}
-		sendCertificatesAndKeysPSN(bot, chatID)
-		previousState[chatID] = "certificatesAndKeysPSN"
 	case "certificatesAndKeysPSN":
 		sendStandalonePSNConfigure(bot, chatID)
 		previousState[chatID] = "psnConfigure"
