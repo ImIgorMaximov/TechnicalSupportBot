@@ -86,6 +86,14 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 			previousState[chatID] == "awaitingStorageQuotaPrivateCloud" {
 			HandleUserInputPrivateCloud(bot, chatID, text)
 		}
+
+		// Обработка ввода данных для почты
+		if previousState[chatID] == "awaitingUserCountMail" ||
+			previousState[chatID] == "awaitingDiskQuotaMail" ||
+			previousState[chatID] == "awaitingEmailsPerDayMail" ||
+			previousState[chatID] == "awaitingSpamCoefficientMail" {
+			HandleUserInputMail(bot, chatID, text)
+		}
 	}
 }
 
@@ -240,6 +248,9 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64) {
 		if previousState[chatID] == "privateCloud" {
 			previousState[chatID] = "awaitingUserCountPrivateCloud"
 			HandleSizingPrivateCloudStandalone(bot, chatID)
+		} else if previousState[chatID] == "mail" {
+			previousState[chatID] = "awaitingUserCountMail"
+			HandleSizingMailStandalone(bot, chatID)
 		}
 	} else if action == "deploy" {
 		if previousState[chatID] == "privateCloud" {
@@ -266,7 +277,7 @@ func handleMail(bot *tgbotapi.BotAPI, chatID int64) {
 	if previousState[chatID] == "instr" {
 		sendInstructions(bot, chatID)
 		previousState[chatID] = "mail"
-	} else if previousState[chatID] == "deploy" {
+	} else if previousState[chatID] == "deploy" || previousState[chatID] == "sizing" {
 		sendDeploymentOptions(bot, chatID)
 		previousState[chatID] = "mail"
 	}

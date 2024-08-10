@@ -3,8 +3,6 @@ package handlers
 import (
 	"fmt"
 	"log"
-	"strconv"
-	"strings"
 
 	"technicalSupportBot/pkg/keyboards"
 
@@ -75,7 +73,7 @@ func HandleNextInput(bot *tgbotapi.BotAPI, chatID int64, userInput string, nextM
 // calculateAndSendSizing выполняет расчет и отправляет результат пользователю
 func calculateAndSendSizing(bot *tgbotapi.BotAPI, chatID int64) {
 	// Открытие файла Excel
-	filePath := "/home/admin-msk/Documents/sizingPrivateCloudPSN.xlsx"
+	filePath := "/home/admin-msk/Documents/sizingPSNStandalone.xlsx"
 	f, err := excelize.OpenFile(filePath)
 	if err != nil {
 		log.Println("Ошибка открытия файла:", err)
@@ -86,10 +84,10 @@ func calculateAndSendSizing(bot *tgbotapi.BotAPI, chatID int64) {
 	defer f.Close()
 
 	// Заполнение ячеек данными
-	err = f.SetCellValue("StandalonePrivateCloud", "D2", userInputValues[chatID][0])
-	err = f.SetCellValue("StandalonePrivateCloud", "F4", userInputValues[chatID][1])
-	err = f.SetCellValue("StandalonePrivateCloud", "F5", userInputValues[chatID][2])
-	err = f.SetCellValue("StandalonePrivateCloud", "D6", userInputValues[chatID][3])
+	err = f.SetCellValue("PSN", "D2", userInputValues[chatID][0])
+	err = f.SetCellValue("PSN", "F4", userInputValues[chatID][1])
+	err = f.SetCellValue("PSN", "F5", userInputValues[chatID][2])
+	err = f.SetCellValue("PSN", "D6", userInputValues[chatID][3])
 	if err != nil {
 		log.Println("Ошибка записи в файл:", err)
 		msg := tgbotapi.NewMessage(chatID, "Произошла ошибка при записи в файл.")
@@ -106,30 +104,21 @@ func calculateAndSendSizing(bot *tgbotapi.BotAPI, chatID int64) {
 	}
 
 	// Извлечение результатов
-	operatorVM, _ := f.GetCellValue("StandalonePrivateCloud", "C13")
-	operatorCPU, _ := f.GetCellValue("StandalonePrivateCloud", "D13")
-	operatorRAM, _ := f.GetCellValue("StandalonePrivateCloud", "E13")
-	operatorSSD, _ := f.GetCellValue("StandalonePrivateCloud", "F13")
+	operatorVM, _ := f.GetCellValue("PSN", "C13")
+	operatorCPU, _ := f.GetCellValue("PSN", "D13")
+	operatorRAM, _ := f.GetCellValue("PSN", "E13")
+	operatorSSD, _ := f.GetCellValue("PSN", "F13")
 
-	coVM, _ := f.GetCellValue("StandalonePrivateCloud", "C14")
-	coCPU, _ := f.GetCellValue("StandalonePrivateCloud", "D14")
-	coRAM, _ := f.GetCellValue("StandalonePrivateCloud", "E14")
-	coSSD, _ := f.GetCellValue("StandalonePrivateCloud", "F14")
+	coVM, _ := f.GetCellValue("PSN", "C14")
+	coCPU, _ := f.GetCellValue("PSN", "D14")
+	coRAM, _ := f.GetCellValue("PSN", "E14")
+	coSSD, _ := f.GetCellValue("PSN", "F14")
 
-	pgsVM, _ := f.GetCellValue("StandalonePrivateCloud", "C15")
-	pgsCPU, _ := f.GetCellValue("StandalonePrivateCloud", "D15")
-	pgsRAM, _ := f.GetCellValue("StandalonePrivateCloud", "E15")
-	pgsSSD, _ := f.GetCellValue("StandalonePrivateCloud", "F15")
+	pgsVM, _ := f.GetCellValue("PSN", "C15")
+	pgsCPU, _ := f.GetCellValue("PSN", "D15")
+	pgsRAM, _ := f.GetCellValue("PSN", "E15")
+	pgsSSD, _ := f.GetCellValue("PSN", "F15")
 
-	pgsSSD = strings.ReplaceAll(pgsSSD, ",", ".")
-	pgsSSDValue, err := strconv.ParseFloat(pgsSSD, 64)
-	if err != nil {
-		log.Println("Ошибка преобразования pgsSSD:", err)
-		pgsSSD = "Ошибка"
-	} else {
-		pgsSSDValue *= 100.0
-		pgsSSD = fmt.Sprintf("%.0f", pgsSSDValue)
-	}
 	// Отправка результата пользователю
 	resultMsg := fmt.Sprintf(
 		"Результаты расчета сайзинга для продукта Частное Облако Standalone:\n\n"+
