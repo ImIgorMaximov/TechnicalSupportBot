@@ -1,3 +1,14 @@
+/*
+Package deployment предоставляет функции для процесса развертывания Standalone Private Cloud.
+
+Эти функции предназначены для использования в боте, который помогает пользователям
+пошагово выполнять установку Standalone Private Cloud, предоставляя необходимые инструкции.
+Функции используют библиотеку tgbotapi для взаимодействия с Telegram API.
+
+Автор: Максимов Игорь
+Email: imigormaximov@gmail.com
+*/
+
 package deployment
 
 import (
@@ -6,6 +17,8 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+// SendStandaloneRequirementsPrivateCloud отправляет пользователю информацию о системных и аппаратных требованиях
+// для установки Standalone Private Cloud с указанным сайзингом.
 func SendStandaloneRequirementsPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
 	requirements := "Аппаратные и системные требования для установки Standalone Частное Облако c сайзингом:\n\n" +
 		"Максимальное кол-во пользователей - 50; \n" +
@@ -30,6 +43,7 @@ func SendStandaloneRequirementsPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) 
 	bot.Send(msg)
 }
 
+// SendStandaloneDownloadPackages отправляет пользователю инструкции по установке необходимых пакетов на машину operator.
 func SendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
 	downloadPackages := "Отлично! Тачки подготовлены! Двигаемся дальше..\n" +
 		"PS. Вся установка и настройка будет производиться на машине operator на примере системы Astra Linux Special Edition 1.7 «Орел» (базовый);\n" +
@@ -48,6 +62,7 @@ func SendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendPrivateKeyInsert отправляет инструкции по добавлению публичных ключей машин PGS и CO на машину Operator.
 func SendPrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64) {
 	privateKeyInsert := "Необходимо убедиться, что публичные ключи машин PGS и CO находятся на машине Operator в папке /root/.ssh/authorized_keys.\n" +
 		"Если ключи отсутствуют, создайте пары ключей на машинах PGS и CO с помощью команды: \n\n" +
@@ -59,6 +74,7 @@ func SendPrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendDNSOptionsPGS отправляет инструкции по настройке DNS-сервера для PGS.
 func SendDNSOptionsPGS(bot *tgbotapi.BotAPI, chatID int64) {
 	dnsPGS := "Перед началом установки необходимо настроить DNS-сервер, указав адрес сервера установки Nginx.\n" +
 		"В случае использования переменной окружения (env) в конфигурационном файле hosts.yml записи будут иметь вид: \n\n" +
@@ -72,6 +88,7 @@ func SendDNSOptionsPGS(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendStandaloneDownloadDistribution отправляет инструкции по подготовке архива с дистрибутивом для машины PGS.
 func SendStandaloneDownloadDistribution(bot *tgbotapi.BotAPI, chatID int64) {
 	downloadPackages := "Первая установка будет произведена на машину PGS.\n" +
 		"После установки необходимых пакетов на машине operator подготовьте архив, который выдается инженером или Аккаунт Менеджером.\n" +
@@ -87,6 +104,7 @@ func SendStandaloneDownloadDistribution(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendCertificatesAndKeysPGS отправляет инструкции по установке SSL-сертификатов для PGS.
 func SendCertificatesAndKeysPGS(bot *tgbotapi.BotAPI, chatID int64) {
 	certificatesAndKeysPGS := "Для работы веб-интерфейса PGS необходима установка SSL-сертификатов.\n" +
 		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
@@ -106,6 +124,7 @@ func SendCertificatesAndKeysPGS(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendStandalonePGSConfigure отправляет инструкции по настройке файла hosts.yml для PGS.
 func SendStandalonePGSConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 	pgsConfigure := "Необходимо скопировать шаблон файла inventory в корневой каталог дистрибутива и заполнить секции hosts и vars.\n\n" +
 		"Операция копирования выполняется с помощью команды:\n\n" +
@@ -138,6 +157,7 @@ func SendStandalonePGSConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendPGSDeploy отправляет инструкции по развертыванию PGS.
 func SendPGSDeploy(bot *tgbotapi.BotAPI, chatID int64) {
 	pgsDeploy := "Для запуска установки PGS необходимо перейти в каталог /root/install_MyOffice_PGS/ и выполнить следующую команду:\n\n" +
 		"./deploy.sh hosts.yml\n\n" +
@@ -147,6 +167,7 @@ func SendPGSDeploy(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendDNSOptionsCO отправляет инструкции по настройке DNS-сервера для CO.
 func SendDNSOptionsCO(bot *tgbotapi.BotAPI, chatID int64) {
 	dnsCO := "Перед началом установки необходимо настроить DNS-сервер.\n" +
 		"В случае использования переменной окружения (env) в конфигурационном файле main.yml записи будут иметь вид: \n\n" +
@@ -170,6 +191,7 @@ func SendDNSOptionsCO(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendCertificatesAndKeysCO отправляет инструкции по установке SSL-сертификатов для CO.
 func SendCertificatesAndKeysCO(bot *tgbotapi.BotAPI, chatID int64) {
 	certificatesAndKeysCO := "Для работы CO необходима установка SSL-сертификатов.\n" +
 		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
@@ -186,6 +208,7 @@ func SendCertificatesAndKeysCO(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendCOInstallation отправляет сообщение с инструкцией по загрузке и распаковке дистрибутива CO.
 func SendCOInstallation(bot *tgbotapi.BotAPI, chatID int64) {
 	coInstallation := "Переходим к установке и настройке CO (Сервер совместного редактирования).\n\n" +
 		"На машину operator перенести дистрибутив CO, который выдается инженером или Аккаунт Менеджером. \n\n" +
@@ -215,6 +238,7 @@ func SendCOInstallation(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendStandaloneCOConfigure отправляет инструкции по настройке файла hosts.yml & main.yml для CO.
 func SendCOConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 	coConfigure := "Заполним файл hosts.yml в директории /root/install_co/:\n" +
 		"vim /root/install_co/hosts.yml\n\n" +
@@ -257,6 +281,7 @@ func SendCOConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendCODeploy отправляет команду для развертывания CO.
 func SendCODeploy(bot *tgbotapi.BotAPI, chatID int64) {
 	coDeploy := "Для запуска установки CO необходимо перейти в каталог /root/install_co/ и выполнить следующую команду:\n\n" +
 		"ansible-playbook playbooks/main.yml --diff\n\n" +

@@ -1,3 +1,13 @@
+/*
+Package deployment предоставляет функции для процесса развертывания Почтового сервера PSN,
+
+	Эти функции предназначены для использования в боте, который помогает пользователям
+	пошагово выполнять установку PSN, предоставляя необходимые инструкции.
+	Функции используют библиотеку tgbotapi для взаимодействия с Telegram API.
+
+	Автор: Максимов Игорь
+	Email: imigormaximov@gmail.com
+*/
 package deployment
 
 import (
@@ -6,6 +16,13 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+// SendStandaloneRequirementsPSN отправляет сообщение с требованиями для установки PSN в режиме Standalone.
+// Сообщение включает аппаратные и системные требования, а также контактные данные для получения
+// дополнительной помощи по сайзингу от инженера.
+//
+// Параметры:
+// - bot: Экземпляр бота Telegram.
+// - chatID: Идентификатор чата Telegram, в который будет отправлено сообщение.
 func SendStandaloneRequirementsPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	requirements := "Аппаратные и системные требования для установки Standalone Почта c сайзингом:\n\n" +
 		"Максимальное кол-во пользователей - 50; \n" +
@@ -30,6 +47,8 @@ func SendStandaloneRequirementsPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendPrivateKeyInsertPSN отправляет сообщение с инструкцией по установке публичного ключа на машину PSN.
+// Сообщение включает команды для генерации ключа и добавления его в файл authorized_keys на PSN.
 func SendPrivateKeyInsertPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	privateKeyInsertPSN := "Необходимо убедиться, что публичныЙ ключ на машине PSN находятся папке /root/.ssh/authorized_keys.\n" +
 		"Если ключ отсутствует, то создайте с помощью команды: \n\n" +
@@ -41,6 +60,8 @@ func SendPrivateKeyInsertPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendDNSOptionsPSN отправляет сообщение с рекомендациями по настройке DNS-сервера перед установкой PSN.
+// Сообщение описывает, как настраивать DNS-записи для различных сервисов PSN в зависимости от использования переменных окружения.
 func SendDNSOptionsPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	dnsPSN := "Перед началом установки необходимо настроить DNS-сервер.\n" +
 		"В случае использования переменной окружения (env) в конфигурационном файле hosts.yml записи будут иметь вид: \n\n" +
@@ -64,6 +85,8 @@ func SendDNSOptionsPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendStandaloneDownloadDistributionPSN отправляет сообщение с инструкцией по загрузке и распаковке дистрибутива PSN.
+// Сообщение описывает, как подготовить директорию и распаковать архив с дистрибутивом PSN.
 func SendStandaloneDownloadDistributionPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	standaloneDownloadDistributionPSN := "После установки необходимых пакетов на машине PSN или operator подготовьте архив, который выдается инженером или Аккаунт Менеджером.\n" +
 		"Далее создайте директорию с помощью команды: \n\n" +
@@ -78,6 +101,8 @@ func SendStandaloneDownloadDistributionPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendCertificatesAndKeysPSN отправляет сообщение с инструкциями по установке SSL-сертификатов для веб-интерфейса PSN.
+// Сообщение описывает, какие сертификаты и ключи необходимы и где их разместить.
 func SendCertificatesAndKeysPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	certificatesAndKeysPSN := "Для работы веб-интерфейса PSN необходима установка SSL-сертификатов.\n" +
 		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
@@ -97,6 +122,8 @@ func SendCertificatesAndKeysPSN(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendStandalonePSNConfigure отправляет сообщение с инструкцией по заполнению конфигурационного файла hosts.yml.
+// В этой функции подробно описываются шаги, необходимые для настройки различных сервисов PSN.
 func SendStandalonePSNConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 	psnConfigure := "Заполним конфигурационный файл hosts.yml : \n\n" +
 		"vim /root/install-psn/inventory/hosts.yml\n\n" +
@@ -129,6 +156,8 @@ func SendStandalonePSNConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// SendPSNDeploy отправляет сообщение с инструкцией по запуску процесса установки PSN.
+// Сообщение включает команды, необходимые для выполнения скрипта развертывания, и рекомендации по обращению к инженеру в случае ошибок.
 func SendPSNDeploy(bot *tgbotapi.BotAPI, chatID int64) {
 	psnDeploy := "Для запуска установки PSN необходимо перейти в каталог /root/install-psn/ и выполнить следующую команду:\n\n" +
 		"./deploy.sh inventory/hosts.yml\n\n" +
