@@ -196,7 +196,7 @@ func calculateAndSendClusterSizing(bot *tgbotapi.BotAPI, chatID int64) {
 	msg := tgbotapi.NewMessage(chatID, resultMsg)
 	bot.Send(msg)
 
-	keyboard := keyboards.GetMainMenuKeyboard()
+	keyboard := keyboards.GetMainMenuWithPrivateCloudCluster2kRolesKeyboard()
 	msgWithKeyboard := tgbotapi.NewMessage(chatID, "Выберите следующую опцию:")
 	msgWithKeyboard.ReplyMarkup = keyboard
 	if _, err := bot.Send(msgWithKeyboard); err != nil {

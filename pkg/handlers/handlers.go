@@ -70,6 +70,8 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		handleNextStep(bot, chatID)
 	case "Проверить корректность сертификатов и ключа":
 		sendIsCertificates(bot, chatID)
+	case "Описание ролей":
+		sendRoleDescriptionsPrivateCloudCluster2k(bot, chatID)
 	case "Пример конфига PGS - hosts.yml":
 		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsPGS.yml", "hostsPGS.yml")
 	case "Пример конфига PSN - hosts.yml":

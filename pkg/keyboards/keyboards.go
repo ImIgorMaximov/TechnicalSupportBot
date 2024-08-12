@@ -238,6 +238,20 @@ func GetMainMenuKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	)
 }
 
+func GetMainMenuWithPrivateCloudCluster2kRolesKeyboard() tgbotapi.ReplyKeyboardMarkup {
+	return tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Описание ролей"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("В главное меню"),
+		),
+	)
+}
+
 func GetUserKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(

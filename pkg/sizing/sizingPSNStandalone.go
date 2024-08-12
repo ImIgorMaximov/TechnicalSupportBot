@@ -66,7 +66,7 @@ func HandleUserInputMail(bot *tgbotapi.BotAPI, chatID int64, userInput string) {
 // calculateAndSendMailSizing выполняет расчет и отправляет результат пользователю
 func calculateAndSendMailSizing(bot *tgbotapi.BotAPI, chatID int64) {
 	// Открытие файла Excel
-	filePath := "/home/admin-msk/Documents/sizingPSNStandalone.xlsx"
+	filePath := "/home/admin-msk/Documents/sizingPrivateCloudPSNStandalone.xlsx"
 	f, err := excelize.OpenFile(filePath)
 	if err != nil {
 		log.Println("Ошибка открытия файла:", err)

@@ -61,6 +61,26 @@ func sendIsCertificates(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+func sendRoleDescriptionsPrivateCloudCluster2k(bot *tgbotapi.BotAPI, chatID int64) {
+	isCertificates := "Описание ролей: \n" +
+		"Operator - сервер, с которого производится установка всех компонентов;\n\n" +
+		"LB - сервер балансировки нагрузки для всех компонентов; \n\n" +
+		"core - в составе: управление редактированием, коллаборации и документного API, балансировка нагрузки компонента CO, " +
+		"управления импортом, экспортом и индексированием документов, подсистема сервиса файлового API, подсистема сервиса push-нотификаций; \n\n" +
+		"infra - сервер, объединящий инфраструктурные роли сбор логов и мониторинга компонента CO  \n\n" +
+		"mq - сервер очереди сообщений и подписок;\n\n" +
+		"imc - сервер кэширования сессий и хранения промежуточных результатов в памяти;\n\n" +
+		"etcd - Подсистема конфигурации продукта при помощи Etcd;\n\n" +
+		"PGS-APP - cервер вычислений, обработки запросов, API, keycloak, внутренний балансировщик;\n\n" +
+		"STORAGE - Сервер хранения данных (GlusterFS);\n\n" +
+		"STORAGE-A - арбитр серверов хранения данных;\n\n" +
+		"PGS-BE - сервер индексного поиска, хранения кэша, конфигурации, очередей (elasticsearch, etcd, arangodb_agent, redis, rabbitmq);\n\n" +
+		"PGS-DB - cервер БД пользователей, метаданных, авторизации (PostgreSQL, ArangoDB);\n\n" +
+		"PGS-LOG - cервер сбора логов компонента PGS (registry, syslog. роли мониторинга);\n\n"
+	msg := tgbotapi.NewMessage(chatID, isCertificates)
+	bot.Send(msg)
+}
+
 func SendClusterRangeKeyboard(bot *tgbotapi.BotAPI, chatID int64) {
 	msg := tgbotapi.NewMessage(chatID, "Выберите диапазон пользователей для кластера:")
 	msg.ReplyMarkup = keyboards.GetUserKeyboard()
