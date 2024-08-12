@@ -61,6 +61,12 @@ func sendIsCertificates(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+func SendClusterRangeKeyboard(bot *tgbotapi.BotAPI, chatID int64) {
+	msg := tgbotapi.NewMessage(chatID, "Выберите диапазон пользователей для кластера:")
+	msg.ReplyMarkup = keyboards.GetUserKeyboard()
+	bot.Send(msg)
+}
+
 func sendUnzippingISO(bot *tgbotapi.BotAPI, chatID int64) {
 	unzippingISO := "Для разархивирования образа .iso используется инструмент \"bsdtar\": \n" +
 		"apt-get install bsdtar \n" +

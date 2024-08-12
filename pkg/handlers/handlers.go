@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"log"
+
 	"technicalSupportBot/pkg/deployment"
 	"technicalSupportBot/pkg/instructions"
 	"technicalSupportBot/pkg/sizing"
@@ -82,22 +84,77 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		handleNextStep(bot, chatID)
 	case "Распаковка ISO образа":
 		sendUnzippingISO(bot, chatID)
+	case "Cluster":
+		handleCluster(bot, chatID)
+	case "<2k":
+		handleClusterUserRange(bot, chatID, text)
 	default:
-		// В этом блоке добавьте обработку для состояния, когда ожидается ввод пользователя
-		if PreviousState[chatID] == "awaitingUserCountPrivateCloud" ||
-			PreviousState[chatID] == "awaitingActiveUserCountPrivateCloud" ||
-			PreviousState[chatID] == "awaitingDocumentCountPrivateCloud" ||
-			PreviousState[chatID] == "awaitingStorageQuotaPrivateCloud" {
-			sizing.HandleUserInputPrivateCloud(bot, chatID, text)
-		}
+		handleDefaultState(bot, chatID, text)
+	}
+}
 
-		// Обработка ввода данных для почты
-		if PreviousState[chatID] == "awaitingUserCountMail" ||
-			PreviousState[chatID] == "awaitingDiskQuotaMail" ||
-			PreviousState[chatID] == "awaitingEmailsPerDayMail" ||
-			PreviousState[chatID] == "awaitingSpamCoefficientMail" {
-			sizing.HandleUserInputMail(bot, chatID, text)
+func handleStandalone(bot *tgbotapi.BotAPI, chatID int64) {
+	action := sizingOrDeployment[chatID]
+
+	if action == "sizing" {
+		if PreviousState[chatID] == "privateCloud" {
+			PreviousState[chatID] = "awaitingUserCountPrivateCloud"
+			sizing.HandleSizingPrivateCloudStandalone(bot, chatID)
+		} else if PreviousState[chatID] == "mail" {
+			PreviousState[chatID] = "awaitingUserCountMail"
+			sizing.HandleSizingMailStandalone(bot, chatID)
 		}
+	} else if action == "deploy" {
+		if PreviousState[chatID] == "privateCloud" {
+			deployment.SendStandaloneRequirementsPrivateCloud(bot, chatID)
+			PreviousState[chatID] = "reqPrivateCloud"
+		} else if PreviousState[chatID] == "mail" {
+			deployment.SendStandaloneRequirementsPSN(bot, chatID)
+			PreviousState[chatID] = "reqPsn"
+		}
+	}
+}
+
+func handleCluster(bot *tgbotapi.BotAPI, chatID int64) {
+	action := sizingOrDeployment[chatID]
+
+	if action == "sizing" {
+		SendClusterRangeKeyboard(bot, chatID)
+		PreviousState[chatID] = "clusterSelection"
+	} else if action == "deploy" {
+		msg := tgbotapi.NewMessage(chatID, "Извините, раздел находится в разработке 😢")
+		bot.Send(msg)
+	}
+}
+
+func handleClusterUserRange(bot *tgbotapi.BotAPI, chatID int64, userRange string) {
+	switch userRange {
+	case "<2k":
+		// Обработка ввода для диапазона >2k
+		PreviousState[chatID] = "awaitingClusterMoreThan2kInput"
+		sizing.HandleClusterMoreThan2k(bot, chatID)
+	default:
+		msg := tgbotapi.NewMessage(chatID, "Выберите корректный диапазон пользователей.")
+		bot.Send(msg)
+	}
+}
+
+func handleDefaultState(bot *tgbotapi.BotAPI, chatID int64, text string) {
+	log.Printf("handleDefaultState: %s, %s", PreviousState[chatID], text)
+
+	// Обработка ввода для частного облака
+	if PreviousState[chatID] == "awaitingUserCountPrivateCloud" {
+		sizing.HandleUserInputPrivateCloud(bot, chatID, text)
+	}
+
+	// Обработка ввода данных для почты
+	if PreviousState[chatID] == "awaitingUserCountMail" {
+		sizing.HandleUserInputMail(bot, chatID, text)
+	}
+
+	// Обработка ввода для диапазона <2k
+	if PreviousState[chatID] == "awaitingClusterMoreThan2kInput" {
+		sizing.HandleClusterMoreThan2kInput(bot, chatID, text)
 	}
 }
 
@@ -239,28 +296,6 @@ func handlePrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64) {
 	} else if PreviousState[chatID] == "reqPsn" {
 		deployment.SendPrivateKeyInsertPSN(bot, chatID)
 		PreviousState[chatID] = "privateKeyInsertPSN"
-	}
-}
-
-func handleStandalone(bot *tgbotapi.BotAPI, chatID int64) {
-	action := sizingOrDeployment[chatID]
-
-	if action == "sizing" {
-		if PreviousState[chatID] == "privateCloud" {
-			PreviousState[chatID] = "awaitingUserCountPrivateCloud"
-			sizing.HandleSizingPrivateCloudStandalone(bot, chatID)
-		} else if PreviousState[chatID] == "mail" {
-			PreviousState[chatID] = "awaitingUserCountMail"
-			sizing.HandleSizingMailStandalone(bot, chatID)
-		}
-	} else if action == "deploy" {
-		if PreviousState[chatID] == "privateCloud" {
-			deployment.SendStandaloneRequirementsPrivateCloud(bot, chatID)
-			PreviousState[chatID] = "reqPrivateCloud"
-		} else if PreviousState[chatID] == "mail" {
-			deployment.SendStandaloneRequirementsPSN(bot, chatID)
-			PreviousState[chatID] = "reqPsn"
-		}
 	}
 }
 
