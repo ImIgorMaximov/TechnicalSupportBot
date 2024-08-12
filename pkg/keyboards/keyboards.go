@@ -237,3 +237,17 @@ func GetMainMenuKeyboard() tgbotapi.ReplyKeyboardMarkup {
 		),
 	)
 }
+
+func GetUserKeyboard() tgbotapi.ReplyKeyboardMarkup {
+	return tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("<2k"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("2k-10k"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("10k<"),
+		),
+	)
+}
