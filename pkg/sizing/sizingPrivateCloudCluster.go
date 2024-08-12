@@ -27,32 +27,38 @@ func HandleClusterMoreThan2kInput(bot *tgbotapi.BotAPI, chatID int64, userInput 
 	switch previousStateCluster[chatID] {
 	case "awaitingMaxAccountCount":
 		clusterInputValues[chatID] = []string{userInput}
-		msg := tgbotapi.NewMessage(chatID, "Введите количество одновременно активных пользователей:")
+		msg := tgbotapi.NewMessage(chatID, "Введите количество одновременно активных пользователей (Например, 50):")
 		bot.Send(msg)
 		previousStateCluster[chatID] = "awaitingActiveUserCount"
 		log.Printf("Ожидание ввода максимального количества аккаунтов для пользователя %d", chatID)
 
 	case "awaitingActiveUserCount":
 		clusterInputValues[chatID] = append(clusterInputValues[chatID], userInput)
-		msg := tgbotapi.NewMessage(chatID, "Введите количество документов, редактируемых одновременно:")
+		msg := tgbotapi.NewMessage(chatID, "Введите количество документов, редактируемых одновременно (Например, 10):")
 		bot.Send(msg)
 		previousStateCluster[chatID] = "awaitingDocumentCount"
 
 	case "awaitingDocumentCount":
 		clusterInputValues[chatID] = append(clusterInputValues[chatID], userInput)
-		msg := tgbotapi.NewMessage(chatID, "Использовать S3 хранилище для инсталляций с общим размером хранилища более 100ТБ? (да/нет):")
+		msg := tgbotapi.NewMessage(chatID, "Использовать S3 хранилище (Для инсталляций с общим размером хранилища более 100ТБ) (да/нет):")
+		bot.Send(msg)
+		previousStateCluster[chatID] = "awaitingExternalStorage"
+
+	case "awaitingExternalStorage":
+		clusterInputValues[chatID] = append(clusterInputValues[chatID], userInput)
+		msg := tgbotapi.NewMessage(chatID, "Использовать внешнее S3 хранилище? (да/нет):")
 		bot.Send(msg)
 		previousStateCluster[chatID] = "awaitingS3Storage"
 
 	case "awaitingS3Storage":
 		clusterInputValues[chatID] = append(clusterInputValues[chatID], userInput)
-		msg := tgbotapi.NewMessage(chatID, "Введите дисковую квоту пользователя (ГБ):")
+		msg := tgbotapi.NewMessage(chatID, "Введите дисковую квоту пользователя (ГБ) (Например, 5):")
 		bot.Send(msg)
 		previousStateCluster[chatID] = "awaitingUserDiskQuota"
 
 	case "awaitingUserDiskQuota":
 		clusterInputValues[chatID] = append(clusterInputValues[chatID], userInput)
-		msg := tgbotapi.NewMessage(chatID, "Введите дисковую квоту для общих папок (ГБ):")
+		msg := tgbotapi.NewMessage(chatID, "Введите дисковую квоту для общих папок (ГБ) (Например, 100):")
 		bot.Send(msg)
 		previousStateCluster[chatID] = "awaitingSharedFolderQuota"
 
@@ -82,8 +88,9 @@ func calculateAndSendClusterSizing(bot *tgbotapi.BotAPI, chatID int64) {
 	err = f.SetCellValue("Cluster<2k", "F6", clusterInputValues[chatID][1])
 	err = f.SetCellValue("Cluster<2k", "F7", clusterInputValues[chatID][2])
 	err = f.SetCellValue("Cluster<2k", "D8", clusterInputValues[chatID][3])
-	err = f.SetCellValue("Cluster<2k", "F11", clusterInputValues[chatID][4])
-	err = f.SetCellValue("Cluster<2k", "D12", clusterInputValues[chatID][5])
+	err = f.SetCellValue("Cluster<2k", "D9", clusterInputValues[chatID][4])
+	err = f.SetCellValue("Cluster<2k", "F11", clusterInputValues[chatID][5])
+	err = f.SetCellValue("Cluster<2k", "D12", clusterInputValues[chatID][6])
 
 	if err != nil {
 		log.Println("Ошибка записи в файл:", err)
