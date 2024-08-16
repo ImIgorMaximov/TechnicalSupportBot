@@ -7,13 +7,13 @@ import (
 )
 
 func SendInstallationGuideMailion(bot *tgbotapi.BotAPI, chatID int64) {
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/61a/ycy96cdtr5s4n74y9pqj4uj0jtzvv8er/Mailion_1.9_Installation_Guide.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/4ee/1327bfyo3dap1r7fdgccha3i0wcfi9lt/Mailion_1.9_Installation_Guide.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard()
 	bot.Send(msg)
 }
 
 func SendAdminGuideMailion(bot *tgbotapi.BotAPI, chatID int64) {
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/dd6/ectn8biypiful7glx1dg7iqnfkatjha8/Mailion_1.9_Admin_Guide.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/6a4/lht8xpd3zc13bzlbaz4rvj5u7cpr85v3/Mailion_1.9_Admin_Guide.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard()
 	bot.Send(msg)
 }

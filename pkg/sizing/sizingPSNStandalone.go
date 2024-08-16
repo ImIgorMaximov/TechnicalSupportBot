@@ -3,6 +3,8 @@ package sizing
 import (
 	"fmt"
 	"log"
+	"math"
+	"strconv"
 
 	"technicalSupportBot/pkg/keyboards"
 
@@ -77,16 +79,37 @@ func calculateAndSendMailSizing(bot *tgbotapi.BotAPI, chatID int64) {
 	defer f.Close()
 
 	// Заполнение ячеек данными
-	err = f.SetCellValue("PSN", "D2", mailInputValues[chatID][0])
-	err = f.SetCellValue("PSN", "D7", mailInputValues[chatID][1])
-	err = f.SetCellValue("PSN", "D8", mailInputValues[chatID][2])
-	err = f.SetCellValue("PSN", "D9", mailInputValues[chatID][3])
+	err = f.SetCellValue("PSN", "D4", mailInputValues[chatID][0])
+	err = f.SetCellValue("PSN", "D9", mailInputValues[chatID][1])
+	err = f.SetCellValue("PSN", "D10", mailInputValues[chatID][2])
+	err = f.SetCellValue("PSN", "D11", mailInputValues[chatID][3])
 	if err != nil {
 		log.Println("Ошибка записи в файл:", err)
 		msg := tgbotapi.NewMessage(chatID, "Произошла ошибка при записи в файл.")
 		bot.Send(msg)
 		return
 	}
+
+	// Преобразование строк в числа
+	value1, err := strconv.ParseFloat(mailInputValues[chatID][0], 64)
+	if err != nil {
+		log.Println("Ошибка преобразования строки в число:", err)
+		msg := tgbotapi.NewMessage(chatID, "Ошибка данных: невозможно преобразовать значение в число.")
+		bot.Send(msg)
+		return
+	}
+
+	value2, err := strconv.ParseFloat(mailInputValues[chatID][1], 64)
+	if err != nil {
+		log.Println("Ошибка преобразования строки в число:", err)
+		msg := tgbotapi.NewMessage(chatID, "Ошибка данных: невозможно преобразовать значение в число.")
+		bot.Send(msg)
+		return
+	}
+
+	// Расчёт значения SSD
+	ssdValue := 50 + value1*value2*1.3
+	ssd := int(math.Round(ssdValue))
 
 	// Сохранение изменений
 	if err := f.Save(); err != nil {
@@ -97,15 +120,14 @@ func calculateAndSendMailSizing(bot *tgbotapi.BotAPI, chatID int64) {
 	}
 
 	// Извлечение результатов
-	vmCount, _ := f.GetCellValue("PSN", "C16")
-	cpu, _ := f.GetCellValue("PSN", "D16")
-	ram, _ := f.GetCellValue("PSN", "E16")
-	ssd, _ := f.GetCellValue("PSN", "F16")
+	vmCount, _ := f.GetCellValue("PSN", "C18")
+	cpu, _ := f.GetCellValue("PSN", "D18")
+	ram, _ := f.GetCellValue("PSN", "E18")
 
 	// Отправка результата пользователю
 	resultMsg := fmt.Sprintf(
 		"Результаты расчета сайзинга для Почты (PSN) Standalone:\n\n"+
-			"Компонент PSN : кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %s ГБ.\n",
+			"Компонент PSN : кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %d ГБ.\n",
 		vmCount, cpu, ram, ssd,
 	)
 	msg := tgbotapi.NewMessage(chatID, resultMsg)
