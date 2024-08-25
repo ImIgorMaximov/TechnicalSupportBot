@@ -46,7 +46,7 @@ func SendStandaloneRequirementsPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) 
 // SendStandaloneDownloadPackages отправляет пользователю инструкции по установке необходимых пакетов на машину operator.
 func SendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
 	downloadPackages := "Отлично! Тачки подготовлены! Двигаемся дальше..\n" +
-		"PS. Вся установка и настройка будет производиться на машине operator на примере системы Astra Linux Special Edition 1.7 «Орел» (базовый);\n" +
+		"PS. Вся установка и настройка будет производиться на машине operator на примере системы Astra Linux Special Edition 1.7.5 «Орел» (базовый);\n" +
 		"На ВМ c ролью operator обновите систему: \n" +
 		"sudo su\n" +
 		"apt update\n" +
@@ -63,7 +63,7 @@ func SendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
 }
 
 // SendPrivateKeyInsert отправляет инструкции по добавлению публичных ключей машин PGS и CO на машину Operator.
-func SendPrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64) {
+func SendPrivateKeyInsertPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
 	privateKeyInsert := "Необходимо убедиться, что публичные ключи машин PGS и CO находятся на машине Operator в папке /root/.ssh/authorized_keys.\n" +
 		"Если ключи отсутствуют, создайте пары ключей на машинах PGS и CO с помощью команды: \n\n" +
 		"ssh-keygen\n\n" +

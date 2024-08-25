@@ -7,102 +7,104 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64) {
-	state, exists := PreviousState[chatID]
-	if !exists {
-		log.Printf("Предыдущего состояния для chatID %d не найдено", chatID)
-		return
-	}
+// HandleNextStep обрабатывает следующий шаг на основе текущего состояния пользователя
+func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
+	state := sm.GetState(chatID)
+	currentState := state.Current
 
-	log.Printf("Обработка следующего шага для chatID %d, текущее состояние: %s", chatID, state)
+	log.Printf("Обработка следующего шага для chatID %d, текущее состояние: %s; предыдущее состояние: %s", chatID, currentState, state.Previous)
 
-	switch state {
+	switch currentState {
 	case "reqPsn", "reqPrivateCloud":
-		log.Printf("Состояние: %s. Отправка пакетов для самостоятельной загрузки.", state)
-		sendStandaloneDownloadPackages(bot, chatID)
-		log.Printf("Обработка вставки приватного ключа.")
-		handlePrivateKeyInsert(bot, chatID)
+		deployment.SendStandaloneDownloadPackages(bot, chatID)
+		sm.SetState(chatID, state.Current, "standaloneDownloadPackages")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendStandaloneDownloadPackages. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "standaloneDownloadPackages":
-		log.Printf("Состояние: %s. Обработка вставки приватного ключа.", state)
-		handlePrivateKeyInsert(bot, chatID)
+		handlePrivateKeyInsert(bot, chatID, sm)
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова handlePrivateKeyInsert. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
-	case "privateKeyInsert":
-		log.Printf("Состояние: %s. Отправка DNS-опций PGS.", state)
+	case "privateKeyInsertPrivateCloud":
+		log.Printf("Состояние: %s. Отправка DNS-опций PGS.", currentState)
 		deployment.SendDNSOptionsPGS(bot, chatID)
-		PreviousState[chatID] = "dnsPGS"
+		sm.SetState(chatID, currentState, "dnsPGS")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendDNSOptionsPGS. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "privateKeyInsertPSN":
-		log.Printf("Состояние: %s. Отправка DNS-опций PSN.", state)
+		log.Printf("Состояние: %s. Отправка DNS-опций PSN.", currentState)
 		deployment.SendDNSOptionsPSN(bot, chatID)
-		PreviousState[chatID] = "dnsPSN"
+		sm.SetState(chatID, currentState, "dnsPSN")
+		log.Printf("Текущее состояние: %s, Предыдущее состояние: %s.", currentState, state.Previous)
 
 	case "dnsPSN":
-		log.Printf("Состояние: %s. Отправка пакетов для самостоятельной загрузки PSN.", state)
+		log.Printf("Состояние: %s. Отправка пакетов для самостоятельной загрузки PSN.", currentState)
 		deployment.SendStandaloneDownloadDistributionPSN(bot, chatID)
-		PreviousState[chatID] = "standaloneDownloadDistributionPSN"
+		sm.SetState(chatID, currentState, "standaloneDownloadDistributionPSN")
 
 	case "dnsPGS":
-		log.Printf("Состояние: %s. Отправка пакетов для самостоятельной загрузки PGS.", state)
+		log.Printf("Состояние: %s. Отправка пакетов для самостоятельной загрузки PGS.", currentState)
 		deployment.SendStandaloneDownloadDistribution(bot, chatID)
-		PreviousState[chatID] = "standaloneDownloadDistribution"
+		sm.SetState(chatID, currentState, "standaloneDownloadDistribution")
 
 	case "standaloneDownloadDistributionPSN":
-		log.Printf("Состояние: %s. Отправка сертификатов и ключей PSN.", state)
+		log.Printf("Состояние: %s. Отправка сертификатов и ключей PSN.", currentState)
 		deployment.SendCertificatesAndKeysPSN(bot, chatID)
-		PreviousState[chatID] = "certificatesAndKeysPSN"
+		sm.SetState(chatID, currentState, "certificatesAndKeysPSN")
 
 	case "standaloneDownloadDistribution":
-		log.Printf("Состояние: %s. Отправка сертификатов и ключей PGS.", state)
+		log.Printf("Состояние: %s. Отправка сертификатов и ключей PGS.", currentState)
 		deployment.SendCertificatesAndKeysPGS(bot, chatID)
-		PreviousState[chatID] = "certificatesAndKeysPGS"
+		sm.SetState(chatID, currentState, "certificatesAndKeysPGS")
 
 	case "certificatesAndKeysPSN":
-		log.Printf("Состояние: %s. Отправка конфигурации для PSN.", state)
+		log.Printf("Состояние: %s. Отправка конфигурации для PSN.", currentState)
 		deployment.SendStandalonePSNConfigure(bot, chatID)
-		PreviousState[chatID] = "psnConfigure"
+		sm.SetState(chatID, currentState, "psnConfigure")
 
 	case "psnConfigure":
-		log.Printf("Состояние: %s. Отправка развертывания PSN.", state)
+		log.Printf("Состояние: %s. Отправка развертывания PSN.", currentState)
 		deployment.SendPSNDeploy(bot, chatID)
-		PreviousState[chatID] = "psnDeploy"
+		sm.SetState(chatID, currentState, "psnDeploy")
 
 	case "certificatesAndKeysPGS":
-		log.Printf("Состояние: %s. Отправка конфигурации для PGS.", state)
+		log.Printf("Состояние: %s. Отправка конфигурации для PGS.", currentState)
 		deployment.SendStandalonePGSConfigure(bot, chatID)
-		PreviousState[chatID] = "pgsConfigure"
+		sm.SetState(chatID, currentState, "pgsConfigure")
 
 	case "pgsConfigure":
-		log.Printf("Состояние: %s. Отправка развертывания PGS.", state)
+		log.Printf("Состояние: %s. Отправка развертывания PGS.", currentState)
 		deployment.SendPGSDeploy(bot, chatID)
-		PreviousState[chatID] = "pgsDeploy"
+		sm.SetState(chatID, currentState, "pgsDeploy")
 
 	case "pgsDeploy":
-		log.Printf("Состояние: %s. Отправка DNS-опций CO.", state)
+		log.Printf("Состояние: %s. Отправка DNS-опций CO.", currentState)
 		deployment.SendDNSOptionsCO(bot, chatID)
-		PreviousState[chatID] = "dnsCO"
+		sm.SetState(chatID, currentState, "dnsCO")
 
 	case "dnsCO":
-		log.Printf("Состояние: %s. Отправка сертификатов и ключей CO.", state)
+		log.Printf("Состояние: %s. Отправка сертификатов и ключей CO.", currentState)
 		deployment.SendCertificatesAndKeysCO(bot, chatID)
-		PreviousState[chatID] = "certificatesAndKeysCO"
+		sm.SetState(chatID, currentState, "certificatesAndKeysCO")
 
 	case "certificatesAndKeysCO":
-		log.Printf("Состояние: %s. Отправка установки CO.", state)
+		log.Printf("Состояние: %s. Отправка установки CO.", currentState)
 		deployment.SendCOInstallation(bot, chatID)
-		PreviousState[chatID] = "coInstallation"
+		sm.SetState(chatID, currentState, "coInstallation")
 
 	case "coInstallation":
-		log.Printf("Состояние: %s. Отправка конфигурации CO.", state)
+		log.Printf("Состояние: %s. Отправка конфигурации CO.", currentState)
 		deployment.SendCOConfigure(bot, chatID)
-		PreviousState[chatID] = "coConfigure"
+		sm.SetState(chatID, currentState, "coConfigure")
 
 	case "coConfigure":
-		log.Printf("Состояние: %s. Отправка развертывания CO.", state)
+		log.Printf("Состояние: %s. Отправка развертывания CO.", currentState)
 		deployment.SendCODeploy(bot, chatID)
-		PreviousState[chatID] = "coDeploy"
+		sm.SetState(chatID, currentState, "coDeploy")
 
 	default:
-		log.Printf("Состояние: %s. Неизвестное состояние, действие не выполнено.", state)
+		log.Printf("Состояние: %s. Неизвестное состояние, действие не выполнено.", currentState)
 	}
 }
