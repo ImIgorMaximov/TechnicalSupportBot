@@ -19,12 +19,19 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	log.Printf("Нажата кнопка \"Назад\" для chatID %d, текущее состояние: %s", chatID, state.Current)
 
 	switch state.Current {
-	case "privateCloud", "squadus", "mailion", "mail":
-		sendProduct(bot, chatID)
-		sm.SetState(chatID, state.Current, state.Action)
-		updatedState := sm.GetState(chatID)
-		log.Printf("После выполнения кнопки Назад sendProduct. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
+	case "privateCloud", "squadus", "mailion", "mail":
+		if state.Previous == "standalone" {
+			sendWelcomeMessage(bot, chatID)
+			sm.SetState(chatID, state.Current, "start")
+			updatedState := sm.GetState(chatID)
+			log.Printf("После выполнения кнопки Назад sendWelcomeMessage. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+		} else {
+			sendProduct(bot, chatID)
+			sm.SetState(chatID, state.Current, state.Action)
+			updatedState := sm.GetState(chatID)
+			log.Printf("После выполнения кнопки Назад sendProduct. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+		}
 	case "standalone", "cluster":
 		sendProduct(bot, chatID)
 		sm.SetState(chatID, state.Current, state.Product)
@@ -33,16 +40,23 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 
 	case "reqPrivateCloud", "reqPsn":
 		sendDeploymentOptions(bot, chatID)
-		state.Previous = state.Current
 		sm.SetState(chatID, state.Current, state.Type)
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад sendDeploymentOptions. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "standaloneDownloadPackages":
-		sendDeploymentOptions(bot, chatID)
-		sm.SetState(chatID, state.Current, state.Previous)
-		updatedState := sm.GetState(chatID)
-		log.Printf("После выполнения кнопки Назад sendDeploymentOptions. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+		if state.Product == "privateCloud" {
+			deployment.SendStandaloneRequirementsPrivateCloud(bot, chatID)
+			sm.SetState(chatID, state.Current, "reqPrivateCloud")
+			updatedState := sm.GetState(chatID)
+			log.Printf("После выполнения кнопки Назад SendStandaloneRequirementsPrivateCloud. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+		} else if state.Product == "mail" {
+			deployment.SendStandaloneRequirementsPSN(bot, chatID)
+			sm.SetState(chatID, state.Current, "reqPsn")
+			updatedState := sm.GetState(chatID)
+			log.Printf("После выполнения кнопки Назад SendStandaloneRequirementsPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+		}
 
 	case "requirementsPrivateCloud", "installationGuidePrivateCloud", "adminGuidePrivateCloud":
 		sendInstructions(bot, chatID)
