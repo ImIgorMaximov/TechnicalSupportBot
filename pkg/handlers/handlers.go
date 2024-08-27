@@ -156,13 +156,13 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	log.Printf("handleStandalone: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
 
 	// Обработка для перехода от состояния privateCloud
-	if state.Current == "privateCloud" {
-		if state.Previous == "sizing" {
+	if state.Product == "privateCloud" {
+		if state.Action == "sizing" {
 			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 			sizing.HandleSizingPrivateCloudStandalone(bot, chatID)
-		} else if state.Previous == "deploy" {
+		} else if state.Action == "deploy" {
 			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
@@ -170,13 +170,13 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 			sm.SetState(chatID, state.Current, "reqPrivateCloud")
 			log.Printf("После вызова SendStandaloneRequirementsPrivateCloud. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 		}
-	} else if state.Current == "mail" {
-		if state.Previous == "sizing" {
+	} else if state.Product == "mail" {
+		if state.Action == "sizing" {
 			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 			sizing.HandleSizingMailStandalone(bot, chatID)
-		} else if state.Previous == "deploy" {
+		} else if state.Action == "deploy" {
 			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s. Отправка пакетов для самостоятельной загрузки.", state.Current, state.Previous)
@@ -236,11 +236,11 @@ func handlePrivateCloud(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	state.Product = "privateCloud"
 	log.Printf("handlePrivateCloud: chatID %d, previousState %s, currentState %s, productState %s", chatID, state.Previous, state.Current, state.Product)
 
-	if state.Current == "instr" {
+	if state.Action == "instr" {
 		sendInstructions(bot, chatID)
 		sm.SetState(chatID, state.Current, "privateCloud")
 		log.Printf("Переключение состояния на privateCloud после инструкции: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
-	} else if state.Current == "deploy" || state.Current == "sizing" {
+	} else if state.Action == "deploy" || state.Current == "sizing" {
 		sendDeploymentOptions(bot, chatID)
 		sm.SetState(chatID, state.Current, "privateCloud")
 		log.Printf("Переключение состояния на privateCloud после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
@@ -253,11 +253,11 @@ func handleMail(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	state.Product = "mail"
 	log.Printf("handleMail: chatID %d, previousState %s, currentState %s, productState %s", chatID, state.Previous, state.Current, state.Product)
 
-	if state.Current == "instr" {
+	if state.Action == "instr" {
 		sendInstructions(bot, chatID)
 		sm.SetState(chatID, state.Current, "mail")
 		log.Printf("Переключение состояния на mail после инструкции: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
-	} else if state.Current == "deploy" || state.Current == "sizing" {
+	} else if state.Action == "deploy" || state.Current == "sizing" {
 		sendDeploymentOptions(bot, chatID)
 		sm.SetState(chatID, state.Current, "mail")
 		log.Printf("Переключение состояния на mail после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)

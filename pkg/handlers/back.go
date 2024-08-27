@@ -31,9 +31,16 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад sendProduct. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
+	case "reqPrivateCloud", "reqPsn":
+		sendDeploymentOptions(bot, chatID)
+		state.Previous = state.Current
+		sm.SetState(chatID, state.Current, state.Type)
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад sendDeploymentOptions. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
 	case "standaloneDownloadPackages":
 		sendDeploymentOptions(bot, chatID)
-		sm.SetState(chatID, state.Current, state.Type)
+		sm.SetState(chatID, state.Current, state.Previous)
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад sendDeploymentOptions. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
