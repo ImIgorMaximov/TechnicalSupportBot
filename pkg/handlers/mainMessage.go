@@ -11,7 +11,6 @@ import (
 )
 
 func sendWelcomeMessage(bot *tgbotapi.BotAPI, chatID int64) {
-	PreviousState[chatID] = "main"
 
 	welcomeMessage := "Добро пожаловать в чат бот тех. поддержки МойОфис! :) " +
 		"Выберите необходимую функцию:\n" +
@@ -41,6 +40,7 @@ func sendDeploymentOptions(bot *tgbotapi.BotAPI, chatID int64) {
 }
 
 func sendInstructions(bot *tgbotapi.BotAPI, chatID int64) {
+
 	chooseFunction := "Что подсказать? \n" +
 		"- Cистемные требования \n" +
 		"- Руководство по установке \n" +
