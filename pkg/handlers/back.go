@@ -19,110 +19,127 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	log.Printf("Нажата кнопка \"Назад\" для chatID %d, текущее состояние: %s", chatID, state.Current)
 
 	switch state.Current {
-	case "instr", "deploy", "sizing":
-		log.Printf("Состояние: %s. Отправка приветственного сообщения и переход на начальный экран.", state.Current)
-		sendWelcomeMessage(bot, chatID)
-		sm.SetState(chatID, state.Current, "start")
-
 	case "privateCloud", "squadus", "mailion", "mail":
-		log.Printf("Состояние: %s. Отправка списка продуктов.", state.Current)
 		sendProduct(bot, chatID)
-		sm.SetState(chatID, state.Current, "instr")
+		sm.SetState(chatID, state.Current, state.Action)
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад sendProduct. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "standalone", "cluster":
-		log.Printf("Состояние: %s. Отправка списка продуктов.", state.Current)
 		sendProduct(bot, chatID)
 		sm.SetState(chatID, state.Current, state.Product)
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад sendProduct. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "standaloneDownloadPackages":
-		log.Printf("Состояние: %s. Отправка типа инсталляции продуктов.", state.Current)
 		sendDeploymentOptions(bot, chatID)
-		sm.SetState(chatID, state.Current, "standalone")
+		sm.SetState(chatID, state.Current, state.Type)
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад sendDeploymentOptions. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "requirementsPrivateCloud", "installationGuidePrivateCloud", "adminGuidePrivateCloud":
-		log.Printf("Состояние: %s. Отправка инструкций для PrivateCloud.", state.Current)
 		sendInstructions(bot, chatID)
-		sm.SetState(chatID, "instr", "privateCloud")
+		sm.SetState(chatID, state.Action, state.Product)
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад sendInstructions. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "pgs", "co":
 		log.Printf("Состояние: %s. Отправка опций установки PrivateCloud.", state.Current)
 		instructions.SendInstallationGuideOptionsPrivateCloud(bot, chatID)
-		sm.SetState(chatID, "privateCloud", "installationGuidePrivateCloud")
+		sm.SetState(chatID, state.Product, "installationGuidePrivateCloud")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendInstallationGuideOptionsPrivateCloud. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "requirementsSquadus", "installationGuideSquadus", "adminGuideSquadus":
-		log.Printf("Состояние: %s. Отправка инструкций для Squadus.", state.Current)
 		sendInstructions(bot, chatID)
-		sm.SetState(chatID, "instr", "squadus")
+		sm.SetState(chatID, state.Action, state.Product)
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад sendInstruction. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "requirementsMailion", "installationGuideMailion", "adminGuideMailion":
-		log.Printf("Состояние: %s. Отправка инструкций для Mailion.", state.Current)
 		sendInstructions(bot, chatID)
-		sm.SetState(chatID, "instr", "mailion")
+		sm.SetState(chatID, state.Action, state.Product)
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад sendInstruction. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "requirementsMail", "installationGuideMail", "adminGuideMail":
-		log.Printf("Состояние: %s. Отправка инструкций для Mail.", state.Current)
 		sendInstructions(bot, chatID)
-		sm.SetState(chatID, "instr", "mail")
+		sm.SetState(chatID, state.Action, state.Product)
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад sendInstruction. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
-	case "standaloneDownloadDistribution":
-		log.Printf("Состояние: %s. Отправка DNS-опций PGS.", state.Current)
+	case "standaloneDownloadDistributionPrivateCloud":
 		deployment.SendDNSOptionsPGS(bot, chatID)
 		sm.SetState(chatID, state.Current, "dnsPGS")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendDNSOptionsPGS. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "standaloneDownloadDistributionPSN":
-		log.Printf("Состояние: %s. Отправка DNS-опций PSN.", state.Current)
 		deployment.SendDNSOptionsPSN(bot, chatID)
 		sm.SetState(chatID, state.Current, "dnsPSN")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendDNSOptionsPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "dnsPGS":
-		log.Printf("Состояние: %s. Отправка вставки приватного ключа.", state.Current)
 		deployment.SendPrivateKeyInsertPrivateCloud(bot, chatID)
 		sm.SetState(chatID, state.Current, "privateKeyInsertPrivateCloud")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendPrivateKeyInsertPrivateCloud. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "privateKeyInsertPrivateCloud", "privateKeyInsertPSN":
 		log.Printf("Состояние: %s. Отправка пакетов для самостоятельной загрузки.", state.Current)
 		deployment.SendStandaloneDownloadPackages(bot, chatID)
 		sm.SetState(chatID, state.Current, "standaloneDownloadPackages")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendStandaloneDownloadPackages. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "certificatesAndKeysPGS":
-		log.Printf("Состояние: %s. Отправка пакетов для самостоятельной загрузки.", state.Current)
-		deployment.SendStandaloneDownloadDistribution(bot, chatID)
-		sm.SetState(chatID, state.Current, "standaloneDownloadDistribution")
+		deployment.SendStandaloneDownloadDistributionPrivateCloud(bot, chatID)
+		sm.SetState(chatID, state.Current, "standaloneDownloadDistributionPrivateCloud")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendStandaloneDownloadDistributionPrivateCloud. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "certificatesAndKeysPSN":
-		log.Printf("Состояние: %s. Отправка пакетов для самостоятельной загрузки PSN.", state.Current)
 		deployment.SendStandaloneDownloadDistributionPSN(bot, chatID)
 		sm.SetState(chatID, state.Current, "standaloneDownloadDistributionPSN")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendStandaloneDownloadDistributionPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "psnConfigure":
-		log.Printf("Состояние: %s. Отправка сертификатов и ключей PSN.", state.Current)
 		deployment.SendCertificatesAndKeysPSN(bot, chatID)
 		sm.SetState(chatID, state.Current, "certificatesAndKeysPSN")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendCertificatesAndKeysPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "pgsConfigure":
-		log.Printf("Состояние: %s. Отправка сертификатов и ключей PGS.", state.Current)
 		deployment.SendCertificatesAndKeysPGS(bot, chatID)
 		sm.SetState(chatID, state.Current, "certificatesAndKeysPGS")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendCertificatesAndKeysPGS. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "pgsDeploy":
-		log.Printf("Состояние: %s. Отправка конфигурации для PGS.", state.Current)
 		deployment.SendStandalonePGSConfigure(bot, chatID)
 		sm.SetState(chatID, state.Current, "pgsConfigure")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendStandalonePGSConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "psnDeploy":
-		log.Printf("Состояние: %s. Отправка конфигурации для PSN.", state.Current)
 		deployment.SendStandalonePSNConfigure(bot, chatID)
 		sm.SetState(chatID, state.Current, "psnConfigure")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendStandalonePSNConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "coInstallation":
-		log.Printf("Состояние: %s. Отправка развертывания PGS.", state.Current)
 		deployment.SendPGSDeploy(bot, chatID)
 		sm.SetState(chatID, state.Current, "pgsDeploy")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendPGSDeploy. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "coDeploy":
-		log.Printf("Состояние: %s. Отправка конфигурации CO.", state.Current)
 		deployment.SendCOConfigure(bot, chatID)
 		sm.SetState(chatID, state.Current, "coConfigure")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendCOConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	default:
 		log.Printf("Состояние: %s. Неизвестное состояние, отправка приветственного сообщения и переход на начальный экран.", state.Current)

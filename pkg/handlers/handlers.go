@@ -14,6 +14,8 @@ type State struct {
 	Previous string
 	Current  string
 	Product  string
+	Action   string
+	Type     string
 }
 
 // StateManager управляет состояниями пользователей
@@ -58,14 +60,17 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 		sm.SetState(chatID, state.Current, "start")
 
 	case "Инструкции по продуктам":
+		state.Action = "instr"
 		sendProduct(bot, chatID)
 		sm.SetState(chatID, state.Current, "instr")
 
 	case "Развертывание продуктов":
+		state.Action = "deploy"
 		sendProduct(bot, chatID)
 		sm.SetState(chatID, state.Current, "deploy")
 
 	case "Расчет сайзинга продуктов":
+		state.Action = "sizing"
 		sendProduct(bot, chatID)
 		sm.SetState(chatID, state.Current, "sizing")
 
@@ -154,10 +159,12 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	if state.Current == "privateCloud" {
 		if state.Previous == "sizing" {
 			sm.SetState(chatID, state.Current, "standalone")
+			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 			sizing.HandleSizingPrivateCloudStandalone(bot, chatID)
 		} else if state.Previous == "deploy" {
 			sm.SetState(chatID, state.Current, "standalone")
+			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 			deployment.SendStandaloneRequirementsPrivateCloud(bot, chatID)
 			sm.SetState(chatID, state.Current, "reqPrivateCloud")
@@ -166,10 +173,12 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	} else if state.Current == "mail" {
 		if state.Previous == "sizing" {
 			sm.SetState(chatID, state.Current, "standalone")
+			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 			sizing.HandleSizingMailStandalone(bot, chatID)
 		} else if state.Previous == "deploy" {
 			sm.SetState(chatID, state.Current, "standalone")
+			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s. Отправка пакетов для самостоятельной загрузки.", state.Current, state.Previous)
 			deployment.SendStandaloneRequirementsPSN(bot, chatID)
 			sm.SetState(chatID, state.Current, "reqPsn")
@@ -258,7 +267,7 @@ func handleMail(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 // handleMailion обрабатывает запрос на Mailion
 func handleMailion(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	state := sm.GetState(chatID)
-	state.Product = "mailiion"
+	state.Product = "mailion"
 	log.Printf("handleMailion: chatID %d, previousState %s, currentState %s, productState %s", chatID, state.Previous, state.Current, state.Product)
 	if state.Current == "instr" {
 		sendInstructions(bot, chatID)

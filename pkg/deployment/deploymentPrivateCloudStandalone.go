@@ -88,8 +88,8 @@ func SendDNSOptionsPGS(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-// SendStandaloneDownloadDistribution отправляет инструкции по подготовке архива с дистрибутивом для машины PGS.
-func SendStandaloneDownloadDistribution(bot *tgbotapi.BotAPI, chatID int64) {
+// SendStandaloneDownloadDistributionPrivateCloud отправляет инструкции по подготовке архива с дистрибутивом для машины PGS.
+func SendStandaloneDownloadDistributionPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
 	downloadPackages := "Первая установка будет произведена на машину PGS.\n" +
 		"После установки необходимых пакетов на машине operator подготовьте архив, который выдается инженером или Аккаунт Менеджером.\n" +
 		"Далее создайте директорию с помощью команды: \n\n" +

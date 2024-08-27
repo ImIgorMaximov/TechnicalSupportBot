@@ -23,86 +23,99 @@ func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 
 	case "standaloneDownloadPackages":
 		handlePrivateKeyInsert(bot, chatID, sm)
+		sm.SetState(chatID, currentState, "privateKeyInsertPrivateCloud")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После вызова handlePrivateKeyInsert. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "privateKeyInsertPrivateCloud":
-		log.Printf("Состояние: %s. Отправка DNS-опций PGS.", currentState)
 		deployment.SendDNSOptionsPGS(bot, chatID)
 		sm.SetState(chatID, currentState, "dnsPGS")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После вызова SendDNSOptionsPGS. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "privateKeyInsertPSN":
-		log.Printf("Состояние: %s. Отправка DNS-опций PSN.", currentState)
 		deployment.SendDNSOptionsPSN(bot, chatID)
 		sm.SetState(chatID, currentState, "dnsPSN")
-		log.Printf("Текущее состояние: %s, Предыдущее состояние: %s.", currentState, state.Previous)
-
-	case "dnsPSN":
-		log.Printf("Состояние: %s. Отправка пакетов для самостоятельной загрузки PSN.", currentState)
-		deployment.SendStandaloneDownloadDistributionPSN(bot, chatID)
-		sm.SetState(chatID, currentState, "standaloneDownloadDistributionPSN")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendDNSOptionsPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "dnsPGS":
-		log.Printf("Состояние: %s. Отправка пакетов для самостоятельной загрузки PGS.", currentState)
-		deployment.SendStandaloneDownloadDistribution(bot, chatID)
-		sm.SetState(chatID, currentState, "standaloneDownloadDistribution")
+		deployment.SendStandaloneDownloadDistributionPrivateCloud(bot, chatID)
+		sm.SetState(chatID, currentState, "standaloneDownloadDistributionPrivateCloud")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendStandaloneDownloadDistributionPrivateCloud. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
-	case "standaloneDownloadDistributionPSN":
-		log.Printf("Состояние: %s. Отправка сертификатов и ключей PSN.", currentState)
-		deployment.SendCertificatesAndKeysPSN(bot, chatID)
-		sm.SetState(chatID, currentState, "certificatesAndKeysPSN")
+	case "dnsPSN":
+		deployment.SendStandaloneDownloadDistributionPSN(bot, chatID)
+		sm.SetState(chatID, currentState, "standaloneDownloadDistributionPSN")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendStandaloneDownloadDistributionPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
-	case "standaloneDownloadDistribution":
-		log.Printf("Состояние: %s. Отправка сертификатов и ключей PGS.", currentState)
+	case "standaloneDownloadDistributionPrivateCloud":
 		deployment.SendCertificatesAndKeysPGS(bot, chatID)
 		sm.SetState(chatID, currentState, "certificatesAndKeysPGS")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendCertificatesAndKeysPGS. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
-	case "certificatesAndKeysPSN":
-		log.Printf("Состояние: %s. Отправка конфигурации для PSN.", currentState)
-		deployment.SendStandalonePSNConfigure(bot, chatID)
-		sm.SetState(chatID, currentState, "psnConfigure")
-
-	case "psnConfigure":
-		log.Printf("Состояние: %s. Отправка развертывания PSN.", currentState)
-		deployment.SendPSNDeploy(bot, chatID)
-		sm.SetState(chatID, currentState, "psnDeploy")
+	case "standaloneDownloadDistributionPSN":
+		deployment.SendCertificatesAndKeysPSN(bot, chatID)
+		sm.SetState(chatID, currentState, "certificatesAndKeysPSN")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendCertificatesAndKeysPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "certificatesAndKeysPGS":
-		log.Printf("Состояние: %s. Отправка конфигурации для PGS.", currentState)
 		deployment.SendStandalonePGSConfigure(bot, chatID)
 		sm.SetState(chatID, currentState, "pgsConfigure")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendStandalonePGSConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "certificatesAndKeysPSN":
+		deployment.SendStandalonePSNConfigure(bot, chatID)
+		sm.SetState(chatID, currentState, "psnConfigure")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendStandalonePSNConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "psnConfigure":
+		deployment.SendPSNDeploy(bot, chatID)
+		sm.SetState(chatID, currentState, "psnDeploy")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendPSNDeploy. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "pgsConfigure":
-		log.Printf("Состояние: %s. Отправка развертывания PGS.", currentState)
 		deployment.SendPGSDeploy(bot, chatID)
 		sm.SetState(chatID, currentState, "pgsDeploy")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendPGSDeploy. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "pgsDeploy":
-		log.Printf("Состояние: %s. Отправка DNS-опций CO.", currentState)
 		deployment.SendDNSOptionsCO(bot, chatID)
 		sm.SetState(chatID, currentState, "dnsCO")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendDNSOptionsCO. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "dnsCO":
-		log.Printf("Состояние: %s. Отправка сертификатов и ключей CO.", currentState)
 		deployment.SendCertificatesAndKeysCO(bot, chatID)
 		sm.SetState(chatID, currentState, "certificatesAndKeysCO")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendCertificatesAndKeysCO. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "certificatesAndKeysCO":
-		log.Printf("Состояние: %s. Отправка установки CO.", currentState)
 		deployment.SendCOInstallation(bot, chatID)
 		sm.SetState(chatID, currentState, "coInstallation")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendCOInstallation. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "coInstallation":
-		log.Printf("Состояние: %s. Отправка конфигурации CO.", currentState)
 		deployment.SendCOConfigure(bot, chatID)
 		sm.SetState(chatID, currentState, "coConfigure")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendCOConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "coConfigure":
-		log.Printf("Состояние: %s. Отправка развертывания CO.", currentState)
 		deployment.SendCODeploy(bot, chatID)
 		sm.SetState(chatID, currentState, "coDeploy")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendCODeploy. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	default:
 		log.Printf("Состояние: %s. Неизвестное состояние, действие не выполнено.", currentState)
