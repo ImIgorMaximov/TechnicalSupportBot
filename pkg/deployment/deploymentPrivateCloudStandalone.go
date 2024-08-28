@@ -76,21 +76,21 @@ func SendPrivateKeyInsertPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
 
 // SendDNSOptionsPGS отправляет инструкции по настройке DNS-сервера для PGS.
 func SendDNSOptionsPGS(bot *tgbotapi.BotAPI, chatID int64) {
-	dnsPGS := "Перед началом установки необходимо настроить DNS-сервер, указав адрес сервера установки Nginx.\n" +
+	dns := "Перед началом установки необходимо настроить DNS-сервер, указав адрес сервера установки Nginx.\n" +
 		"В случае использования переменной окружения (env) в конфигурационном файле hosts.yml записи будут иметь вид: \n\n" +
 		"admin-<env>.<default_domain> - Адрес веб-панели администрирования PGS \n" +
 		"pgs-<env>.<default_domain> - Адрес точки входа для API\n\n" +
 		"Если переменная окружения (env) не задана, записи примут вид:\n\n" +
 		"admin.<default_domain>\n" +
 		"pgs.<default_domain>\n\n"
-	msg := tgbotapi.NewMessage(chatID, dnsPGS)
+	msg := tgbotapi.NewMessage(chatID, dns)
 	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
 	bot.Send(msg)
 }
 
 // SendStandaloneDownloadDistributionPrivateCloud отправляет инструкции по подготовке архива с дистрибутивом для машины PGS.
 func SendStandaloneDownloadDistributionPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
-	downloadPackages := "Первая установка будет произведена на машину PGS.\n" +
+	downloadDistr := "Первая установка будет произведена на машину PGS.\n" +
 		"После установки необходимых пакетов на машине operator подготовьте архив, который выдается инженером или Аккаунт Менеджером.\n" +
 		"Далее создайте директорию с помощью команды: \n\n" +
 		"mkdir install_MyOffice_PGS\n\n" +
@@ -99,14 +99,14 @@ func SendStandaloneDownloadDistributionPrivateCloud(bot *tgbotapi.BotAPI, chatID
 		"*vesion - введите соответствующую версию продукта \n\n" +
 		"После этого перейдите в каталог install_MyOffice_PGS: \n\n" +
 		"cd install_MyOffice_PGS\n"
-	msg := tgbotapi.NewMessage(chatID, downloadPackages)
+	msg := tgbotapi.NewMessage(chatID, downloadDistr)
 	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
 	bot.Send(msg)
 }
 
 // SendCertificatesAndKeysPGS отправляет инструкции по установке SSL-сертификатов для PGS.
 func SendCertificatesAndKeysPGS(bot *tgbotapi.BotAPI, chatID int64) {
-	certificatesAndKeysPGS := "Для работы веб-интерфейса PGS необходима установка SSL-сертификатов.\n" +
+	certificatesAndKeys := "Для работы веб-интерфейса PGS необходима установка SSL-сертификатов.\n" +
 		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
 		"Сертификаты необходимо разместить в каталоге, соответствующему доменному имени PGS.\n\n" +
 		"Напримере домена myoffice-app.ru : \n\n" +
@@ -119,14 +119,14 @@ func SendCertificatesAndKeysPGS(bot *tgbotapi.BotAPI, chatID int64) {
 		"Проверить наличия сертификатов и ключа:\n\n" +
 		"ls -la /root/install_MyOffice_PGS/certificates/myoffice-app.ru\n\n" +
 		"Далее начинаем заполнять конфигурационные файлы!:)\n"
-	msg := tgbotapi.NewMessage(chatID, certificatesAndKeysPGS)
+	msg := tgbotapi.NewMessage(chatID, certificatesAndKeys)
 	msg.ReplyMarkup = keyboards.GetIsCertificatesKeyboard()
 	bot.Send(msg)
 }
 
 // SendStandalonePGSConfigure отправляет инструкции по настройке файла hosts.yml для PGS.
 func SendStandalonePGSConfigure(bot *tgbotapi.BotAPI, chatID int64) {
-	pgsConfigure := "Необходимо скопировать шаблон файла inventory в корневой каталог дистрибутива и заполнить секции hosts и vars.\n\n" +
+	configure := "Необходимо скопировать шаблон файла inventory в корневой каталог дистрибутива и заполнить секции hosts и vars.\n\n" +
 		"Операция копирования выполняется с помощью команды:\n\n" +
 		"cp /root/install_MyOffice_PGS/inventory/hosts-sa.yaml hosts.yml \n\n" +
 		"Далее заполним файл hosts.yml : \n\n" +
@@ -152,24 +152,24 @@ func SendStandalonePGSConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 		"APP_ADMIN_PASSWORD: \"6dbYv6qVJrqiVB\"\n\n" +
 		"*В примерах используется редактор vim \n" +
 		"*При необходимости выберите пример конфига, нажав соответствующую кнопку. \n"
-	msg := tgbotapi.NewMessage(chatID, pgsConfigure)
+	msg := tgbotapi.NewMessage(chatID, configure)
 	msg.ReplyMarkup = keyboards.GetPGSStandaloneConfig()
 	bot.Send(msg)
 }
 
 // SendPGSDeploy отправляет инструкции по развертыванию PGS.
 func SendPGSDeploy(bot *tgbotapi.BotAPI, chatID int64) {
-	pgsDeploy := "Для запуска установки PGS необходимо перейти в каталог /root/install_MyOffice_PGS/ и выполнить следующую команду:\n\n" +
+	deploy := "Для запуска установки PGS необходимо перейти в каталог /root/install_MyOffice_PGS/ и выполнить следующую команду:\n\n" +
 		"./deploy.sh hosts.yml\n\n" +
 		"Ожидаем результат! При возниковении ошибок или вопросов свяжитесь с инженером!\n"
-	msg := tgbotapi.NewMessage(chatID, pgsDeploy)
+	msg := tgbotapi.NewMessage(chatID, deploy)
 	msg.ReplyMarkup = keyboards.GetCOInstallation()
 	bot.Send(msg)
 }
 
 // SendDNSOptionsCO отправляет инструкции по настройке DNS-сервера для CO.
 func SendDNSOptionsCO(bot *tgbotapi.BotAPI, chatID int64) {
-	dnsCO := "Перед началом установки необходимо настроить DNS-сервер.\n" +
+	dns := "Перед началом установки необходимо настроить DNS-сервер.\n" +
 		"В случае использования переменной окружения (env) в конфигурационном файле main.yml записи будут иметь вид: \n\n" +
 		"auth-<domain_env>.<domain_name> \n" +
 		"cdn-<domain_env>.<domain_name> \n" +
@@ -186,31 +186,14 @@ func SendDNSOptionsCO(bot *tgbotapi.BotAPI, chatID int64) {
 		"files.<domain_name> \n" +
 		"links.<domain_name> \n" +
 		"_https._tcp.<domain_name> \n"
-	msg := tgbotapi.NewMessage(chatID, dnsCO)
+	msg := tgbotapi.NewMessage(chatID, dns)
 	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
-	bot.Send(msg)
-}
-
-// SendCertificatesAndKeysCO отправляет инструкции по установке SSL-сертификатов для CO.
-func SendCertificatesAndKeysCO(bot *tgbotapi.BotAPI, chatID int64) {
-	certificatesAndKeysCO := "Для работы CO необходима установка SSL-сертификатов.\n" +
-		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
-		"Сертификаты необходимо разместить в каталоге certificates.\n\n" +
-		"cd /root/install_co/certificates\n" +
-		"Вставьте серитификаты в директорию certificates.\n\n Список необходимых сертификатов: \n\n" +
-		"server.crt - сертификат внешнего домена. \n" +
-		"server.nopass.key - ключ внешнего домена. \n" +
-		"ca.сrt - цепочка сертификатов промежуточных центров сертификации.\n\n" +
-		"Проверить наличия сертификатов и ключа:\n" +
-		"ls -la /root/install_MyOffice_PGS/certificates/\n\n"
-	msg := tgbotapi.NewMessage(chatID, certificatesAndKeysCO)
-	msg.ReplyMarkup = keyboards.GetIsCertificatesKeyboard()
 	bot.Send(msg)
 }
 
 // SendCOInstallation отправляет сообщение с инструкцией по загрузке и распаковке дистрибутива CO.
 func SendCOInstallation(bot *tgbotapi.BotAPI, chatID int64) {
-	coInstallation := "Переходим к установке и настройке CO (Сервер совместного редактирования).\n\n" +
+	installation := "Переходим к установке и настройке CO (Сервер совместного редактирования).\n\n" +
 		"На машину operator перенести дистрибутив CO, который выдается инженером или Аккаунт Менеджером. \n\n" +
 		"Данный дистрибутив (.iso) включает: \n\n" +
 		"co_ansible_bin_version.run - файл с  подсистемой управления конфигурациями\n" +
@@ -230,17 +213,33 @@ func SendCOInstallation(bot *tgbotapi.BotAPI, chatID int64) {
 		"Создайте каталог co_setup/ в директории /root/install_co/group_vars/:\n\n" +
 		"mkdir /root/install_co/group_vars/co_setup/\n\n" +
 		"Скопируйте в созданную директорию co_setup каталог с переменными для заполнения :\n\n" +
-		"cp -r /root/install_co/contrib/co/standalone/group_vars/co_setup/* /root/install_co/group_vars/co_setup/\n\n" +
-		"Далее начинаем заполнять конфигурационные файлы..\n"
+		"cp -r /root/install_co/contrib/co/standalone/group_vars/co_setup/* /root/install_co/group_vars/co_setup/\n\n"
 
-	msg := tgbotapi.NewMessage(chatID, coInstallation)
+	msg := tgbotapi.NewMessage(chatID, installation)
 	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+	bot.Send(msg)
+}
+
+// SendCertificatesAndKeysCO отправляет инструкции по установке SSL-сертификатов для CO.
+func SendCertificatesAndKeysCO(bot *tgbotapi.BotAPI, chatID int64) {
+	certificatesAndKeys := "Для работы CO необходима установка SSL-сертификатов.\n" +
+		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
+		"Сертификаты необходимо разместить в каталоге certificates.\n\n" +
+		"cd /root/install_co/certificates\n" +
+		"Вставьте серитификаты в директорию certificates.\n\n Список необходимых сертификатов: \n\n" +
+		"server.crt - сертификат внешнего домена. \n" +
+		"server.nopass.key - ключ внешнего домена. \n" +
+		"ca.сrt - цепочка сертификатов промежуточных центров сертификации.\n\n" +
+		"Проверить наличия сертификатов и ключа:\n" +
+		"ls -la /root/install_co/certificates/\n\n"
+	msg := tgbotapi.NewMessage(chatID, certificatesAndKeys)
+	msg.ReplyMarkup = keyboards.GetIsCertificatesKeyboard()
 	bot.Send(msg)
 }
 
 // SendStandaloneCOConfigure отправляет инструкции по настройке файла hosts.yml & main.yml для CO.
 func SendCOConfigure(bot *tgbotapi.BotAPI, chatID int64) {
-	coConfigure := "Заполним файл hosts.yml в директории /root/install_co/:\n" +
+	configure := "Заполним файл hosts.yml в директории /root/install_co/:\n" +
 		"vim /root/install_co/hosts.yml\n\n" +
 		"В секцию hosts добавьте доменное имя вашего CO-сервера: \n" +
 		"hosts:\n" +
@@ -276,17 +275,17 @@ func SendCOConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 		"*В примерах используется редактор vim \n" +
 		"*При необходимости выберите пример конфига, нажав соответствующую кнопку. \n"
 
-	msg := tgbotapi.NewMessage(chatID, coConfigure)
+	msg := tgbotapi.NewMessage(chatID, configure)
 	msg.ReplyMarkup = keyboards.GetCOStandaloneConfigKeyboard()
 	bot.Send(msg)
 }
 
 // SendCODeploy отправляет команду для развертывания CO.
 func SendCODeploy(bot *tgbotapi.BotAPI, chatID int64) {
-	coDeploy := "Для запуска установки CO необходимо перейти в каталог /root/install_co/ и выполнить следующую команду:\n\n" +
+	deploy := "Для запуска установки CO необходимо перейти в каталог /root/install_co/ и выполнить следующую команду:\n\n" +
 		"ansible-playbook playbooks/main.yml --diff\n\n" +
 		"Ожидаем результат! При возниковении ошибок или вопросов обращайтесь к инженеру!\n"
-	msg := tgbotapi.NewMessage(chatID, coDeploy)
+	msg := tgbotapi.NewMessage(chatID, deploy)
 	msg.ReplyMarkup = keyboards.GetFinishKeyboard()
 	bot.Send(msg)
 }

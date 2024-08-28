@@ -38,7 +38,7 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад sendProduct. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
-	case "reqPrivateCloud", "reqPsn":
+	case "reqPrivateCloud", "reqPsn", "reqSquadus":
 		sendDeploymentOptions(bot, chatID)
 		sm.SetState(chatID, state.Current, state.Type)
 		updatedState := sm.GetState(chatID)
@@ -56,6 +56,11 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 			sm.SetState(chatID, state.Current, "reqPsn")
 			updatedState := sm.GetState(chatID)
 			log.Printf("После выполнения кнопки Назад SendStandaloneRequirementsPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+		} else if state.Product == "squadus" {
+			deployment.SendStandaloneRequirementsSquadus(bot, chatID)
+			sm.SetState(chatID, state.Current, "reqSquadus")
+			updatedState := sm.GetState(chatID)
+			log.Printf("После выполнения кнопки Назад SendStandaloneRequirementsSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 		}
 
 	case "requirementsPrivateCloud", "installationGuidePrivateCloud", "adminGuidePrivateCloud":
@@ -101,13 +106,31 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад SendDNSOptionsPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
+	case "standaloneDownloadDistributionSquadus":
+		deployment.SendDNSOptionsSquadus(bot, chatID)
+		sm.SetState(chatID, state.Current, "dnsSquadus")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendDNSOptionsSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
 	case "dnsPGS":
 		deployment.SendPrivateKeyInsertPrivateCloud(bot, chatID)
 		sm.SetState(chatID, state.Current, "privateKeyInsertPrivateCloud")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад SendPrivateKeyInsertPrivateCloud. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
-	case "privateKeyInsertPrivateCloud", "privateKeyInsertPSN":
+	case "dnsPSN":
+		deployment.SendPrivateKeyInsertPSN(bot, chatID)
+		sm.SetState(chatID, state.Current, "privateKeyInsertPSN")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendPrivateKeyInsertPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "dnsSquadus":
+		deployment.SendPrivateKeyInsertSquadus(bot, chatID)
+		sm.SetState(chatID, state.Current, "privateKeyInsertSquadus")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendPrivateKeyInsertPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "privateKeyInsertPrivateCloud", "privateKeyInsertPSN", "privateKeyInsertSquadus":
 		log.Printf("Состояние: %s. Отправка пакетов для самостоятельной загрузки.", state.Current)
 		deployment.SendStandaloneDownloadPackages(bot, chatID)
 		sm.SetState(chatID, state.Current, "standaloneDownloadPackages")
@@ -125,6 +148,12 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		sm.SetState(chatID, state.Current, "standaloneDownloadDistributionPSN")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад SendStandaloneDownloadDistributionPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "certificatesAndKeysSquadus":
+		deployment.SendStandaloneDownloadDistributionSquadus(bot, chatID)
+		sm.SetState(chatID, state.Current, "standaloneDownloadDistributionSquadus")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendStandaloneDownloadDistributionSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "psnConfigure":
 		deployment.SendCertificatesAndKeysPSN(bot, chatID)

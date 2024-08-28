@@ -15,7 +15,7 @@ func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	log.Printf("Обработка следующего шага для chatID %d, текущее состояние: %s; предыдущее состояние: %s", chatID, currentState, state.Previous)
 
 	switch currentState {
-	case "reqPsn", "reqPrivateCloud":
+	case "reqPsn", "reqPrivateCloud", "reqSquadus":
 		deployment.SendStandaloneDownloadPackages(bot, chatID)
 		sm.SetState(chatID, state.Current, "standaloneDownloadPackages")
 		updatedState := sm.GetState(chatID)
@@ -23,7 +23,6 @@ func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 
 	case "standaloneDownloadPackages":
 		handlePrivateKeyInsert(bot, chatID, sm)
-		sm.SetState(chatID, currentState, "privateKeyInsertPrivateCloud")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После вызова handlePrivateKeyInsert. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
@@ -38,6 +37,18 @@ func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		sm.SetState(chatID, currentState, "dnsPSN")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После вызова SendDNSOptionsPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "privateKeyInsertSquadus":
+		deployment.SendDNSOptionsSquadus(bot, chatID)
+		sm.SetState(chatID, currentState, "dnsSquadus")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendDNSOptionsSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "dnsSquadus":
+		deployment.SendStandaloneDownloadDistributionSquadus(bot, chatID)
+		sm.SetState(chatID, currentState, "standaloneDownloadDistributionSquadus")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendStandaloneDownloadDistributionSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "dnsPGS":
 		deployment.SendStandaloneDownloadDistributionPrivateCloud(bot, chatID)
@@ -56,6 +67,12 @@ func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		sm.SetState(chatID, currentState, "certificatesAndKeysPGS")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После вызова SendCertificatesAndKeysPGS. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "standaloneDownloadDistributionSquadus":
+		deployment.SendCertificatesAndKeysSquadus(bot, chatID)
+		sm.SetState(chatID, currentState, "certificatesAndKeysSquadus")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendCertificatesAndKeysSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "standaloneDownloadDistributionPSN":
 		deployment.SendCertificatesAndKeysPSN(bot, chatID)

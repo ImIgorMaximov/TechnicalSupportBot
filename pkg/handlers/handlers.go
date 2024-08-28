@@ -184,6 +184,15 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 			sm.SetState(chatID, state.Current, "reqPsn")
 			log.Printf("После вызова SendStandaloneRequirementsPSN. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 		}
+	} else if state.Product == "squadus" {
+		if state.Action == "deploy" {
+			sm.SetState(chatID, state.Current, "standalone")
+			state.Type = "standalone"
+			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s. Отправка пакетов для самостоятельной загрузки.", state.Current, state.Previous)
+			deployment.SendStandaloneRequirementsSquadus(bot, chatID)
+			sm.SetState(chatID, state.Current, "reqSquadus")
+			log.Printf("После вызова SendStandaloneRequirementsSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
+		}
 	}
 }
 
@@ -282,7 +291,12 @@ func handleSquadus(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	log.Printf("handleSquadus: chatID %d, previousState %s, currentState %s, productState %s", chatID, state.Previous, state.Current, state.Product)
 	if state.Current == "instr" {
 		sendInstructions(bot, chatID)
-		state.Current = "squadus"
+		sm.SetState(chatID, state.Current, "squadus")
+		log.Printf("Переключение состояния на mail после инструкции: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
+	} else if state.Action == "deploy" || state.Current == "sizing" {
+		sendDeploymentOptions(bot, chatID)
+		sm.SetState(chatID, state.Current, "squadus")
+		log.Printf("Переключение состояния на squadus после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
 	}
 }
 
@@ -295,6 +309,9 @@ func handlePrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager
 	} else if state.Product == "mail" {
 		deployment.SendPrivateKeyInsertPSN(bot, chatID)
 		sm.SetState(chatID, state.Current, "privateKeyInsertPSN")
+	} else if state.Product == "squadus" {
+		deployment.SendPrivateKeyInsertSquadus(bot, chatID)
+		sm.SetState(chatID, state.Current, "privateKeyInsertSquadus")
 	}
 }
 
