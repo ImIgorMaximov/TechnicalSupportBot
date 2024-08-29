@@ -90,6 +90,8 @@ func SendClusterRangeKeyboard(bot *tgbotapi.BotAPI, chatID int64) {
 func sendUnzippingISO(bot *tgbotapi.BotAPI, chatID int64) {
 	unzippingISO := "Сопоставьте контрольную сумму с сайта и скаченного образа .iso для MD5: \n" +
 		"md5sum /path/to/file.iso \n" +
+		"Создайте директорию, например /mnt/iso\n" +
+		"mkdir /mnt/iso\n" +
 		"Смонтируйте образ : \n" +
 		"mount -o loop /path/to/file.iso /mnt/iso \n\n" +
 		"*Для разархивирования образа .iso также можно воспользоваться инструментом \"bsdtar\": \n" +
