@@ -86,6 +86,12 @@ func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		updatedState := sm.GetState(chatID)
 		log.Printf("После вызова SendStandalonePGSConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
+	case "certificatesAndKeysSquadus":
+		deployment.SendSquadusConfigure(bot, chatID)
+		sm.SetState(chatID, currentState, "squadusConfigure")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendSquadusConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
 	case "certificatesAndKeysPSN":
 		deployment.SendStandalonePSNConfigure(bot, chatID)
 		sm.SetState(chatID, currentState, "psnConfigure")
@@ -103,6 +109,12 @@ func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		sm.SetState(chatID, currentState, "pgsDeploy")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После вызова SendPGSDeploy. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "squadusConfigure":
+		deployment.SendSquadusDeploy(bot, chatID)
+		sm.SetState(chatID, currentState, "squadusDeploy")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendSquadusDeploy. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "pgsDeploy":
 		deployment.SendDNSOptionsCO(bot, chatID)

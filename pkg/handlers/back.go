@@ -161,6 +161,12 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад SendCertificatesAndKeysPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
+	case "squadusConfigure":
+		deployment.SendCertificatesAndKeysSquadus(bot, chatID)
+		sm.SetState(chatID, state.Current, "certificatesAndKeysSquadus")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendCertificatesAndKeysSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
 	case "pgsConfigure":
 		deployment.SendCertificatesAndKeysPGS(bot, chatID)
 		sm.SetState(chatID, state.Current, "certificatesAndKeysPGS")
@@ -172,6 +178,12 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		sm.SetState(chatID, state.Current, "pgsConfigure")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад SendStandalonePGSConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "squadusDeploy":
+		deployment.SendSquadusConfigure(bot, chatID)
+		sm.SetState(chatID, state.Current, "squadusConfigure")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendSquadusConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "psnDeploy":
 		deployment.SendStandalonePSNConfigure(bot, chatID)
