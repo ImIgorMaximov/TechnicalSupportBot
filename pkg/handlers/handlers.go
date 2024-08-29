@@ -115,9 +115,6 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 	case "Cluster":
 		handleCluster(bot, chatID, sm)
 
-	case "Готово", "Запустить деплой":
-		HandleNextStep(bot, chatID, sm)
-
 	case "Проверить корректность сертификатов и ключа":
 		sendIsCertificates(bot, chatID)
 
@@ -136,7 +133,7 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 	case "Пример конфига CO - hosts.yml":
 		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsCO.yml", "hostsCO.yml")
 
-	case "Далее", "Установка CO":
+	case "Далее", "Установка CO", "Готово", "Запустить деплой":
 		HandleNextStep(bot, chatID, sm)
 
 	case "Распаковка ISO образа":
