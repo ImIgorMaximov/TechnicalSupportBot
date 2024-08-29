@@ -96,14 +96,14 @@ func SendStandaloneDownloadDistributionSquadus(bot *tgbotapi.BotAPI, chatID int6
 		"Скопируйте файл /root/install_squadus/contrib/squadus/standalone_hosts.yml в /root/install_squadus/:\n\n" +
 		"cp /root/install_squadus/contrib/squadus/standalone_hosts.yml hosts.yml\n\n" +
 		"Перенесите заготовку файлов параметров group_vars с помощью команды: :\n\n" +
-		"cp -r /root/install_squadus/contrib/squadus/group_vars/squadus_setup /root/install_co/group_vars/\n\n"
+		"cp -r /root/install_squadus/contrib/squadus/group_vars/squadus_setup /root/install_squadus/group_vars/\n\n"
 
 	msg := tgbotapi.NewMessage(chatID, installation)
 	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
 	bot.Send(msg)
 }
 
-// SendCertificatesAndKeysSquadus отправляет инструкции по установке SSL-сертификатов для CO.
+// SendCertificatesAndKeysSquadus отправляет инструкции по установке SSL-сертификатов для Squadus.
 func SendCertificatesAndKeysSquadus(bot *tgbotapi.BotAPI, chatID int64) {
 	certificatesAndKeys := "Для работы Squadus необходима установка SSL-сертификатов.\n" +
 		"Рекомендуется использовать сертификаты, полученные от публичных центров сертификации.\n" +
@@ -117,5 +117,15 @@ func SendCertificatesAndKeysSquadus(bot *tgbotapi.BotAPI, chatID int64) {
 		"ls -la /root/install_squadus/certificates/\n\n"
 	msg := tgbotapi.NewMessage(chatID, certificatesAndKeys)
 	msg.ReplyMarkup = keyboards.GetIsCertificatesKeyboard()
+	bot.Send(msg)
+}
+
+// SendSquadusDeploy отправляет команду для развертывания Squadus.
+func SendSquadusDeploy(bot *tgbotapi.BotAPI, chatID int64) {
+	deploy := "Для запуска установки Squadus необходимо перейти в каталог /root/install_squadus/ и выполнить следующую команду:\n\n" +
+		"ansible-playbook playbooks/main.yml --diff\n\n" +
+		"Ожидаем результат! При возниковении ошибок или вопросов обращайтесь к инженеру!\n"
+	msg := tgbotapi.NewMessage(chatID, deploy)
+	msg.ReplyMarkup = keyboards.GetFinishKeyboard()
 	bot.Send(msg)
 }

@@ -160,12 +160,13 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		if state.Action == "sizing" {
 			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
-			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
+			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s, Действие: %s", state.Current, state.Previous, state.Action)
 			sizing.HandleSizingPrivateCloudStandalone(bot, chatID)
+			log.Printf("После вызова HandleSizingPrivateCloudStandalone. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 		} else if state.Action == "deploy" {
 			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
-			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
+			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s, Действие: %s", state.Current, state.Previous, state.Action)
 			deployment.SendStandaloneRequirementsPrivateCloud(bot, chatID)
 			sm.SetState(chatID, state.Current, "reqPrivateCloud")
 			log.Printf("После вызова SendStandaloneRequirementsPrivateCloud. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
@@ -201,13 +202,8 @@ func handleCluster(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	state := sm.GetState(chatID)
 	log.Printf("handleCluster: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
 
-	if state.Previous == "sizing" {
-		state.Current = "cluster"
-		SendClusterRangeKeyboard(bot, chatID)
-	} else if state.Previous == "deploy" {
-		msg := tgbotapi.NewMessage(chatID, "Извините, раздел находится в разработке😢")
-		bot.Send(msg)
-	}
+	msg := tgbotapi.NewMessage(chatID, "Извините, раздел находится в разработке😢")
+	bot.Send(msg)
 }
 
 // handleClusterUserRange обрабатывает диапазон пользователей для Cluster
