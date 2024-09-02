@@ -216,7 +216,7 @@ func SendCOInstallation(bot *tgbotapi.BotAPI, chatID int64) {
 		"cp -r /root/install_co/contrib/co/standalone/group_vars/co_setup/* /root/install_co/group_vars/co_setup/\n\n"
 
 	msg := tgbotapi.NewMessage(chatID, installation)
-	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+	msg.ReplyMarkup = keyboards.GetUnzippingISOKeyboard()
 	bot.Send(msg)
 }
 

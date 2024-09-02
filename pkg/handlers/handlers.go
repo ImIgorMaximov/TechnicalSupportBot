@@ -133,6 +133,12 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 	case "Пример конфига CO - hosts.yml":
 		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsCO.yml", "hostsCO.yml")
 
+	case "Пример конфига Squadus - hosts.yml":
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsSquadus.yml", "hostsSquadus.yml")
+
+	case "Пример конфига Squadus - main.yml":
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsSquadus.yml", "mainSquadus.yml")
+
 	case "Далее", "Установка CO", "Готово", "Запустить деплой":
 		HandleNextStep(bot, chatID, sm)
 

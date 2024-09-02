@@ -99,7 +99,7 @@ func SendStandaloneDownloadDistributionSquadus(bot *tgbotapi.BotAPI, chatID int6
 		"cp -r /root/install_squadus/contrib/squadus/group_vars/squadus_setup /root/install_squadus/group_vars/\n\n"
 
 	msg := tgbotapi.NewMessage(chatID, installation)
-	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+	msg.ReplyMarkup = keyboards.GetUnzippingISOKeyboard()
 	bot.Send(msg)
 }
 
@@ -130,17 +130,17 @@ func SendSquadusConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 		"Операцию необходимо проделать со всеми сервисами: squadus_apps, squadus_converter, squadus_db, squadus_ha, squadus_infra...\n\n" +
 		"Приступаем заполнять конфиг main.yml в директории /root/install_squadus/group_vars/squadus_setup :\n" +
 		"vim /root/install_squadus/group_vars/squadus_setup/main.yml\n\n" +
-		"Заполните переменные окружения: \n" +
+		"Заполните домен: \n" +
 		"squadus_domain: \"myoffice-app.ru\" \n" +
-		"При использовании domain_env co_domain_module примет ввид: \n" +
+		"При использовании переменной окружения переменная domain_module примет ввид: \n" +
 		"domain_module: \"{service}-env.{domain}\" \n\n" +
 		"Заполните smtp-адрес squadus_smtp_from_email: \"noreply@myoffice-app.ru\"\n\n" +
-		"Cгенерируйте пароли для служб или оставьте по умолчанию.\n\n" +
+		"Cгенерируйте пароли для служб или оставьте по умолчанию. Примеры паролей можно посмотреть в конфигурационном файле main.yml.\n\n" +
 		"*В примерах используется редактор vim \n" +
 		"*При необходимости выберите пример конфига, нажав соответствующую кнопку. \n"
 
 	msg := tgbotapi.NewMessage(chatID, configure)
-	msg.ReplyMarkup = keyboards.GetCOStandaloneConfigKeyboard()
+	msg.ReplyMarkup = keyboards.GetSquadusStandaloneConfigKeyboard()
 	bot.Send(msg)
 }
 
