@@ -115,9 +115,6 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 	case "Cluster":
 		handleCluster(bot, chatID, sm)
 
-	case "Готово", "Запустить деплой":
-		HandleNextStep(bot, chatID, sm)
-
 	case "Проверить корректность сертификатов и ключа":
 		sendIsCertificates(bot, chatID)
 
@@ -136,17 +133,27 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 	case "Пример конфига CO - hosts.yml":
 		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsCO.yml", "hostsCO.yml")
 
-	case "Далее", "Установка CO":
+	case "Пример конфига Squadus - hosts.yml":
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsSquadus.yml", "hostsSquadus.yml")
+
+	case "Пример конфига Squadus - main.yml":
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsSquadus.yml", "mainSquadus.yml")
+
+	case "Пример конфига Mailion - hosts.yml":
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/hostsMailion.yml", "hostsMailion.yml")
+
+	case "Пример конфига Mailion - main.yml":
+		sendConfigFile(bot, chatID, "/home/admin-msk/MyOfficeConfig/mainMailion.yml", "mainMailion.yml")
+
+	case "Далее", "Установка CO", "Готово", "Запустить деплой":
 		HandleNextStep(bot, chatID, sm)
 
 	case "Распаковка ISO образа":
 		sendUnzippingISO(bot, chatID)
 
-	case "<2k":
-		handleClusterUserRange(bot, chatID, text, sm)
-
 	default:
-		handleDefaultState(bot, chatID, text, sm)
+		sendWelcomeMessage(bot, chatID)
+		sm.SetState(chatID, state.Current, "start")
 	}
 }
 
@@ -160,12 +167,13 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		if state.Action == "sizing" {
 			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
-			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
+			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s, Действие: %s", state.Current, state.Previous, state.Action)
 			sizing.HandleSizingPrivateCloudStandalone(bot, chatID)
+			log.Printf("После вызова HandleSizingPrivateCloudStandalone. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 		} else if state.Action == "deploy" {
 			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
-			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
+			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s, Действие: %s", state.Current, state.Previous, state.Action)
 			deployment.SendStandaloneRequirementsPrivateCloud(bot, chatID)
 			sm.SetState(chatID, state.Current, "reqPrivateCloud")
 			log.Printf("После вызова SendStandaloneRequirementsPrivateCloud. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
@@ -184,6 +192,24 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 			sm.SetState(chatID, state.Current, "reqPsn")
 			log.Printf("После вызова SendStandaloneRequirementsPSN. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 		}
+	} else if state.Product == "squadus" {
+		if state.Action == "deploy" {
+			sm.SetState(chatID, state.Current, "standalone")
+			state.Type = "standalone"
+			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s. Отправка пакетов для самостоятельной загрузки.", state.Current, state.Previous)
+			deployment.SendStandaloneRequirementsSquadus(bot, chatID)
+			sm.SetState(chatID, state.Current, "reqSquadus")
+			log.Printf("После вызова SendStandaloneRequirementsSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
+		}
+	} else if state.Product == "mailion" {
+		if state.Action == "deploy" {
+			sm.SetState(chatID, state.Current, "standalone")
+			state.Type = "standalone"
+			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s. Отправка пакетов для самостоятельной загрузки.", state.Current, state.Previous)
+			deployment.SendStandaloneRequirementsMailion(bot, chatID)
+			sm.SetState(chatID, state.Current, "reqMailion")
+			log.Printf("После вызова SendStandaloneRequirementsMailion. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
+		}
 	}
 }
 
@@ -192,28 +218,8 @@ func handleCluster(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	state := sm.GetState(chatID)
 	log.Printf("handleCluster: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
 
-	if state.Previous == "sizing" {
-		state.Current = "cluster"
-		SendClusterRangeKeyboard(bot, chatID)
-	} else if state.Previous == "deploy" {
-		msg := tgbotapi.NewMessage(chatID, "Извините, раздел находится в разработке😢")
-		bot.Send(msg)
-	}
-}
-
-// handleClusterUserRange обрабатывает диапазон пользователей для Cluster
-func handleClusterUserRange(bot *tgbotapi.BotAPI, chatID int64, userRange string, sm *StateManager) {
-	state := sm.GetState(chatID)
-	log.Printf("handleClusterUserRange: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
-
-	switch userRange {
-	case "<2k":
-		state.Previous = "awaitingClusterMoreThan2kInput"
-		sizing.HandleClusterMoreThan2k(bot, chatID)
-	default:
-		msg := tgbotapi.NewMessage(chatID, "Выберите корректный диапазон пользователей.")
-		bot.Send(msg)
-	}
+	msg := tgbotapi.NewMessage(chatID, "Извините, раздел находится в разработке😢")
+	bot.Send(msg)
 }
 
 // handleDefaultState обрабатывает сообщения в зависимости от текущего состояния
@@ -271,7 +277,12 @@ func handleMailion(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	log.Printf("handleMailion: chatID %d, previousState %s, currentState %s, productState %s", chatID, state.Previous, state.Current, state.Product)
 	if state.Current == "instr" {
 		sendInstructions(bot, chatID)
-		state.Current = "mailion"
+		sm.SetState(chatID, state.Current, "mailion")
+		log.Printf("Переключение состояния на mailion после инструкции: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
+	} else if state.Action == "deploy" || state.Current == "sizing" {
+		sendDeploymentOptions(bot, chatID)
+		sm.SetState(chatID, state.Current, "mailion")
+		log.Printf("Переключение состояния на mailion после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
 	}
 }
 
@@ -282,7 +293,12 @@ func handleSquadus(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	log.Printf("handleSquadus: chatID %d, previousState %s, currentState %s, productState %s", chatID, state.Previous, state.Current, state.Product)
 	if state.Current == "instr" {
 		sendInstructions(bot, chatID)
-		state.Current = "squadus"
+		sm.SetState(chatID, state.Current, "squadus")
+		log.Printf("Переключение состояния на squadus после инструкции: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
+	} else if state.Action == "deploy" || state.Current == "sizing" {
+		sendDeploymentOptions(bot, chatID)
+		sm.SetState(chatID, state.Current, "squadus")
+		log.Printf("Переключение состояния на squadus после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
 	}
 }
 
@@ -295,6 +311,12 @@ func handlePrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager
 	} else if state.Product == "mail" {
 		deployment.SendPrivateKeyInsertPSN(bot, chatID)
 		sm.SetState(chatID, state.Current, "privateKeyInsertPSN")
+	} else if state.Product == "squadus" {
+		deployment.SendPrivateKeyInsertSquadus(bot, chatID)
+		sm.SetState(chatID, state.Current, "privateKeyInsertSquadus")
+	} else if state.Product == "mailion" {
+		deployment.SendPrivateKeyInsertMailion(bot, chatID)
+		sm.SetState(chatID, state.Current, "privateKeyInsertMailion")
 	}
 }
 

@@ -38,7 +38,7 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад sendProduct. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
-	case "reqPrivateCloud", "reqPsn":
+	case "reqPrivateCloud", "reqPsn", "reqSquadus", "reqMailion":
 		sendDeploymentOptions(bot, chatID)
 		sm.SetState(chatID, state.Current, state.Type)
 		updatedState := sm.GetState(chatID)
@@ -56,6 +56,16 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 			sm.SetState(chatID, state.Current, "reqPsn")
 			updatedState := sm.GetState(chatID)
 			log.Printf("После выполнения кнопки Назад SendStandaloneRequirementsPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+		} else if state.Product == "squadus" {
+			deployment.SendStandaloneRequirementsSquadus(bot, chatID)
+			sm.SetState(chatID, state.Current, "reqSquadus")
+			updatedState := sm.GetState(chatID)
+			log.Printf("После выполнения кнопки Назад SendStandaloneRequirementsSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+		} else if state.Product == "mailion" {
+			deployment.SendStandaloneRequirementsMailion(bot, chatID)
+			sm.SetState(chatID, state.Current, "reqMailion")
+			updatedState := sm.GetState(chatID)
+			log.Printf("После выполнения кнопки Назад SendStandaloneRequirementsMailion. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 		}
 
 	case "requirementsPrivateCloud", "installationGuidePrivateCloud", "adminGuidePrivateCloud":
@@ -101,13 +111,43 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад SendDNSOptionsPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
+	case "standaloneDownloadDistributionSquadus":
+		deployment.SendDNSOptionsSquadus(bot, chatID)
+		sm.SetState(chatID, state.Current, "dnsSquadus")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendDNSOptionsSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "standaloneDownloadDistributionMailion":
+		deployment.SendDNSOptionsMailion(bot, chatID)
+		sm.SetState(chatID, state.Current, "dnsMailion")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendDNSOptionsMailion. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
 	case "dnsPGS":
 		deployment.SendPrivateKeyInsertPrivateCloud(bot, chatID)
 		sm.SetState(chatID, state.Current, "privateKeyInsertPrivateCloud")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад SendPrivateKeyInsertPrivateCloud. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
-	case "privateKeyInsertPrivateCloud", "privateKeyInsertPSN":
+	case "dnsPSN":
+		deployment.SendPrivateKeyInsertPSN(bot, chatID)
+		sm.SetState(chatID, state.Current, "privateKeyInsertPSN")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendPrivateKeyInsertPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "dnsSquadus":
+		deployment.SendPrivateKeyInsertSquadus(bot, chatID)
+		sm.SetState(chatID, state.Current, "privateKeyInsertSquadus")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendPrivateKeyInsertPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "dnsMailion":
+		deployment.SendPrivateKeyInsertMailion(bot, chatID)
+		sm.SetState(chatID, state.Current, "privateKeyInsertMailion")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendPrivateKeyInsertMailion. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "privateKeyInsertPrivateCloud", "privateKeyInsertPSN", "privateKeyInsertSquadus", "privateKeyInsertMailion":
 		log.Printf("Состояние: %s. Отправка пакетов для самостоятельной загрузки.", state.Current)
 		deployment.SendStandaloneDownloadPackages(bot, chatID)
 		sm.SetState(chatID, state.Current, "standaloneDownloadPackages")
@@ -126,11 +166,35 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад SendStandaloneDownloadDistributionPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
+	case "certificatesAndKeysSquadus":
+		deployment.SendStandaloneDownloadDistributionSquadus(bot, chatID)
+		sm.SetState(chatID, state.Current, "standaloneDownloadDistributionSquadus")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendStandaloneDownloadDistributionSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "certificatesAndKeysMailion":
+		deployment.SendStandaloneDownloadDistributionMailion(bot, chatID)
+		sm.SetState(chatID, state.Current, "standaloneDownloadDistributionMailion")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendStandaloneDownloadDistributionMailion. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
 	case "psnConfigure":
 		deployment.SendCertificatesAndKeysPSN(bot, chatID)
 		sm.SetState(chatID, state.Current, "certificatesAndKeysPSN")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад SendCertificatesAndKeysPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "squadusConfigure":
+		deployment.SendCertificatesAndKeysSquadus(bot, chatID)
+		sm.SetState(chatID, state.Current, "certificatesAndKeysSquadus")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendCertificatesAndKeysSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "mailionConfigure":
+		deployment.SendCertificatesAndKeysMailion(bot, chatID)
+		sm.SetState(chatID, state.Current, "certificatesAndKeysMailion")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendCertificatesAndKeysMailion. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "pgsConfigure":
 		deployment.SendCertificatesAndKeysPGS(bot, chatID)
@@ -143,6 +207,18 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		sm.SetState(chatID, state.Current, "pgsConfigure")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад SendStandalonePGSConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "squadusDeploy":
+		deployment.SendStandaloneSquadusConfigure(bot, chatID)
+		sm.SetState(chatID, state.Current, "squadusConfigure")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendStandaloneSquadusConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "mailionDeploy":
+		deployment.SendStandaloneMailionConfigure(bot, chatID)
+		sm.SetState(chatID, state.Current, "mailionConfigure")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendStandaloneMailionConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "psnDeploy":
 		deployment.SendStandalonePSNConfigure(bot, chatID)

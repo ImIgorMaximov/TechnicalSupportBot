@@ -21,6 +21,7 @@ func HandleSizingPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64) {
 	msg := tgbotapi.NewMessage(chatID, "Введите количество пользователей (Например, 50):")
 	bot.Send(msg)
 	previousStateSizingPrivateCloudStandalone[chatID] = "awaitingUserCountPrivateCloud"
+	log.Printf("Cостояние previousStateSizingPrivateCloudStandalone: %s", previousStateSizingPrivateCloudStandalone[chatID])
 }
 
 // HandleUserInputPrivateCloud обрабатывает ввод пользователя
