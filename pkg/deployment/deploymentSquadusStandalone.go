@@ -31,6 +31,7 @@ func SendStandaloneRequirementsSquadus(bot *tgbotapi.BotAPI, chatID int64) {
 		"- РЕД ОС 7.3 Муром (версия ФСТЭК);\n" +
 		"- CentOS 7.7;\n" +
 		"- Ubuntu 20.04\n" +
+		"- CentOS 7.7\n" +
 		"Нажмите далее для продолжения. :)\n"
 
 	msg := tgbotapi.NewMessage(chatID, requirements)
@@ -55,7 +56,7 @@ func SendPrivateKeyInsertSquadus(bot *tgbotapi.BotAPI, chatID int64) {
 // Сообщение описывает, как настраивать DNS-записи для различных сервисов Squadus в зависимости от использования переменных окружения.
 func SendDNSOptionsSquadus(bot *tgbotapi.BotAPI, chatID int64) {
 	dns := "Перед началом установки необходимо настроить DNS-сервер.\n" +
-		"В случае использования переменной окружения (env) в конфигурационном файле hosts.yml записи будут иметь вид: \n\n" +
+		"В случае использования переменной окружения (env) в конфигурационном файле main.yml записи будут иметь вид: \n\n" +
 		"im-<env>.<default_domain> \n" +
 		"go-<env>.<default_domain> \n" +
 		"meet-<env>.<default_domain> \n" +
@@ -112,7 +113,7 @@ func SendCertificatesAndKeysSquadus(bot *tgbotapi.BotAPI, chatID int64) {
 		"Вставьте серитификаты в директорию certificates.\n\n Список необходимых сертификатов: \n\n" +
 		"server.crt - сертификат внешнего домена. \n" +
 		"server.nopass.key - ключ внешнего домена. \n" +
-		"ca.сrt - цепочка сертификатов промежуточных центров сертификации.\n\n" +
+		"ca.pem - цепочка сертификатов промежуточных центров сертификации.\n\n" +
 		"Проверить наличия сертификатов и ключа:\n" +
 		"ls -la /root/install_squadus/certificates/\n\n"
 	msg := tgbotapi.NewMessage(chatID, certificatesAndKeys)
@@ -121,7 +122,7 @@ func SendCertificatesAndKeysSquadus(bot *tgbotapi.BotAPI, chatID int64) {
 }
 
 // SendStandaloneSquadusConfigure отправляет инструкции по настройке файла hosts.yml & main.yml для Squadus.
-func SendSquadusConfigure(bot *tgbotapi.BotAPI, chatID int64) {
+func SendStandaloneSquadusConfigure(bot *tgbotapi.BotAPI, chatID int64) {
 	configure := "Заполним файл hosts.yml в директории /root/install_squadus/:\n" +
 		"vim /root/install_squadus/hosts.yml\n\n" +
 		"В секцию hosts добавьте доменное имя вашего Squadus-сервера: \n" +

@@ -15,7 +15,7 @@ func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	log.Printf("Обработка следующего шага для chatID %d, текущее состояние: %s; предыдущее состояние: %s", chatID, currentState, state.Previous)
 
 	switch currentState {
-	case "reqPsn", "reqPrivateCloud", "reqSquadus":
+	case "reqPsn", "reqPrivateCloud", "reqSquadus", "reqMailion":
 		deployment.SendStandaloneDownloadPackages(bot, chatID)
 		sm.SetState(chatID, state.Current, "standaloneDownloadPackages")
 		updatedState := sm.GetState(chatID)
@@ -44,11 +44,23 @@ func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		updatedState := sm.GetState(chatID)
 		log.Printf("После вызова SendDNSOptionsSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
+	case "privateKeyInsertMailion":
+		deployment.SendDNSOptionsMailion(bot, chatID)
+		sm.SetState(chatID, currentState, "dnsMailion")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendDNSOptionsMailion. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
 	case "dnsSquadus":
 		deployment.SendStandaloneDownloadDistributionSquadus(bot, chatID)
 		sm.SetState(chatID, currentState, "standaloneDownloadDistributionSquadus")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После вызова SendStandaloneDownloadDistributionSquadus. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "dnsMailion":
+		deployment.SendStandaloneDownloadDistributionMailion(bot, chatID)
+		sm.SetState(chatID, currentState, "standaloneDownloadDistributionMailion")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendStandaloneDownloadDistributionMailion. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "dnsPGS":
 		deployment.SendStandaloneDownloadDistributionPrivateCloud(bot, chatID)
@@ -80,6 +92,12 @@ func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		updatedState := sm.GetState(chatID)
 		log.Printf("После вызова SendCertificatesAndKeysPSN. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
+	case "standaloneDownloadDistributionMailion":
+		deployment.SendCertificatesAndKeysMailion(bot, chatID)
+		sm.SetState(chatID, currentState, "certificatesAndKeysMailion")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendCertificatesAndKeysMailion. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
 	case "certificatesAndKeysPGS":
 		deployment.SendStandalonePGSConfigure(bot, chatID)
 		sm.SetState(chatID, currentState, "pgsConfigure")
@@ -87,7 +105,7 @@ func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		log.Printf("После вызова SendStandalonePGSConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "certificatesAndKeysSquadus":
-		deployment.SendSquadusConfigure(bot, chatID)
+		deployment.SendStandaloneSquadusConfigure(bot, chatID)
 		sm.SetState(chatID, currentState, "squadusConfigure")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После вызова SendSquadusConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
@@ -97,6 +115,12 @@ func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		sm.SetState(chatID, currentState, "psnConfigure")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После вызова SendStandalonePSNConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "certificatesAndKeysMailion":
+		deployment.SendStandaloneMailionConfigure(bot, chatID)
+		sm.SetState(chatID, currentState, "mailionConfigure")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendStandaloneMailionConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "psnConfigure":
 		deployment.SendPSNDeploy(bot, chatID)
@@ -115,6 +139,12 @@ func HandleNextStep(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		sm.SetState(chatID, currentState, "squadusDeploy")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После вызова SendSquadusDeploy. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "mailionConfigure":
+		deployment.SendMailionDeploy(bot, chatID)
+		sm.SetState(chatID, currentState, "mailionDeploy")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После вызова SendMailionDeploy. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "pgsDeploy":
 		deployment.SendDNSOptionsCO(bot, chatID)

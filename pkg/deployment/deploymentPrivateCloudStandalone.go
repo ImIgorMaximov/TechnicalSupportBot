@@ -34,7 +34,6 @@ func SendStandaloneRequirementsPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) 
 		"Cистемные требования (OS): \n" +
 		"- Astra Linux Special Edition 1.7 «Орел» (базовый);\n" +
 		"- РЕД ОС 7.3 Муром (версия ФСТЭК);\n" +
-		"- CentOS 7.9;\n" +
 		"- Ubuntu 22.04\n" +
 		"Нажмите далее для продолжения. :)\n"
 
@@ -45,7 +44,7 @@ func SendStandaloneRequirementsPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) 
 
 // SendStandaloneDownloadPackages отправляет пользователю инструкции по установке необходимых пакетов на машину operator.
 func SendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
-	downloadPackages := "Отлично! Тачки подготовлены! Двигаемся дальше..\n" +
+	downloadPackages := "Отлично! Двигаемся дальше..\n" +
 		"PS. Вся установка и настройка будет производиться на машине operator на примере системы Astra Linux Special Edition 1.7.5 «Орел» (базовый);\n" +
 		"На ВМ c ролью operator обновите систему: \n" +
 		"sudo su\n" +

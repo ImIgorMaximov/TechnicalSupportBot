@@ -37,9 +37,8 @@ func SendStandaloneRequirementsPSN(bot *tgbotapi.BotAPI, chatID int64) {
 		"PSN: 4 (CPU, vCPU); 4 GB (RAM), 135 GB (HDD)\n\n" +
 		"Cистемные требования (OS): \n" +
 		"- Astra Linux Special Edition 1.7 «Орел» (базовый);\n" +
-		"- РЕД ОС 7.3 Муром (версия ФСТЭК);\n" +
+		"- РЕД ОС 7.3.2 Муром (версия ФСТЭК);\n" +
 		"- CentOS 7.9;\n" +
-		"- Ubuntu 22.04\n" +
 		"Нажмите далее для продолжения. :)\n"
 
 	msg := tgbotapi.NewMessage(chatID, requirements)
