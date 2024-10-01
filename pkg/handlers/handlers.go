@@ -168,8 +168,10 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s, Действие: %s", state.Current, state.Previous, state.Action)
-			sizing.HandleSizingPrivateCloudStandalone(bot, chatID)
-			log.Printf("После вызова HandleSizingPrivateCloudStandalone. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
+
+			sizing.HandleUserInput(bot, chatID, &state.Current)
+
+			log.Printf("После вызова HandleUserInput. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 		} else if state.Action == "deploy" {
 			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
@@ -220,20 +222,6 @@ func handleCluster(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 
 	msg := tgbotapi.NewMessage(chatID, "Извините, раздел находится в разработке😢")
 	bot.Send(msg)
-}
-
-// handleDefaultState обрабатывает сообщения в зависимости от текущего состояния
-func handleDefaultState(bot *tgbotapi.BotAPI, chatID int64, text string, sm *StateManager) {
-	state := sm.GetState(chatID)
-	log.Printf("handleDefaultState: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
-
-	if state.Previous == "awaitingUserCountPrivateCloud" {
-		sizing.HandleUserInputPrivateCloud(bot, chatID, text)
-	} else if state.Previous == "awaitingUserCountMail" {
-		sizing.HandleUserInputMail(bot, chatID, text)
-	} else if state.Previous == "awaitingClusterMoreThan2kInput" {
-		sizing.HandleClusterMoreThan2kInput(bot, chatID, text)
-	}
 }
 
 // handlePrivateCloud обрабатывает запрос на Частное Облако
