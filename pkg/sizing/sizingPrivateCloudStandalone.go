@@ -19,40 +19,40 @@ var userInputValues = make(map[int64][]string)
 var currentState string
 
 // Обработка ввода пользователя и управление состоянием
-func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string) {
+func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text string) {
 	currentState = *state
-	var userInput string // Переменная для хранения ввода пользователя
+	// var userInput string // Переменная для хранения ввода пользователя
 
 	log.Printf("Получен ввод от пользователя. Текущее состояние: %s", currentState)
 
 	switch currentState {
-	case "standalone":
+	case "privateCloud":
 		log.Printf("Обработка состояния: %s.", currentState)
 		currentState = "awaitingMaxUserCountPrivateCloud"
 		userInputValues[chatID] = []string{} // Инициализация мапы для пользователя
-		HandleNextInput(bot, chatID, userInput, "Введите максимальное количество пользователей (например, 50):", "awaitingMaxUserCountPrivateCloud")
+		HandleNextInput(bot, chatID, "", "Введите максимальное количество пользователей (например, 50):", "awaitingMaxUserCountPrivateCloud")
 
 	case "awaitingMaxUserCountPrivateCloud":
 		log.Println("Обработка состояния: awaitingMaxUserCountPrivateCloud")
-		userInputValues[chatID] = append(userInputValues[chatID], userInput) // Сохраняем ввод
+		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
 		currentState = "awaitingActiveUserCountPrivateCloud"
-		HandleNextInput(bot, chatID, userInput, "Введите количество одновременно активных пользователей (например, 10):", "awaitingActiveUserCountPrivateCloud")
+		HandleNextInput(bot, chatID, text, "Введите количество одновременно активных пользователей (например, 10):", "awaitingActiveUserCountPrivateCloud")
 
 	case "awaitingActiveUserCountPrivateCloud":
 		log.Println("Обработка состояния: awaitingActiveUserCountPrivateCloud")
-		userInputValues[chatID] = append(userInputValues[chatID], userInput) // Сохраняем ввод
+		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
 		currentState = "awaitingDocumentCountPrivateCloud"
-		HandleNextInput(bot, chatID, userInput, "Введите количество редактируемых документов (например, 200):", "awaitingDocumentCountPrivateCloud")
+		HandleNextInput(bot, chatID, text, "Введите количество редактируемых документов (например, 200):", "awaitingDocumentCountPrivateCloud")
 
 	case "awaitingDocumentCountPrivateCloud":
 		log.Println("Обработка состояния: awaitingDocumentCountPrivateCloud")
-		userInputValues[chatID] = append(userInputValues[chatID], userInput) // Сохраняем ввод
+		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
 		currentState = "awaitingStorageQuotaPrivateCloud"
-		HandleNextInput(bot, chatID, userInput, "Введите дисковую квоту пользователей в хранилище (ГБ) (например, 2):", "awaitingStorageQuotaPrivateCloud")
+		HandleNextInput(bot, chatID, text, "Введите дисковую квоту пользователей в хранилище (ГБ) (например, 2):", "awaitingStorageQuotaPrivateCloud")
 
 	case "awaitingStorageQuotaPrivateCloud":
 		log.Println("Обработка состояния: awaitingStorageQuotaPrivateCloud")
-		userInputValues[chatID] = append(userInputValues[chatID], userInput) // Сохраняем ввод
+		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
 		log.Println("Все данные от пользователя получены:", userInputValues[chatID])
 
 		// После получения всех значений выполняем расчет
@@ -70,8 +70,9 @@ func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string) {
 
 // HandleNextInput помогает запрашивать следующие данные и обновлять состояние
 func HandleNextInput(bot *tgbotapi.BotAPI, chatID int64, userInput string, nextMessage string, nextState string) {
-	userInputValues[chatID] = append(userInputValues[chatID], userInput) // Сохраняем текущий ввод
-	msg := tgbotapi.NewMessage(chatID, nextMessage)                      // Создаём сообщение для пользователя
+	currentState = nextState
+	// userInputValues[chatID] = append(userInputValues[chatID], userInput) // Сохраняем текущий ввод
+	msg := tgbotapi.NewMessage(chatID, nextMessage) // Создаём сообщение для пользователя
 	if _, err := bot.Send(msg); err != nil {
 		log.Printf("Ошибка при отправке сообщения: %s", err) // Логируем ошибку
 	}

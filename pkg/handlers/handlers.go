@@ -110,7 +110,7 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 		sendSupportEngineerContact(bot, chatID)
 
 	case "Standalone":
-		handleStandalone(bot, chatID, sm)
+		handleStandalone(bot, chatID, sm, text)
 
 	case "Cluster":
 		handleCluster(bot, chatID, sm)
@@ -152,24 +152,44 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 		sendUnzippingISO(bot, chatID)
 
 	default:
+
+		if state.Type != "" {
+
+			switch state.Type {
+			case "standalone":
+				handleStandalone(bot, chatID, sm, text)
+				return
+
+				// case "squadus":
+				// 	handleSquadus(bot, chatID, sm)
+
+				// case "mailion":
+				// 	handleMailion(bot, chatID, sm)
+
+				// case "почта":
+				// 	handleMail(bot, chatID, sm)
+
+			}
+		}
+
 		sendWelcomeMessage(bot, chatID)
 		sm.SetState(chatID, state.Current, "start")
 	}
 }
 
 // handleStandalone обрабатывает запрос на Standalone
-func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
+func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text string) {
 	state := sm.GetState(chatID)
 	log.Printf("handleStandalone: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
 
 	// Обработка для перехода от состояния privateCloud
 	if state.Product == "privateCloud" {
 		if state.Action == "sizing" {
-			sm.SetState(chatID, state.Current, "standalone")
+			// sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s, Действие: %s", state.Current, state.Previous, state.Action)
 
-			sizing.HandleUserInput(bot, chatID, &state.Current)
+			sizing.HandleUserInput(bot, chatID, &state.Current, text)
 
 			log.Printf("После вызова HandleUserInput. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 		} else if state.Action == "deploy" {
