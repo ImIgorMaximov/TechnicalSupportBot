@@ -1,6 +1,7 @@
 package sizing
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"math"
@@ -106,11 +107,15 @@ func calculateAndSendSizing(bot *tgbotapi.BotAPI, chatID int64, userInputValues 
 	}
 
 	// Извлечение результатов
-	sendSizingResults(bot, chatID, f)
+	sendSizingResults(bot, chatID, f, userInputValues)
 }
 
 // fillExcelFile заполняет Excel данными пользователя
 func fillExcelFile(f *excelize.File, userInputValues []string) error {
+	if len(userInputValues) < 4 {
+		errors.New("len is less than 4")
+	}
+
 	err := f.SetCellValue("PSN", "D4", userInputValues[0]) // Макс. количество пользователей
 	err = f.SetCellValue("PSN", "F6", userInputValues[1])  // Кол-во активных пользователей
 	err = f.SetCellValue("PSN", "F7", userInputValues[2])  // Кол-во редактируемых документов
@@ -119,7 +124,7 @@ func fillExcelFile(f *excelize.File, userInputValues []string) error {
 }
 
 // sendSizingResults извлекает результаты из Excel и отправляет их пользователю
-func sendSizingResults(bot *tgbotapi.BotAPI, chatID int64, f *excelize.File) {
+func sendSizingResults(bot *tgbotapi.BotAPI, chatID int64, f *excelize.File, userInputValues []string) {
 	operatorVM, _ := f.GetCellValue("PSN", "C15")
 	operatorCPU, _ := f.GetCellValue("PSN", "D15")
 	operatorRAM, _ := f.GetCellValue("PSN", "E15")
@@ -135,7 +140,7 @@ func sendSizingResults(bot *tgbotapi.BotAPI, chatID int64, f *excelize.File) {
 	pgsRAM, _ := f.GetCellValue("PSN", "E17")
 
 	// Расчет значения для PGS SSD
-	ssdValue := calculatePGSSSD(userInputValues[0])
+	ssdValue := calculatePGSSSD(userInputValues)
 
 	// Отправка результата пользователю
 	resultMsg := fmt.Sprintf(
