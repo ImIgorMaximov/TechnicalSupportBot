@@ -191,6 +191,7 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 
 			sizing.HandleUserInput(bot, chatID, &state.Current, text)
 
+			state.Previous = "standalone"
 			log.Printf("После вызова HandleUserInput. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 		} else if state.Action == "deploy" {
 			sm.SetState(chatID, state.Current, "standalone")
