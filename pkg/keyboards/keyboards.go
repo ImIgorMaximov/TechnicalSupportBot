@@ -305,3 +305,20 @@ func GetUserKeyboard() tgbotapi.ReplyKeyboardMarkup {
 		),
 	)
 }
+
+func GetStandalonePrivateCloudKeyboard() tgbotapi.ReplyKeyboardMarkup {
+	return tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Количество пользователей"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Количество активных пользователей"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Количество редактируемых документов"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Дисковую квоту в хранилище"),
+		),
+	)
+}

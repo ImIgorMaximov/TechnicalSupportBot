@@ -20,43 +20,47 @@ var userInputValues = make(map[int64][]string)
 var currentState string
 
 // Обработка ввода пользователя и управление состоянием
-func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text string) {
+func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, data map[string]string) {
 	currentState = *state
 	// var userInput string // Переменная для хранения ввода пользователя
 
 	log.Printf("Получен ввод от пользователя. Текущее состояние: %s", currentState)
 
 	switch currentState {
-	case "privateCloud":
+	case "standalone":
 		log.Printf("Обработка состояния: %s.", currentState)
 		currentState = "awaitingMaxUserCountPrivateCloud"
 		userInputValues[chatID] = []string{} // Инициализация мапы для пользователя
-		HandleNextInput(bot, chatID, "", "Введите максимальное количество пользователей (например, 50):", "awaitingMaxUserCountPrivateCloud")
+		// HandleNextInput(bot, chatID, "", "Введите максимальное количество пользователей (например, 50):", "awaitingMaxUserCountPrivateCloud")
 
 	case "awaitingMaxUserCountPrivateCloud":
 		log.Println("Обработка состояния: awaitingMaxUserCountPrivateCloud")
-		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
+		// userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
 		currentState = "awaitingActiveUserCountPrivateCloud"
-		HandleNextInput(bot, chatID, text, "Введите количество одновременно активных пользователей (например, 10):", "awaitingActiveUserCountPrivateCloud")
+		HandleNextInput(bot, chatID, "Введите количество одновременно активных пользователей (например, 10):", "awaitingActiveUserCountPrivateCloud")
 
 	case "awaitingActiveUserCountPrivateCloud":
 		log.Println("Обработка состояния: awaitingActiveUserCountPrivateCloud")
-		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
+		// userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
 		currentState = "awaitingDocumentCountPrivateCloud"
-		HandleNextInput(bot, chatID, text, "Введите количество редактируемых документов (например, 200):", "awaitingDocumentCountPrivateCloud")
+		HandleNextInput(bot, chatID, "Введите количество редактируемых документов (например, 200):", "awaitingDocumentCountPrivateCloud")
 
 	case "awaitingDocumentCountPrivateCloud":
 		log.Println("Обработка состояния: awaitingDocumentCountPrivateCloud")
-		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
+		// userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
 		currentState = "awaitingStorageQuotaPrivateCloud"
-		HandleNextInput(bot, chatID, text, "Введите дисковую квоту пользователей в хранилище (ГБ) (например, 2):", "awaitingStorageQuotaPrivateCloud")
+		HandleNextInput(bot, chatID, "Введите дисковую квоту пользователей в хранилище (ГБ) (например, 2):", "awaitingStorageQuotaPrivateCloud")
 
 	case "awaitingStorageQuotaPrivateCloud":
 		log.Println("Обработка состояния: awaitingStorageQuotaPrivateCloud")
-		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
-		log.Println("Все данные от пользователя получены:", userInputValues[chatID])
+		// userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
 
 		// После получения всех значений выполняем расчет
+		for _, v := range data {
+			userInputValues[chatID] = append(userInputValues[chatID], v) // Сохраняем ввод
+		}
+		log.Println("Все данные от пользователя получены:", userInputValues[chatID])
+
 		calculateAndSendSizing(bot, chatID, userInputValues[chatID])
 		log.Println("Результаты расчета отправлены пользователю")
 
@@ -70,7 +74,7 @@ func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text str
 }
 
 // HandleNextInput помогает запрашивать следующие данные и обновлять состояние
-func HandleNextInput(bot *tgbotapi.BotAPI, chatID int64, userInput string, nextMessage string, nextState string) {
+func HandleNextInput(bot *tgbotapi.BotAPI, chatID int64, nextMessage string, nextState string) {
 	currentState = nextState
 	// userInputValues[chatID] = append(userInputValues[chatID], userInput) // Сохраняем текущий ввод
 	msg := tgbotapi.NewMessage(chatID, nextMessage) // Создаём сообщение для пользователя
@@ -82,7 +86,8 @@ func HandleNextInput(bot *tgbotapi.BotAPI, chatID int64, userInput string, nextM
 // calculateAndSendSizing выполняет расчет и отправляет результат пользователю
 func calculateAndSendSizing(bot *tgbotapi.BotAPI, chatID int64, userInputValues []string) {
 	// Открытие файла Excel
-	filePath := "/home/admin-msk/Documents/sizingPrivateCloudPSNStandalone.xlsx"
+	// filePath := "/home/admin-msk/Documents/sizingPrivateCloudPSNStandalone.xlsx"
+	filePath := "/home/kayrat/go/TechnicalSupportBot/sizingPrivateCloudPSNStandalone.xlsx"
 	f, err := excelize.OpenFile(filePath)
 	if err != nil {
 		sendErrorMessage(bot, chatID, "Произошла ошибка при открытии файла.")

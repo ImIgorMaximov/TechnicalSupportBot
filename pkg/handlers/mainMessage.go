@@ -50,6 +50,18 @@ func sendInstructions(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+func sendStandaloneSettings(bot *tgbotapi.BotAPI, chatID int64) {
+
+	settings := "Введите следующие параметры: \n" +
+		"- Количество пользователей \n" +
+		"- Количество одновременно активных пользователей \n" +
+		"- Количество редактируемых документов \n" +
+		"- Дисковую квоту пользователей в хранилище \n"
+	msg := tgbotapi.NewMessage(chatID, settings)
+	msg.ReplyMarkup = keyboards.GetStandalonePrivateCloudKeyboard()
+	bot.Send(msg)
+}
+
 func sendIsCertificates(bot *tgbotapi.BotAPI, chatID int64) {
 	isCertificates := "Проверка сертификата сервера (server.crt): \n" +
 		"openssl x509 -in server.crt -text -noout \n" +

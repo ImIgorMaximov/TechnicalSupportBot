@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"errors"
 	"log"
 	"technicalSupportBot/pkg/deployment"
 	"technicalSupportBot/pkg/instructions"
+	"technicalSupportBot/pkg/keyboards"
 	"technicalSupportBot/pkg/sizing"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -46,13 +48,15 @@ func (sm *StateManager) SetState(chatID int64, previous, current string) {
 }
 
 // HandleUpdate обрабатывает входящие сообщения от пользователей
-func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager) {
+func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, data *Data, sm *StateManager) {
 	chatID := update.Message.Chat.ID
 	text := update.Message.Text
 
 	log.Printf("Получено сообщение от chatID %d: %s", chatID, text)
 
 	state := sm.GetState(chatID)
+
+	userID := update.Message.From.ID
 
 	switch text {
 	case "/start", "В главное меню":
@@ -112,6 +116,31 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 	case "Standalone":
 		handleStandalone(bot, chatID, sm, text)
 
+	case "Количество пользователей":
+		msg := tgbotapi.NewMessage(chatID, "Введите максимальное количество пользователей (например, 50):")
+		bot.Send(msg)
+
+		// Задаем ожидание
+		data.Set(userID, "waiting_for", "awaitingMaxUserCountPrivateCloud")
+
+	case "Количество активных пользователей":
+		msg := tgbotapi.NewMessage(chatID, "Введите количество одновременно активных пользователей (например, 200):")
+		bot.Send(msg)
+
+		data.Set(userID, "waiting_for", "awaitingActiveUserCountPrivateCloud")
+
+	case "Количество редактируемых документов":
+		msg := tgbotapi.NewMessage(chatID, "Введите количество редактируемых документов (например, 10):")
+		bot.Send(msg)
+
+		data.Set(userID, "waiting_for", "awaitingDocumentCountPrivateCloud")
+
+	case "Дисковую квоту в хранилище":
+		msg := tgbotapi.NewMessage(chatID, "Введите дисковую квоту пользователей в хранилище (ГБ) (например, 2):")
+		bot.Send(msg)
+
+		data.Set(userID, "waiting_for", "awaitingStorageQuotaPrivateCloud")
+
 	case "Cluster":
 		handleCluster(bot, chatID, sm)
 
@@ -153,27 +182,15 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 
 	default:
 
-		if state.Type != "" {
+		err := handleSettings(bot, sm, data, update)
+		if err != nil {
+			log.Println("handle settings:", err)
 
-			switch state.Type {
-			case "standalone":
-				handleStandalone(bot, chatID, sm, text)
-				return
-
-				// case "squadus":
-				// 	handleSquadus(bot, chatID, sm)
-
-				// case "mailion":
-				// 	handleMailion(bot, chatID, sm)
-
-				// case "почта":
-				// 	handleMail(bot, chatID, sm)
-
-			}
+			sendWelcomeMessage(bot, chatID)
+			sm.SetState(chatID, state.Current, "start")
+			return
 		}
 
-		sendWelcomeMessage(bot, chatID)
-		sm.SetState(chatID, state.Current, "start")
 	}
 }
 
@@ -185,11 +202,13 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 	// Обработка для перехода от состояния privateCloud
 	if state.Product == "privateCloud" {
 		if state.Action == "sizing" {
-			// sm.SetState(chatID, state.Current, "standalone")
+			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s, Действие: %s", state.Current, state.Previous, state.Action)
 
-			sizing.HandleUserInput(bot, chatID, &state.Current, text)
+			sendStandaloneSettings(bot, chatID)
+			// sizing.HandleUserInput(bot, chatID, &state.Current, nil)
+			sm.SetState(chatID, state.Current, "settings")
 
 			log.Printf("После вызова HandleUserInput. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 		} else if state.Action == "deploy" {
@@ -386,4 +405,86 @@ func handleAdminGuide(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		instructions.SendAdminGuideMail(bot, chatID)
 		state.Current = "adminGuideMail"
 	}
+}
+
+func handleSettings(bot *tgbotapi.BotAPI, sm *StateManager, data *Data,
+	update tgbotapi.Update) error {
+
+	state := sm.GetState(update.Message.Chat.ID)
+	if state.Type != "standalone" {
+		return errors.New("")
+	}
+
+	userID := update.Message.From.ID
+
+	// получение ожидаемых параметров
+	val, ok := data.Get(userID, "waiting_for")
+	if ok {
+		if val == "awaitingMaxUserCountPrivateCloud" {
+			state.Current = val
+			sm.SetState(update.Message.Chat.ID, state.Current, val)
+			// msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Максимальное количество пользователей сохранено! Теперь введите количество активных пользователей.")
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Принятые параметры:\n"+
+				"✔️ Количество пользователей \n"+
+				"- Количество одновременно активных пользователей \n"+
+				"- Количество редактируемых документов \n"+
+				"- Дисковую квоту пользователей в хранилище")
+
+			data.Set(userID, "MaxUserCountPrivateCloud", update.Message.Text)
+			data.Set(userID, "waiting_for", "")
+
+			msg.ReplyMarkup = keyboards.GetStandalonePrivateCloudKeyboard()
+			bot.Send(msg)
+
+		} else if val == "awaitingActiveUserCountPrivateCloud" {
+			sm.SetState(update.Message.Chat.ID, state.Current, val)
+			// msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Максимальное количество пользователей сохранено! Теперь введите количество активных пользователей.")
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Принятые параметры:\n"+
+				"✔️ Количество пользователей \n"+
+				"✔️ Количество одновременно активных пользователей \n"+
+				"- Количество редактируемых документов \n"+
+				"- Дисковую квоту пользователей в хранилище")
+
+			data.Set(userID, "ActiveUserCountPrivateCloud", update.Message.Text)
+			data.Set(userID, "waiting_for", "")
+			msg.ReplyMarkup = keyboards.GetStandalonePrivateCloudKeyboard()
+			bot.Send(msg)
+		} else if val == "awaitingDocumentCountPrivateCloud" {
+			sm.SetState(update.Message.Chat.ID, state.Current, val)
+			// msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Kоличество активных пользователей сохранено! Теперь введите количество редактируемых документов")
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Принятые параметры:\n"+
+				"✔️ Количество пользователей \n"+
+				"✔️ Количество одновременно активных пользователей \n"+
+				"✔️ Количество редактируемых документов \n"+
+				"- Дисковую квоту пользователей в хранилище")
+
+			data.Set(userID, "DocumentCountPrivateCloud", update.Message.Text)
+			data.Set(userID, "waiting_for", "")
+
+			msg.ReplyMarkup = keyboards.GetStandalonePrivateCloudKeyboard()
+			bot.Send(msg)
+		} else if val == "awaitingStorageQuotaPrivateCloud" {
+			sm.SetState(update.Message.Chat.ID, state.Current, val)
+			// msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Дисковая квота в хранилище сохранено! Теперь введите количество редактируемых документов")
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Принятые параметры:\n"+
+				"✔️ Количество пользователей \n"+
+				"✔️ Количество одновременно активных пользователей \n"+
+				"✔️ Количество редактируемых документов \n"+
+				"✔️ Дисковую квоту пользователей в хранилище")
+
+			data.Set(userID, "StorageQuotaPrivateCloud", update.Message.Text)
+			data.Set(userID, "waiting_for", "")
+
+			// msg.ReplyMarkup = keyboards.GetStandalonePrivateCloudKeyboard()
+			bot.Send(msg)
+
+			state := sm.GetState(update.Message.Chat.ID)
+			log.Println(data.UserData[userID])
+			sizing.HandleUserInput(bot, update.Message.Chat.ID, &state.Current, data.UserData[userID])
+		}
+	} else {
+		return errors.New("not exist")
+	}
+
+	return nil
 }

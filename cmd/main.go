@@ -23,6 +23,9 @@ func main() {
 	// Создание StateManager
 	sm := handlers.NewStateManager()
 
+	// Создание Data для хранения параметров privatecloud
+	data := handlers.NewData()
+
 	// Установка режима дебага
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
@@ -30,7 +33,7 @@ func main() {
 
 	for update := range updates {
 		if update.Message != nil {
-			handlers.HandleUpdate(bot, update, sm)
+			handlers.HandleUpdate(bot, update, data, sm)
 		}
 	}
 }
