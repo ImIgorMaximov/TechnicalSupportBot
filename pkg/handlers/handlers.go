@@ -54,6 +54,25 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 
 	state := sm.GetState(chatID)
 
+	if state.Type != "" {
+
+		switch state.Type {
+		case "standalone":
+			handleStandalone(bot, chatID, sm, text)
+			return
+
+			// case "squadus":
+			// 	handleSquadus(bot, chatID, sm)
+
+			// case "mailion":
+			// 	handleMailion(bot, chatID, sm)
+
+			// case "почта":
+			// 	handleMail(bot, chatID, sm)
+
+		}
+	}
+
 	switch text {
 	case "/start", "В главное меню":
 		sendWelcomeMessage(bot, chatID)
@@ -153,25 +172,6 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 
 	default:
 
-		if state.Type != "" {
-
-			switch state.Type {
-			case "standalone":
-				handleStandalone(bot, chatID, sm, text)
-				return
-
-				// case "squadus":
-				// 	handleSquadus(bot, chatID, sm)
-
-				// case "mailion":
-				// 	handleMailion(bot, chatID, sm)
-
-				// case "почта":
-				// 	handleMail(bot, chatID, sm)
-
-			}
-		}
-
 		sendWelcomeMessage(bot, chatID)
 		sm.SetState(chatID, state.Current, "start")
 	}
@@ -180,18 +180,26 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 // handleStandalone обрабатывает запрос на Standalone
 func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text string) {
 	state := sm.GetState(chatID)
-	log.Printf("handleStandalone: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
+	log.Printf("handleStandalone: chatID %d, Текущее состояние: %s, Предыдущее состояние: %s", chatID, state.Current, state.Previous)
 
 	// Обработка для перехода от состояния privateCloud
 	if state.Product == "privateCloud" {
 		if state.Action == "sizing" {
-			// sm.SetState(chatID, state.Current, "standalone")
-			state.Type = "standalone"
-			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s, Действие: %s", state.Current, state.Previous, state.Action)
+			if state.Current == "privateCloud" {
+				sm.SetState(chatID, state.Current, "standalone")
+				state.Type = "standalone"
+			}
+			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s", state.Current, state.Previous)
 
+			state.Previous = state.Current
+			// Если предыдущее состояние равно awaitingStorageQuotaPrivateCloud, выходим из функции
+			if state.Previous == "awaitingStorageQuotaPrivateCloud" {
+				state.Current = "В главное меню"
+				log.Printf("Предыдущее состояние: %s, выполнение функции прекращено.", state.Previous)
+				return
+			}
 			sizing.HandleUserInput(bot, chatID, &state.Current, text)
 
-			state.Previous = "standalone"
 			log.Printf("После вызова HandleUserInput. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 		} else if state.Action == "deploy" {
 			sm.SetState(chatID, state.Current, "standalone")

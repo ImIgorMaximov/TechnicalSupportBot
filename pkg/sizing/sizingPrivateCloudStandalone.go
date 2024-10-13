@@ -24,10 +24,10 @@ func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text str
 	currentState = *state
 	// var userInput string // Переменная для хранения ввода пользователя
 
-	log.Printf("Получен ввод от пользователя. Текущее состояние: %s", currentState)
+	log.Printf("Функция HandleUserInput. Текущее состояние: %s", currentState)
 
 	switch currentState {
-	case "privateCloud":
+	case "standalone":
 		log.Printf("Обработка состояния: %s.", currentState)
 		currentState = "awaitingMaxUserCountPrivateCloud"
 		userInputValues[chatID] = []string{} // Инициализация мапы для пользователя
