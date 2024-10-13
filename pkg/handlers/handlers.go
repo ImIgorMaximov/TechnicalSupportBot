@@ -133,7 +133,7 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 	case "Связаться с инженером тех. поддержки":
 		sendSupportEngineerContact(bot, chatID)
 
-	case "Standalone":
+	case "Standalone", "Повторить расчет":
 		handleStandalone(bot, chatID, sm, text)
 
 	case "Cluster":
@@ -192,18 +192,21 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 		if state.Action == "sizing" {
 			if state.Current == "privateCloud" {
 				sm.SetState(chatID, state.Current, "standalone")
-				state.Type = "standalone"
 			}
+			// изменение состояния для перерасчета
+			if state.Previous == "awaitingStorageQuotaPrivateCloud" &&
+				state.Current == "В главное меню" {
+				sm.SetState(chatID, state.Current, "standalone")
+			}
+			sm.SetType(chatID, "standalone")
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s", state.Current, state.Previous)
 
 			state.Previous = state.Current
-
 			sizing.HandleUserInput(bot, chatID, &state.Current, text)
 
 			// Если предыдущее состояние равно awaitingStorageQuotaPrivateCloud, выходим из функции
 			if state.Previous == "awaitingStorageQuotaPrivateCloud" {
 				state.Current = "В главное меню"
-
 				// set initial type
 				sm.SetType(chatID, "")
 				log.Printf("Предыдущее состояние: %s, выполнение функции прекращено.", state.Previous)
