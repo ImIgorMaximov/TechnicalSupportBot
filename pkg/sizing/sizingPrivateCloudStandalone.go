@@ -13,6 +13,13 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
+const (
+	privateCloudMaxUser     = 50
+	privateCloudActiveUser  = 10
+	privateCloudDocument    = 200
+	privateCloudStorageInGB = 2
+)
+
 // Определение глобальной переменной для хранения пользовательских вводов по состояниям
 var userInputValues = make(map[int64][]string)
 
@@ -35,24 +42,55 @@ func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text str
 
 	case "awaitingMaxUserCountPrivateCloud":
 		log.Println("Обработка состояния: awaitingMaxUserCountPrivateCloud")
+
+		if ok := validateInput(text, privateCloudMaxUser); !ok {
+			msg := tgbotapi.NewMessage(chatID, "невалидный ввод")
+			bot.Send(msg)
+			return
+		}
+
 		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
 		currentState = "awaitingActiveUserCountPrivateCloud"
 		HandleNextInput(bot, chatID, text, "Введите количество одновременно активных пользователей (например, 10):", "awaitingActiveUserCountPrivateCloud")
 
 	case "awaitingActiveUserCountPrivateCloud":
 		log.Println("Обработка состояния: awaitingActiveUserCountPrivateCloud")
+
+		// валидация
+		if ok := validateInput(text, privateCloudActiveUser); !ok {
+			msg := tgbotapi.NewMessage(chatID, "невалидный ввод")
+			bot.Send(msg)
+			return
+		}
+
 		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
 		currentState = "awaitingDocumentCountPrivateCloud"
 		HandleNextInput(bot, chatID, text, "Введите количество редактируемых документов (например, 200):", "awaitingDocumentCountPrivateCloud")
 
 	case "awaitingDocumentCountPrivateCloud":
 		log.Println("Обработка состояния: awaitingDocumentCountPrivateCloud")
+
+		// валидация
+		if ok := validateInput(text, privateCloudDocument); !ok {
+			msg := tgbotapi.NewMessage(chatID, "невалидный ввод")
+			bot.Send(msg)
+			return
+		}
+
 		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
 		currentState = "awaitingStorageQuotaPrivateCloud"
 		HandleNextInput(bot, chatID, text, "Введите дисковую квоту пользователей в хранилище (ГБ) (например, 2):", "awaitingStorageQuotaPrivateCloud")
 
 	case "awaitingStorageQuotaPrivateCloud":
 		log.Println("Обработка состояния: awaitingStorageQuotaPrivateCloud")
+
+		// валидация
+		if ok := validateInput(text, privateCloudStorageInGB); !ok {
+			msg := tgbotapi.NewMessage(chatID, "невалидный ввод")
+			bot.Send(msg)
+			return
+		}
+
 		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
 		log.Println("Все данные от пользователя получены:", userInputValues[chatID])
 
@@ -190,4 +228,13 @@ func sendErrorMessage(bot *tgbotapi.BotAPI, chatID int64, errorMessage string) {
 	msg := tgbotapi.NewMessage(chatID, errorMessage)
 	bot.Send(msg)
 	log.Println(errorMessage)
+}
+
+func validateInput(input string, max int) bool {
+	num, err := strconv.Atoi(input)
+	if err != nil {
+		return false
+	}
+
+	return num > 0 && num <= max
 }

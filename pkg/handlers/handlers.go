@@ -45,6 +45,11 @@ func (sm *StateManager) SetState(chatID int64, previous, current string) {
 	state.Current = current
 }
 
+func (sm *StateManager) SetType(chatID int64, newType string) {
+	state := sm.GetState(chatID)
+	state.Type = newType
+}
+
 // HandleUpdate обрабатывает входящие сообщения от пользователей
 func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager) {
 	chatID := update.Message.Chat.ID
@@ -192,13 +197,18 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s", state.Current, state.Previous)
 
 			state.Previous = state.Current
+
+			sizing.HandleUserInput(bot, chatID, &state.Current, text)
+
 			// Если предыдущее состояние равно awaitingStorageQuotaPrivateCloud, выходим из функции
 			if state.Previous == "awaitingStorageQuotaPrivateCloud" {
 				state.Current = "В главное меню"
+
+				// set initial type
+				sm.SetType(chatID, "")
 				log.Printf("Предыдущее состояние: %s, выполнение функции прекращено.", state.Previous)
 				return
 			}
-			sizing.HandleUserInput(bot, chatID, &state.Current, text)
 
 			log.Printf("После вызова HandleUserInput. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 		} else if state.Action == "deploy" {
