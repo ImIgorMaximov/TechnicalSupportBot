@@ -14,10 +14,10 @@ import (
 )
 
 const (
-	privateCloudMaxUser     = 50
-	privateCloudActiveUser  = 10
-	privateCloudDocument    = 200
-	privateCloudStorageInGB = 2
+	privateCloudMaxUser     = 1000
+	privateCloudActiveUser  = 1000
+	privateCloudDocument    = 10000
+	privateCloudStorageInGB = 10000
 )
 
 // Определение глобальной переменной для хранения пользовательских вводов по состояниям
@@ -29,7 +29,6 @@ var currentState string
 // Обработка ввода пользователя и управление состоянием
 func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text string) {
 	currentState = *state
-	// var userInput string // Переменная для хранения ввода пользователя
 
 	log.Printf("Функция HandleUserInput. Текущее состояние: %s", currentState)
 
@@ -44,7 +43,7 @@ func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text str
 		log.Println("Обработка состояния: awaitingMaxUserCountPrivateCloud")
 
 		if ok := validateInput(text, privateCloudMaxUser); !ok {
-			msg := tgbotapi.NewMessage(chatID, "невалидный ввод")
+			msg := tgbotapi.NewMessage(chatID, "Некорректный ввод. Пожалуйста, введите числа в диапазоне от 1 до 1000.")
 			bot.Send(msg)
 			return
 		}
@@ -56,9 +55,8 @@ func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text str
 	case "awaitingActiveUserCountPrivateCloud":
 		log.Println("Обработка состояния: awaitingActiveUserCountPrivateCloud")
 
-		// валидация
 		if ok := validateInput(text, privateCloudActiveUser); !ok {
-			msg := tgbotapi.NewMessage(chatID, "невалидный ввод")
+			msg := tgbotapi.NewMessage(chatID, "Некорректный ввод. Пожалуйста, введите числа в диапазоне от 1 до 10000.")
 			bot.Send(msg)
 			return
 		}
@@ -70,9 +68,8 @@ func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text str
 	case "awaitingDocumentCountPrivateCloud":
 		log.Println("Обработка состояния: awaitingDocumentCountPrivateCloud")
 
-		// валидация
 		if ok := validateInput(text, privateCloudDocument); !ok {
-			msg := tgbotapi.NewMessage(chatID, "невалидный ввод")
+			msg := tgbotapi.NewMessage(chatID, "Некорректный ввод. Пожалуйста, введите числа в диапазоне от 1 до 10000.")
 			bot.Send(msg)
 			return
 		}
@@ -84,9 +81,8 @@ func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text str
 	case "awaitingStorageQuotaPrivateCloud":
 		log.Println("Обработка состояния: awaitingStorageQuotaPrivateCloud")
 
-		// валидация
 		if ok := validateInput(text, privateCloudStorageInGB); !ok {
-			msg := tgbotapi.NewMessage(chatID, "невалидный ввод")
+			msg := tgbotapi.NewMessage(chatID, "Некорректный ввод. Пожалуйста, введите числа в диапазоне от 1 до 1000.")
 			bot.Send(msg)
 			return
 		}
@@ -100,7 +96,7 @@ func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text str
 
 	default:
 		log.Printf("Ошибка: Неизвестное состояние или некорректный ввод. Состояние: %s", currentState)
-		sendErrorMessage(bot, chatID, "Ошибка: неизвестное состояние или некорректный ввод.")
+		sendErrorMessage(bot, chatID, "Ошибка: некорректный ввод. Введите кнопку /start для выхода в Главное меню.")
 	}
 
 	// Обновление состояния после обработки

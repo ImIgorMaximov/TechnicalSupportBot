@@ -207,7 +207,6 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 			// Если предыдущее состояние равно awaitingStorageQuotaPrivateCloud, выходим из функции
 			if state.Previous == "awaitingStorageQuotaPrivateCloud" {
 				state.Current = "В главное меню"
-				// set initial type
 				sm.SetType(chatID, "")
 				log.Printf("Предыдущее состояние: %s, выполнение функции прекращено.", state.Previous)
 				return
