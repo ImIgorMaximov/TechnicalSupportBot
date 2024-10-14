@@ -65,16 +65,6 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 		case "standalone":
 			handleStandalone(bot, chatID, sm, text)
 			return
-
-			// case "squadus":
-			// 	handleSquadus(bot, chatID, sm)
-
-			// case "mailion":
-			// 	handleMailion(bot, chatID, sm)
-
-			// case "почта":
-			// 	handleMail(bot, chatID, sm)
-
 		}
 	}
 
@@ -202,7 +192,7 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s", state.Current, state.Previous)
 
 			state.Previous = state.Current
-			sizing.HandleUserInput(bot, chatID, &state.Current, text)
+			sizing.HandleUserInputPrivateCloudStandalone(bot, chatID, &state.Current, text)
 
 			// Если предыдущее состояние равно awaitingStorageQuotaPrivateCloud, выходим из функции
 			if state.Previous == "awaitingStorageQuotaPrivateCloud" {
@@ -211,8 +201,8 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 				log.Printf("Предыдущее состояние: %s, выполнение функции прекращено.", state.Previous)
 				return
 			}
+			log.Printf("После вызова HandleUserInputPrivateCloudStandalone. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 
-			log.Printf("После вызова HandleUserInput. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 		} else if state.Action == "deploy" {
 			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
@@ -221,12 +211,33 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 			sm.SetState(chatID, state.Current, "reqPrivateCloud")
 			log.Printf("После вызова SendStandaloneRequirementsPrivateCloud. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 		}
+
 	} else if state.Product == "mail" {
 		if state.Action == "sizing" {
-			sm.SetState(chatID, state.Current, "standalone")
-			state.Type = "standalone"
+			if state.Current == "mail" {
+				sm.SetState(chatID, state.Current, "standalone")
+			}
+			// изменение состояния для перерасчета
+			if state.Previous == "awaitingSpamCoefficientMail" &&
+				state.Current == "В главное меню" {
+				sm.SetState(chatID, state.Current, "standalone")
+			}
+			sm.SetType(chatID, "standalone")
+			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s", state.Current, state.Previous)
+
+			state.Previous = state.Current
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
-			sizing.HandleSizingMailStandalone(bot, chatID)
+			sizing.HandleUserInputPSNStandalone(bot, chatID, &state.Current, text)
+
+			// Если предыдущее состояние равно awaitingSpamCoefficientMail, выходим из функции
+			if state.Previous == "awaitingSpamCoefficientMail" {
+				state.Current = "В главное меню"
+				sm.SetType(chatID, "")
+				log.Printf("Предыдущее состояние: %s, выполнение функции прекращено.", state.Previous)
+				return
+			}
+			log.Printf("После вызова HandleUserInputPSNStandalone. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
+
 		} else if state.Action == "deploy" {
 			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"

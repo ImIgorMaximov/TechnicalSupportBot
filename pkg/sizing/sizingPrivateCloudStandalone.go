@@ -21,26 +21,26 @@ const (
 )
 
 // Определение глобальной переменной для хранения пользовательских вводов по состояниям
-var userInputValues = make(map[int64][]string)
+var userInputValuesPrivateCloudStandalone = make(map[int64][]string)
 
 // Глобальная переменная для хранения текущего состояния
-var currentState string
+var currentStatePrivateCloudStandalone string
 
 // Обработка ввода пользователя и управление состоянием
-func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text string) {
-	currentState = *state
+func HandleUserInputPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64, state *string, text string) {
+	currentStatePrivateCloudStandalone = *state
 
-	log.Printf("Функция HandleUserInput. Текущее состояние: %s", currentState)
+	log.Printf("Функция HandleUserInput. Текущее состояние: %s", currentStatePrivateCloudStandalone)
 
-	switch currentState {
+	switch currentStatePrivateCloudStandalone {
 	case "standalone":
-		log.Printf("Обработка состояния: %s.", currentState)
-		currentState = "awaitingMaxUserCountPrivateCloud"
-		userInputValues[chatID] = []string{} // Инициализация мапы для пользователя
-		HandleNextInput(bot, chatID, "", "Введите максимальное количество пользователей (например, 50):", "awaitingMaxUserCountPrivateCloud")
+		log.Printf("Обработка состояния: %s.", currentStatePrivateCloudStandalone)
+		currentStatePrivateCloudStandalone = "awaitingMaxUserCountPrivateCloud"
+		userInputValuesPrivateCloudStandalone[chatID] = []string{} // Инициализация мапы для пользователя
+		HandleNextInputPrivateCloudStandalone(bot, chatID, "", "Введите максимальное количество пользователей (например, 50):", "awaitingMaxUserCountPrivateCloud")
 
 	case "awaitingMaxUserCountPrivateCloud":
-		log.Println("Обработка состояния: awaitingMaxUserCountPrivateCloud")
+		log.Printf("Обработка состояния: %s.", currentStatePrivateCloudStandalone)
 
 		if ok := validateInput(text, privateCloudMaxUser); !ok {
 			msg := tgbotapi.NewMessage(chatID, "Некорректный ввод. Пожалуйста, введите числа в диапазоне от 1 до 1000.")
@@ -48,12 +48,12 @@ func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text str
 			return
 		}
 
-		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
-		currentState = "awaitingActiveUserCountPrivateCloud"
-		HandleNextInput(bot, chatID, text, "Введите количество одновременно активных пользователей (например, 10):", "awaitingActiveUserCountPrivateCloud")
+		userInputValuesPrivateCloudStandalone[chatID] = append(userInputValuesPrivateCloudStandalone[chatID], text) // Сохраняем ввод
+		currentStatePrivateCloudStandalone = "awaitingActiveUserCountPrivateCloud"
+		HandleNextInputPrivateCloudStandalone(bot, chatID, text, "Введите количество одновременно активных пользователей (например, 10):", "awaitingActiveUserCountPrivateCloud")
 
 	case "awaitingActiveUserCountPrivateCloud":
-		log.Println("Обработка состояния: awaitingActiveUserCountPrivateCloud")
+		log.Printf("Обработка состояния: %s.", currentStatePrivateCloudStandalone)
 
 		if ok := validateInput(text, privateCloudActiveUser); !ok {
 			msg := tgbotapi.NewMessage(chatID, "Некорректный ввод. Пожалуйста, введите числа в диапазоне от 1 до 10000.")
@@ -61,12 +61,12 @@ func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text str
 			return
 		}
 
-		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
-		currentState = "awaitingDocumentCountPrivateCloud"
-		HandleNextInput(bot, chatID, text, "Введите количество редактируемых документов (например, 200):", "awaitingDocumentCountPrivateCloud")
+		userInputValuesPrivateCloudStandalone[chatID] = append(userInputValuesPrivateCloudStandalone[chatID], text) // Сохраняем ввод
+		currentStatePrivateCloudStandalone = "awaitingDocumentCountPrivateCloud"
+		HandleNextInputPrivateCloudStandalone(bot, chatID, text, "Введите количество редактируемых документов (например, 200):", "awaitingDocumentCountPrivateCloud")
 
 	case "awaitingDocumentCountPrivateCloud":
-		log.Println("Обработка состояния: awaitingDocumentCountPrivateCloud")
+		log.Printf("Обработка состояния: %s.", currentStatePrivateCloudStandalone)
 
 		if ok := validateInput(text, privateCloudDocument); !ok {
 			msg := tgbotapi.NewMessage(chatID, "Некорректный ввод. Пожалуйста, введите числа в диапазоне от 1 до 10000.")
@@ -74,12 +74,12 @@ func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text str
 			return
 		}
 
-		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
-		currentState = "awaitingStorageQuotaPrivateCloud"
-		HandleNextInput(bot, chatID, text, "Введите дисковую квоту пользователей в хранилище (ГБ) (например, 2):", "awaitingStorageQuotaPrivateCloud")
+		userInputValuesPrivateCloudStandalone[chatID] = append(userInputValuesPrivateCloudStandalone[chatID], text) // Сохраняем ввод
+		currentStatePrivateCloudStandalone = "awaitingStorageQuotaPrivateCloud"
+		HandleNextInputPrivateCloudStandalone(bot, chatID, text, "Введите дисковую квоту пользователей в хранилище (ГБ) (например, 2):", "awaitingStorageQuotaPrivateCloud")
 
 	case "awaitingStorageQuotaPrivateCloud":
-		log.Println("Обработка состояния: awaitingStorageQuotaPrivateCloud")
+		log.Printf("Обработка состояния: %s.", currentStatePrivateCloudStandalone)
 
 		if ok := validateInput(text, privateCloudStorageInGB); !ok {
 			msg := tgbotapi.NewMessage(chatID, "Некорректный ввод. Пожалуйста, введите числа в диапазоне от 1 до 1000.")
@@ -87,26 +87,26 @@ func HandleUserInput(bot *tgbotapi.BotAPI, chatID int64, state *string, text str
 			return
 		}
 
-		userInputValues[chatID] = append(userInputValues[chatID], text) // Сохраняем ввод
-		log.Println("Все данные от пользователя получены:", userInputValues[chatID])
+		userInputValuesPrivateCloudStandalone[chatID] = append(userInputValuesPrivateCloudStandalone[chatID], text) // Сохраняем ввод
+		log.Println("Все данные от пользователя получены:", userInputValuesPrivateCloudStandalone[chatID])
 
 		// После получения всех значений выполняем расчет
-		calculateAndSendSizing(bot, chatID, userInputValues[chatID])
+		calculateAndSendSizingPrivateCloudStandalone(bot, chatID, userInputValuesPrivateCloudStandalone[chatID])
 		log.Println("Результаты расчета отправлены пользователю")
 
 	default:
-		log.Printf("Ошибка: Неизвестное состояние или некорректный ввод. Состояние: %s", currentState)
+		log.Printf("Ошибка: Неизвестное состояние или некорректный ввод. Состояние: %s", currentStatePrivateCloudStandalone)
 		sendErrorMessage(bot, chatID, "Ошибка: некорректный ввод. Введите кнопку /start для выхода в Главное меню.")
 	}
 
 	// Обновление состояния после обработки
-	*state = currentState
+	*state = currentStatePrivateCloudStandalone
 }
 
-// HandleNextInput помогает запрашивать следующие данные и обновлять состояние
-func HandleNextInput(bot *tgbotapi.BotAPI, chatID int64, userInput string, nextMessage string, nextState string) {
-	currentState = nextState
-	// userInputValues[chatID] = append(userInputValues[chatID], userInput) // Сохраняем текущий ввод
+// HandleNextInputPrivateCloudStandalone помогает запрашивать следующие данные и обновлять состояние
+func HandleNextInputPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64, userInput string, nextMessage string, nextState string) {
+	currentStatePrivateCloudStandalone = nextState
+	// userInputValuesPrivateCloudStandalone[chatID] = append(userInputValuesPrivateCloudStandalone[chatID], userInput) // Сохраняем текущий ввод
 	msg := tgbotapi.NewMessage(chatID, nextMessage) // Создаём сообщение для пользователя
 	if _, err := bot.Send(msg); err != nil {
 		log.Printf("Ошибка при отправке сообщения: %s", err) // Логируем ошибку
@@ -114,9 +114,9 @@ func HandleNextInput(bot *tgbotapi.BotAPI, chatID int64, userInput string, nextM
 }
 
 // calculateAndSendSizing выполняет расчет и отправляет результат пользователю
-func calculateAndSendSizing(bot *tgbotapi.BotAPI, chatID int64, userInputValues []string) {
+func calculateAndSendSizingPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64, userInputValuesPrivateCloudStandalone []string) {
 	// Открытие файла Excel
-	filePath := "/home/admin-msk/Documents/sizingPrivateCloudPSNStandalone.xlsx"
+	filePath := "/home/admin-msk/MyOfficeConfig/sizingPrivateCloudStandalone.xlsx"
 	f, err := excelize.OpenFile(filePath)
 	if err != nil {
 		sendErrorMessage(bot, chatID, "Произошла ошибка при открытии файла.")
@@ -126,7 +126,7 @@ func calculateAndSendSizing(bot *tgbotapi.BotAPI, chatID int64, userInputValues 
 	defer f.Close()
 
 	// Заполнение ячеек данными
-	err = fillExcelFile(f, userInputValues)
+	err = fillExcelFilePrivateCloudStandalone(f, userInputValuesPrivateCloudStandalone)
 	if err != nil {
 		sendErrorMessage(bot, chatID, "Произошла ошибка при записи в файл.")
 		log.Println("Ошибка записи в файл:", err)
@@ -141,40 +141,40 @@ func calculateAndSendSizing(bot *tgbotapi.BotAPI, chatID int64, userInputValues 
 	}
 
 	// Извлечение результатов
-	sendSizingResults(bot, chatID, f, userInputValues)
+	sendSizingResultsPrivateCloudStandalone(bot, chatID, f, userInputValuesPrivateCloudStandalone)
 }
 
 // fillExcelFile заполняет Excel данными пользователя
-func fillExcelFile(f *excelize.File, userInputValues []string) error {
-	if len(userInputValues) < 4 {
+func fillExcelFilePrivateCloudStandalone(f *excelize.File, userInputValuesPrivateCloudStandalone []string) error {
+	if len(userInputValuesPrivateCloudStandalone) < 4 {
 		errors.New("len is less than 4")
 	}
 
-	err := f.SetCellValue("PSN", "D4", userInputValues[0]) // Макс. количество пользователей
-	err = f.SetCellValue("PSN", "F6", userInputValues[1])  // Кол-во активных пользователей
-	err = f.SetCellValue("PSN", "F7", userInputValues[2])  // Кол-во редактируемых документов
-	err = f.SetCellValue("PSN", "D8", userInputValues[3])  // Дисковая квота пользователя
+	err := f.SetCellValue("Standalone", "D4", userInputValuesPrivateCloudStandalone[0]) // Макс. количество пользователей
+	err = f.SetCellValue("Standalone", "F6", userInputValuesPrivateCloudStandalone[1])  // Кол-во активных пользователей
+	err = f.SetCellValue("Standalone", "F7", userInputValuesPrivateCloudStandalone[2])  // Кол-во редактируемых документов
+	err = f.SetCellValue("Standalone", "D8", userInputValuesPrivateCloudStandalone[3])  // Дисковая квота пользователя
 	return err
 }
 
 // sendSizingResults извлекает результаты из Excel и отправляет их пользователю
-func sendSizingResults(bot *tgbotapi.BotAPI, chatID int64, f *excelize.File, userInputValues []string) {
-	operatorVM, _ := f.GetCellValue("PSN", "C15")
-	operatorCPU, _ := f.GetCellValue("PSN", "D15")
-	operatorRAM, _ := f.GetCellValue("PSN", "E15")
-	operatorSSD, _ := f.GetCellValue("PSN", "F15")
+func sendSizingResultsPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64, f *excelize.File, userInputValuesPrivateCloudStandalone []string) {
+	operatorVM, _ := f.GetCellValue("Standalone", "C15")
+	operatorCPU, _ := f.GetCellValue("Standalone", "D15")
+	operatorRAM, _ := f.GetCellValue("Standalone", "E15")
+	operatorSSD, _ := f.GetCellValue("Standalone", "F15")
 
-	coVM, _ := f.GetCellValue("PSN", "C16")
-	coCPU, _ := f.GetCellValue("PSN", "D16")
-	coRAM, _ := f.GetCellValue("PSN", "E16")
-	coSSD, _ := f.GetCellValue("PSN", "F16")
+	coVM, _ := f.GetCellValue("Standalone", "C16")
+	coCPU, _ := f.GetCellValue("Standalone", "D16")
+	coRAM, _ := f.GetCellValue("Standalone", "E16")
+	coSSD, _ := f.GetCellValue("Standalone", "F16")
 
-	pgsVM, _ := f.GetCellValue("PSN", "C17")
-	pgsCPU, _ := f.GetCellValue("PSN", "D17")
-	pgsRAM, _ := f.GetCellValue("PSN", "E17")
+	pgsVM, _ := f.GetCellValue("Standalone", "C17")
+	pgsCPU, _ := f.GetCellValue("Standalone", "D17")
+	pgsRAM, _ := f.GetCellValue("Standalone", "E17")
 
 	// Расчет значения для PGS SSD
-	ssdValue := calculatePGSSSD(userInputValues)
+	ssdValue := calculateSSD(userInputValuesPrivateCloudStandalone)
 
 	// Отправка результата пользователю
 	resultMsg := fmt.Sprintf(
@@ -193,15 +193,15 @@ func sendSizingResults(bot *tgbotapi.BotAPI, chatID int64, f *excelize.File, use
 	showMainMenu(bot, chatID)
 }
 
-// calculatePGSSSD вычисляет значение для PGS SSD
-func calculatePGSSSD(userInputValues []string) int {
-	value1, err := strconv.ParseFloat(userInputValues[0], 64) // Количество пользователей
+// calculateSSD вычисляет значение для SSD
+func calculateSSD(userInputValuesPrivateCloudStandalone []string) int {
+	value1, err := strconv.ParseFloat(userInputValuesPrivateCloudStandalone[0], 64) // Количество пользователей
 	if err != nil {
 		log.Println("Ошибка преобразования строки в число:", err)
 		return 0
 	}
 
-	value2, err := strconv.ParseFloat(userInputValues[3], 64) // Дисковая квота
+	value2, err := strconv.ParseFloat(userInputValuesPrivateCloudStandalone[3], 64) // Дисковая квота
 	if err != nil {
 		log.Println("Ошибка преобразования строки в число:", err)
 		return 0
