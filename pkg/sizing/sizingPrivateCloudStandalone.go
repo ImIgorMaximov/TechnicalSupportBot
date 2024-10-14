@@ -93,7 +93,7 @@ func HandleUserInputPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64, s
 		// После получения всех значений выполняем расчет
 		calculateAndSendSizingPrivateCloudStandalone(bot, chatID, userInputValuesPrivateCloudStandalone[chatID])
 		log.Println("Результаты расчета отправлены пользователю")
-
+		currentStatePrivateCloudStandalone = "calculationDone"
 	default:
 		log.Printf("Ошибка: Неизвестное состояние или некорректный ввод. Состояние: %s", currentStatePrivateCloudStandalone)
 		sendErrorMessage(bot, chatID, "Ошибка: некорректный ввод. Введите кнопку /start для выхода в Главное меню.")
