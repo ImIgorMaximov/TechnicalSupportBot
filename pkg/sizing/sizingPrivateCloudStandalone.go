@@ -174,7 +174,7 @@ func sendSizingResultsPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64,
 	pgsRAM, _ := f.GetCellValue("Standalone", "E17")
 
 	// Расчет значения для PGS SSD
-	ssdValue := calculateSSD(userInputValuesPrivateCloudStandalone)
+	pgsSSD := calculateSSDPGS(userInputValuesPrivateCloudStandalone)
 
 	// Отправка результата пользователю
 	resultMsg := fmt.Sprintf(
@@ -184,7 +184,7 @@ func sendSizingResultsPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64,
 			"Компонент PGS: кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %d ГБ.",
 		operatorVM, operatorCPU, operatorRAM, operatorSSD,
 		coVM, coCPU, coRAM, coSSD,
-		pgsVM, pgsCPU, pgsRAM, ssdValue,
+		pgsVM, pgsCPU, pgsRAM, pgsSSD,
 	)
 	msg := tgbotapi.NewMessage(chatID, resultMsg)
 	bot.Send(msg)
@@ -193,8 +193,8 @@ func sendSizingResultsPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64,
 	showMainMenu(bot, chatID)
 }
 
-// calculateSSD вычисляет значение для SSD
-func calculateSSD(userInputValuesPrivateCloudStandalone []string) int {
+// calculateSSDPGS вычисляет значение для SSD
+func calculateSSDPGS(userInputValuesPrivateCloudStandalone []string) int {
 	value1, err := strconv.ParseFloat(userInputValuesPrivateCloudStandalone[0], 64) // Количество пользователей
 	if err != nil {
 		log.Println("Ошибка преобразования строки в число:", err)

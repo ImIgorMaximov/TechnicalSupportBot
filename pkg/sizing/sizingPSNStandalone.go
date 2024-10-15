@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -160,15 +161,14 @@ func sendSizingResultsPSNStandalone(bot *tgbotapi.BotAPI, chatID int64, f *excel
 	psnVM, _ := f.GetCellValue("Standalone", "C18")
 	psnCPU, _ := f.GetCellValue("Standalone", "D18")
 	psnRAM, _ := f.GetCellValue("Standalone", "E18")
-	psnSSD, _ := f.GetCellValue("Standalone", "F18")
 
 	// Расчет значения для SSD
-	// ssdValue := calculateSSD(userInputValuesPSNStandalone)
+	psnSSD := calculateSSDPSN(userInputValuesPSNStandalone)
 
 	// Отправка результата пользователю
 	resultMsg := fmt.Sprintf(
 		"Результаты расчета сайзинга для продукта Почта Standalone:\n\n"+
-			"Компонент PSN: кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %s ГБ;\n",
+			"Компонент PSN: кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %d ГБ;\n",
 		psnVM, psnCPU, psnRAM, psnSSD,
 	)
 	msg := tgbotapi.NewMessage(chatID, resultMsg)
@@ -176,6 +176,24 @@ func sendSizingResultsPSNStandalone(bot *tgbotapi.BotAPI, chatID int64, f *excel
 
 	// Отправка клавиатуры с основным меню
 	showMainMenu(bot, chatID)
+}
+
+// calculateSSD вычисляет значение для SSD
+func calculateSSDPSN(userInputValuesPrivateCloudStandalone []string) int {
+	value1, err := strconv.ParseFloat(userInputValuesPrivateCloudStandalone[0], 64) // Количество пользователей
+	if err != nil {
+		log.Println("Ошибка преобразования строки в число:", err)
+		return 0
+	}
+
+	value2, err := strconv.ParseFloat(userInputValuesPrivateCloudStandalone[1], 64) // Дисковая квота
+	if err != nil {
+		log.Println("Ошибка преобразования строки в число:", err)
+		return 0
+	}
+
+	ssdValue := 50 + value1*value2*1.3
+	return int(math.Round(ssdValue))
 }
 
 func validateInputSpam(input string, max float64) bool {
