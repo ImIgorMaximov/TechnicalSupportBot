@@ -335,8 +335,12 @@ func handleSquadus(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		sendInstructions(bot, chatID)
 		sm.SetState(chatID, state.Current, "squadus")
 		log.Printf("Переключение состояния на squadus после инструкции: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
-	} else if state.Action == "deploy" || state.Current == "sizing" {
+	} else if state.Action == "deploy" {
 		sendDeploymentOptions(bot, chatID)
+		sm.SetState(chatID, state.Current, "squadus")
+		log.Printf("Переключение состояния на squadus после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
+	} else if state.Action == "sizing" {
+		sizing.SizingSquadus(bot, chatID)
 		sm.SetState(chatID, state.Current, "squadus")
 		log.Printf("Переключение состояния на squadus после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
 	}

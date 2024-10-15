@@ -98,7 +98,7 @@ func sendUnzippingISO(bot *tgbotapi.BotAPI, chatID int64) {
 func sendSupportEngineerContact(bot *tgbotapi.BotAPI, chatID int64) {
 	errorMessage := "Направьте описание проблемы или вопроса инженеру \nТГ: @IgorMaksimov2000\nПочта: igor.maksimov@myoffice.team \n\n" +
 		"Формат сообщения должен включать: \n" +
-		"1. Описание ошибки/вопроса.\n" +
+		"1. Описание ошибки/вопроса c приложением скриншотов.\n" +
 		"2. Вывод команд pip3 list и ansible --version. (Выполненные в корневой директории инсталляции, например, /root/install_pgs) \n" +
 		"3. Конфигурационные файлы, которые были использованы при инсталляции. (Например, hosts.yml для PGS, hosts.yml/main.yml для CO) \n" +
 		"4. Логи ошибок (Например, при развертывания СО сервера это будет файл deploy_co.log). \n\n" +
