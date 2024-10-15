@@ -90,7 +90,7 @@ func HandleUserInputPSNStandalone(bot *tgbotapi.BotAPI, chatID int64, state *str
 		// После получения всех значений выполняем расчет
 		calculateAndSendMailSizingPSNStandalone(bot, chatID, userInputValuesPSNStandalone[chatID])
 		log.Println("Результаты расчета отправлены пользователю")
-
+		currentStatePSNStandalone = "calculationDone"
 	default:
 		log.Printf("Ошибка: Неизвестное состояние или некорректный ввод. Состояние: %s", currentStatePSNStandalone)
 		sendErrorMessage(bot, chatID, "Ошибка: некорректный ввод. Введите кнопку /start для выхода в Главное меню.")
@@ -179,10 +179,10 @@ func sendSizingResultsPSNStandalone(bot *tgbotapi.BotAPI, chatID int64, f *excel
 }
 
 func validateInputSpam(input string, max float64) bool {
-	num, err := strconv.Atoi(input)
+	num, err := strconv.ParseFloat(input, 64)
 	if err != nil {
 		return false
 	}
 
-	return num > 0.0 && num < 1.0
+	return num > 0 && num < 1
 }

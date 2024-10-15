@@ -60,7 +60,17 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 	state := sm.GetState(chatID)
 
 	if state.Type != "" {
-
+		// добавил проверку, потому что когда задаешь параметры
+		// и захочется на главное меню, невозможно выйти
+		// возващает не валидный ввод
+		//
+		// или предлагаю другой вариант:
+		// вынести из switch case /start выше,
+		// сразу же после объявления "text"
+		if text == "/start" {
+			sm.SetType(chatID, "")
+			goto handleCommands
+		}
 		switch state.Type {
 		case "standalone":
 			handleStandalone(bot, chatID, sm, text)
@@ -68,10 +78,11 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 		}
 	}
 
+handleCommands:
 	switch text {
 	case "/start", "В главное меню":
-		sendWelcomeMessage(bot, chatID)
 		sm.SetState(chatID, state.Current, "start")
+		sendWelcomeMessage(bot, chatID)
 
 	case "Инструкции по продуктам":
 		state.Action = "instr"
@@ -194,8 +205,12 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 			state.Previous = state.Current
 			sizing.HandleUserInputPrivateCloudStandalone(bot, chatID, &state.Current, text)
 
-			// Если предыдущее состояние равно awaitingStorageQuotaPrivateCloud, выходим из функции
-			if state.Previous == "awaitingStorageQuotaPrivateCloud" {
+			// внес изменение: добавил новое завершающее состояние
+			// если расчет закончен, только тогда выходим из функции
+			// (баг был когда валидация не проходит то статус все равно оставался на awaitingStorageQuotaPrivateCloud
+			// и при попытке ввести правильный параметр перекидывал на главное меню
+			// не начав расчет)
+			if state.Current == "calculationDone" {
 				state.Current = "В главное меню"
 				sm.SetType(chatID, "")
 				log.Printf("Предыдущее состояние: %s, выполнение функции прекращено.", state.Previous)
@@ -230,7 +245,7 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 			sizing.HandleUserInputPSNStandalone(bot, chatID, &state.Current, text)
 
 			// Если предыдущее состояние равно awaitingSpamCoefficientMail, выходим из функции
-			if state.Previous == "awaitingSpamCoefficientMail" {
+			if state.Current == "calculationDone" {
 				state.Current = "В главное меню"
 				sm.SetType(chatID, "")
 				log.Printf("Предыдущее состояние: %s, выполнение функции прекращено.", state.Previous)
