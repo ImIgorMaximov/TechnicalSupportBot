@@ -29,8 +29,7 @@ func main() {
 	updates := bot.GetUpdatesChan(u)
 
 	for update := range updates {
-		if update.Message != nil {
-			handlers.HandleUpdate(bot, update, sm)
-		}
+		// callbackquery и messages обрабатываем внутри
+		handlers.HandleUpdate(bot, update, sm)
 	}
 }

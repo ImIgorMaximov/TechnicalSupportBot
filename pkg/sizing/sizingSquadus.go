@@ -11,19 +11,28 @@ import (
 // sizingSquadus обрабатывает выбор количества пользователей и отправку PDF-файла
 func SizingSquadus(bot *tgbotapi.BotAPI, chatID int64) {
 	// Определение кнопок для выбора количества пользователей
-	buttons := []tgbotapi.InlineKeyboardButton{
-		tgbotapi.NewInlineKeyboardButtonData("<50", "<50"),
-		tgbotapi.NewInlineKeyboardButtonData("<500", "<500"),
-		tgbotapi.NewInlineKeyboardButtonData("<1000", "<1000"),
-		tgbotapi.NewInlineKeyboardButtonData("<2000", "<2000"),
-		tgbotapi.NewInlineKeyboardButtonData("<3000", "<3000"),
-		tgbotapi.NewInlineKeyboardButtonData("<5000", "<5000"),
-		tgbotapi.NewInlineKeyboardButtonData("<10000", "<10000"),
-		tgbotapi.NewInlineKeyboardButtonData("<20000", "<20000"),
+	// изменение
+	buttons := [][]tgbotapi.InlineKeyboardButton{
+		{
+			tgbotapi.NewInlineKeyboardButtonData("<50", "<50"),
+			tgbotapi.NewInlineKeyboardButtonData("<500", "<500"),
+		},
+		{
+			tgbotapi.NewInlineKeyboardButtonData("<1000", "<1000"),
+			tgbotapi.NewInlineKeyboardButtonData("<2000", "<2000"),
+		},
+		{
+			tgbotapi.NewInlineKeyboardButtonData("<3000", "<3000"),
+			tgbotapi.NewInlineKeyboardButtonData("<5000", "<5000"),
+		},
+		{
+			tgbotapi.NewInlineKeyboardButtonData("<10000", "<10000"),
+			tgbotapi.NewInlineKeyboardButtonData("<20000", "<20000"),
+		},
 	}
 
 	// Создание клавиатуры с кнопками
-	keyboard := tgbotapi.NewInlineKeyboardMarkup(buttons)
+	keyboard := tgbotapi.NewInlineKeyboardMarkup(buttons...)
 
 	// Сообщение с инструкциями по выбору
 	msg := tgbotapi.NewMessage(chatID, "Пожалуйста, выберите количество пользователей:")

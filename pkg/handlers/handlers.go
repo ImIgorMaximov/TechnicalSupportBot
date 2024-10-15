@@ -52,6 +52,40 @@ func (sm *StateManager) SetType(chatID int64, newType string) {
 
 // HandleUpdate обрабатывает входящие сообщения от пользователей
 func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager) {
+
+	// Проверка нажатий на кнопки (CallbackQuery)
+	if update.CallbackQuery != nil {
+		chatID := update.CallbackQuery.Message.Chat.ID
+		data := update.CallbackQuery.Data
+
+		log.Printf("Нажата кнопка с данными: %s для chatID %d", data, chatID)
+
+		// Определяем состояние и передаем данные нажатой кнопки в соответствующий обработчик
+		state := sm.GetState(chatID)
+
+		switch state.Type {
+		case "squadus":
+			sizing.HandleUserSelection(chatID, data, bot)
+
+		}
+
+		// Убираем индикатор загрузки кнопки после её нажатия
+
+		callback := tgbotapi.NewCallback(update.CallbackQuery.ID, "")
+
+		if _, err := bot.Request(callback); err != nil {
+			log.Println("Ошибка при ответе на CallbackQuery:", err)
+		}
+
+	}
+
+	// перед тем как обработать сообщения
+	// иначе будем пытаться обработать пустой (nil) message
+	// и будет краш приложения (т.е. panic)
+	if update.Message == nil {
+		return
+	}
+
 	chatID := update.Message.Chat.ID
 	text := update.Message.Text
 
@@ -357,6 +391,7 @@ func handleSquadus(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	} else if state.Action == "sizing" {
 		sizing.SizingSquadus(bot, chatID)
 		sm.SetState(chatID, state.Current, "squadus")
+		sm.SetType(chatID, "squadus")
 		log.Printf("Переключение состояния на squadus после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
 	}
 }
