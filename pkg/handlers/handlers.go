@@ -79,9 +79,6 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 
 	}
 
-	// перед тем как обработать сообщения
-	// иначе будем пытаться обработать пустой (nil) message
-	// и будет краш приложения (т.е. panic)
 	if update.Message == nil {
 		return
 	}
@@ -94,13 +91,9 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 	state := sm.GetState(chatID)
 
 	if state.Type != "" {
-		// добавил проверку, потому что когда задаешь параметры
-		// и захочется на главное меню, невозможно выйти
-		// возващает не валидный ввод
-		//
-		// или предлагаю другой вариант:
-		// вынести из switch case /start выше,
-		// сразу же после объявления "text"
+		// Проверка на выход в Главное меню
+		// при вводе параметров на расчет сайзинга
+
 		if text == "/start" {
 			sm.SetType(chatID, "")
 			goto handleCommands
@@ -108,6 +101,9 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 		switch state.Type {
 		case "standalone":
 			handleStandalone(bot, chatID, sm, text)
+			return
+		case "mailion":
+			handleMailion(bot, chatID, sm, text)
 			return
 		}
 	}
@@ -134,13 +130,13 @@ handleCommands:
 		sm.SetState(chatID, state.Current, "sizing")
 
 	case "Частное Облако":
-		handlePrivateCloud(bot, chatID, sm)
+		handlePrivateCloude(bot, chatID, sm)
 
 	case "Squadus":
 		handleSquadus(bot, chatID, sm)
 
 	case "Mailion":
-		handleMailion(bot, chatID, sm)
+		handleMailion(bot, chatID, sm, text)
 
 	case "Почта":
 		handleMail(bot, chatID, sm)
@@ -239,11 +235,6 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 			state.Previous = state.Current
 			sizing.HandleUserInputPrivateCloudStandalone(bot, chatID, &state.Current, text)
 
-			// внес изменение: добавил новое завершающее состояние
-			// если расчет закончен, только тогда выходим из функции
-			// (баг был когда валидация не проходит то статус все равно оставался на awaitingStorageQuotaPrivateCloud
-			// и при попытке ввести правильный параметр перекидывал на главное меню
-			// не начав расчет)
 			if state.Current == "calculationDone" {
 				state.Current = "В главное меню"
 				sm.SetType(chatID, "")
@@ -326,7 +317,7 @@ func handleCluster(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 }
 
 // handlePrivateCloud обрабатывает запрос на Частное Облако
-func handlePrivateCloud(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
+func handlePrivateCloude(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	state := sm.GetState(chatID)
 	state.Product = "privateCloud"
 	log.Printf("handlePrivateCloud: chatID %d, previousState %s, currentState %s, productState %s", chatID, state.Previous, state.Current, state.Product)
@@ -360,7 +351,7 @@ func handleMail(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 }
 
 // handleMailion обрабатывает запрос на Mailion
-func handleMailion(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
+func handleMailion(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text string) {
 	state := sm.GetState(chatID)
 	state.Product = "mailion"
 	log.Printf("handleMailion: chatID %d, previousState %s, currentState %s, productState %s", chatID, state.Previous, state.Current, state.Product)
@@ -368,9 +359,14 @@ func handleMailion(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		sendInstructions(bot, chatID)
 		sm.SetState(chatID, state.Current, "mailion")
 		log.Printf("Переключение состояния на mailion после инструкции: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
-	} else if state.Action == "deploy" || state.Current == "sizing" {
+	} else if state.Action == "deploy" {
 		sendDeploymentOptions(bot, chatID)
 		sm.SetState(chatID, state.Current, "mailion")
+		log.Printf("Переключение состояния на mailion после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
+	} else if state.Current == "sizing" {
+		sm.SetState(chatID, state.Current, "mailion")
+		sm.SetType(chatID, "mailion")
+		sizing.HandleUserInputMailion(bot, chatID, &state.Current, text)
 		log.Printf("Переключение состояния на mailion после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
 	}
 }
