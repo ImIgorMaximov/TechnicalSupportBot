@@ -90,6 +90,8 @@ func HandleUserInputMailion(bot *tgbotapi.BotAPI, chatID int64, state *string, t
 		currentStateMailion = "mailion"
 		delete(userInputValuesMailion, chatID)
 	}
+
+	*state = currentStateMailion
 }
 
 // HandleNextInputMailion помогает запрашивать следующие данные и обновлять состояние

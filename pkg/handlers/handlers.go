@@ -363,9 +363,11 @@ func handleMailion(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text st
 		sendDeploymentOptions(bot, chatID)
 		sm.SetState(chatID, state.Current, "mailion")
 		log.Printf("Переключение состояния на mailion после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
-	} else if state.Current == "sizing" {
-		sm.SetState(chatID, state.Current, "mailion")
-		sm.SetType(chatID, "mailion")
+	} else if state.Action == "sizing" {
+		if text == "Mailion" {
+			sm.SetState(chatID, state.Current, "mailion")
+			sm.SetType(chatID, "mailion")
+		}
 		sizing.HandleUserInputMailion(bot, chatID, &state.Current, text)
 		log.Printf("Переключение состояния на mailion после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
 	}
