@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"strconv"
+	"technicalSupportBot/pkg/keyboards"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -81,8 +82,10 @@ func HandleUserInputMailion(bot *tgbotapi.BotAPI, chatID int64, state *string, t
 		bot.Send(msg)
 
 		// Сбрасываем состояние после завершения
-		currentStateMailion = "mailion"
+		currentStateMailion = "calculation done"
 		delete(userInputValuesMailion, chatID)
+
+		showMainMenuForMailion(bot, chatID)
 
 	default:
 		msg := tgbotapi.NewMessage(chatID, "Неизвестное состояние. Начните заново.")
@@ -188,4 +191,12 @@ func sendPDFToUserMailion(bot *tgbotapi.BotAPI, chatID int64, filePath string) e
 	}
 
 	return nil
+}
+
+// showMainMenu отправляет клавиатуру с главным меню
+func showMainMenuForMailion(bot *tgbotapi.BotAPI, chatID int64) {
+	keyboard := keyboards.GetMainMenuKeyboardForMailion()
+	msgWithKeyboard := tgbotapi.NewMessage(chatID, "Выберите следующую опцию:")
+	msgWithKeyboard.ReplyMarkup = keyboard
+	bot.Send(msgWithKeyboard)
 }

@@ -135,7 +135,7 @@ handleCommands:
 	case "Squadus":
 		handleSquadus(bot, chatID, sm)
 
-	case "Mailion":
+	case "Mailion", "Повторить расчет(Mailion)":
 		handleMailion(bot, chatID, sm, text)
 
 	case "Почта":
@@ -366,10 +366,22 @@ func handleMailion(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text st
 	} else if state.Action == "sizing" {
 		if text == "Mailion" {
 			sm.SetState(chatID, state.Current, "mailion")
-			sm.SetType(chatID, "mailion")
 		}
+		if state.Previous == "awaitingDiskQuotaMailion" &&
+			state.Current == "В главное меню" {
+			sm.SetState(chatID, state.Current, "mailion")
+		}
+		sm.SetType(chatID, "mailion")
 		sizing.HandleUserInputMailion(bot, chatID, &state.Current, text)
 		log.Printf("Переключение состояния на mailion после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
+
+		if state.Current == "calculation done" {
+			state.Previous = "awaitingDiskQuotaMailion"
+			state.Current = "В главное меню"
+			sm.SetType(chatID, "")
+			log.Printf("Предыдущее состояние: %s, выполнение функции прекращено.", state.Previous)
+			return
+		}
 	}
 }
 
