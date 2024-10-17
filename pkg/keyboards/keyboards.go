@@ -22,7 +22,7 @@ func GetMainKeyboard() tgbotapi.ReplyKeyboardMarkup {
 }
 
 func GetProductKeyboard() tgbotapi.ReplyKeyboardMarkup {
-	return tgbotapi.NewReplyKeyboard(
+	return tgbotapi.NewOneTimeReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Частное Облако"),
 		),
@@ -59,7 +59,7 @@ func GetInstructionsKeyboard() tgbotapi.ReplyKeyboardMarkup {
 }
 
 func GetDeploymentOptionsKeyboard() tgbotapi.ReplyKeyboardMarkup {
-	return tgbotapi.NewReplyKeyboard(
+	return tgbotapi.NewOneTimeReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Standalone"),
 		),
