@@ -287,7 +287,7 @@ func GetMainMenuKeyboardForMailion() tgbotapi.ReplyKeyboardMarkup {
 			tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("Повторить расчет(Mailion)"),
+			tgbotapi.NewKeyboardButton("Повторить расчет сайзинга"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("В главное меню"),

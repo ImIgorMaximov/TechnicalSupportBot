@@ -77,10 +77,6 @@ func HandleUserInputMailion(bot *tgbotapi.BotAPI, chatID int64, state *string, t
 			return
 		}
 
-		// Завершаем процесс и выводим сообщение об успешной отправке
-		msg := tgbotapi.NewMessage(chatID, "Файл с сайзингом был успешно отправлен!")
-		bot.Send(msg)
-
 		// Сбрасываем состояние после завершения
 		currentStateMailion = "calculation done"
 		delete(userInputValuesMailion, chatID)

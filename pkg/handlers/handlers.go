@@ -135,7 +135,7 @@ handleCommands:
 	case "Squadus":
 		handleSquadus(bot, chatID, sm)
 
-	case "Mailion", "Повторить расчет(Mailion)":
+	case "Mailion", "Повторить расчет сайзинга":
 		handleMailion(bot, chatID, sm, text)
 
 	case "Почта":
