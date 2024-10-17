@@ -119,43 +119,22 @@ func HandleNextInputPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64, u
 // calculateAndSendSizing выполняет расчет и отправляет результат пользователю
 func calculateAndSendSizingPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64, userInputValuesPrivateCloudStandalone []string) {
 	// Открытие файла Excel
-	// filePath := "/home/kayrat/go/tgbot/TechnicalSupportBot/sizing.xlsx"
-	// f, err := excelize.OpenFile(filePath)
-	// if err != nil {
-	// 	sendErrorMessage(bot, chatID, "Произошла ошибка при открытии файла.")
-	// 	log.Println("Ошибка открытия файла:", err)
-	// 	return
-	// }
-	// defer f.Close()
-
-	f, _ := newfile(sheetName)
-
-	// Создание буфера для хранения файла в памяти
-	// buf := new(bytes.Buffer)
-	// if err := f.Write(buf); err != nil {
-	// 	log.Fatalf("Ошибка при записи в буфер: %v", err)
-	// }
+	filePath := "/home/admin-msk/MyOfficeConfig/sizingPrivateCloudStandalone.xlsx"
+	f, err := excelize.OpenFile(filePath)
+	if err != nil {
+		sendErrorMessage(bot, chatID, "Произошла ошибка при открытии файла.")
+		log.Println("Ошибка открытия файла:", err)
+		return
+	}
+	defer f.Close()
 
 	// Заполнение ячеек данными
-	err := fillExcelFilePrivateCloudStandalone(f, userInputValuesPrivateCloudStandalone)
+	err = fillExcelFilePrivateCloudStandalone(f, userInputValuesPrivateCloudStandalone)
 	if err != nil {
 		sendErrorMessage(bot, chatID, "Произошла ошибка при записи в файл.")
 		log.Println("Ошибка записи в файл:", err)
 		return
 	}
-
-	// doc := tgbotapi.NewDocument(chatID, tgbotapi.FilePath(filepath.Clean(filePath)))
-	// if _, err := bot.Send(doc); err != nil {
-	// 	log.Printf("Ошибка отправки %s файла, err: %v", filepath.Base(filePath), err)
-	// 	return
-	// }
-
-	// Сохранение изменений
-	// if err := f.Save(); err != nil {
-	// 	sendErrorMessage(bot, chatID, "Произошла ошибка при сохранении файла.")
-	// 	log.Println("Ошибка сохранения файла:", err)
-	// 	returnЫ
-	// }
 
 	// Извлечение результатов
 	sendSizingResultsPrivateCloudStandalone(bot, chatID, f, userInputValuesPrivateCloudStandalone)
@@ -167,32 +146,75 @@ func fillExcelFilePrivateCloudStandalone(f *excelize.File, userInputValuesPrivat
 		errors.New("len is less than 4")
 	}
 
-	err := f.SetCellValue(sheetName, "D6", userInputValuesPrivateCloudStandalone[0]) // Макс. количество пользователей
+	err := f.SetCellValue(sheetName, "D4", userInputValuesPrivateCloudStandalone[0]) // Макс. количество пользователей
 	err = f.SetCellValue(sheetName, "F6", userInputValuesPrivateCloudStandalone[1])  // Кол-во активных пользователей
 	err = f.SetCellValue(sheetName, "F7", userInputValuesPrivateCloudStandalone[2])  // Кол-во редактируемых документов
-	err = f.SetCellValue(sheetName, "D7", userInputValuesPrivateCloudStandalone[3])  // Дисковая квота пользователя
+	err = f.SetCellValue(sheetName, "D8", userInputValuesPrivateCloudStandalone[3])  // Дисковая квота пользователя
 	return err
 }
 
 // sendSizingResults извлекает результаты из Excel и отправляет их пользователю
 func sendSizingResultsPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64, f *excelize.File, userInputValuesPrivateCloudStandalone []string) {
-	operatorVM, _ := f.GetCellValue(sheetName, "C2")
-	operatorCPU, _ := f.GetCellValue(sheetName, "D2")
-	operatorRAM, _ := f.GetCellValue(sheetName, "E2")
-	operatorSSD, _ := f.GetCellValue(sheetName, "F2")
+	//GET VALUE
+	operatorVM, _ := f.GetCellValue("Standalone", "C15")
+	operatorCPU, _ := f.GetCellValue("Standalone", "D15")
+	operatorRAM, _ := f.GetCellValue("Standalone", "E15")
+	operatorSSD, _ := f.GetCellValue("Standalone", "F15")
 
-	coVM, _ := f.GetCellValue(sheetName, "C3")
-	coCPU, _ := f.GetCellValue(sheetName, "D3")
-	coRAM, _ := f.GetCellValue(sheetName, "E3")
-	coSSD, _ := f.GetCellValue(sheetName, "F3")
+	coVM, _ := f.GetCellValue("Standalone", "C16")
+	coCPU, _ := f.GetCellValue("Standalone", "D16")
+	coRAM, _ := f.GetCellValue("Standalone", "E16")
+	coSSD, _ := f.GetCellValue("Standalone", "F16")
 
-	pgsVM, _ := f.GetCellValue(sheetName, "C4")
-	pgsCPU, _ := f.GetCellValue(sheetName, "D4")
-	pgsRAM, _ := f.GetCellValue(sheetName, "E4")
+	pgsVM, _ := f.GetCellValue("Standalone", "C17")
+	pgsCPU, _ := f.GetCellValue("Standalone", "D17")
+	pgsRAM, _ := f.GetCellValue("Standalone", "E17")
+
+	psnVM, _ := f.GetCellValue("Standalone", "C18")
+	psnCPU, _ := f.GetCellValue("Standalone", "D18")
+	psnRAM, _ := f.GetCellValue("Standalone", "E18")
+
+	itogoVM, _ := f.GetCellValue("Standalone", "C19")
+	itogoCPU, _ := f.GetCellValue("Standalone", "D19")
+	itogoRAM, _ := f.GetCellValue("Standalone", "E19")
+	itogoSSD, _ := f.GetCellValue("Standalone", "F19")
+	// itogoHDD, _ := f.GetCellValue("Standalone", "G19")
+
+	newFile, err := newExcelFile(sheetName)
+	if err != nil {
+		log.Println("creating new file err:", err)
+		return
+	}
+
+	err = newFile.SetCellValue(sheetName, "C2", operatorVM)
+	err = newFile.SetCellValue(sheetName, "D2", operatorCPU)
+	err = newFile.SetCellValue(sheetName, "E2", operatorRAM)
+	err = newFile.SetCellValue(sheetName, "F2", operatorSSD)
+
+	err = newFile.SetCellValue(sheetName, "C3", coVM)
+	err = newFile.SetCellValue(sheetName, "D3", coCPU)
+	err = newFile.SetCellValue(sheetName, "E3", coRAM)
+	err = newFile.SetCellValue(sheetName, "F3", coSSD)
+
+	err = newFile.SetCellValue(sheetName, "C4", pgsVM)
+	err = newFile.SetCellValue(sheetName, "D4", pgsCPU)
+	err = newFile.SetCellValue(sheetName, "E4", pgsRAM)
+
+	err = newFile.SetCellValue(sheetName, "C5", psnVM)
+	err = newFile.SetCellValue(sheetName, "D5", psnCPU)
+	err = newFile.SetCellValue(sheetName, "E5", psnRAM)
+
+	err = f.SetCellValue(sheetName, "C6", itogoVM)
+	err = f.SetCellValue(sheetName, "D6", itogoCPU)
+	err = f.SetCellValue(sheetName, "E6", itogoRAM)
+	err = f.SetCellValue(sheetName, "F6", itogoSSD)
+
+	// Расчет значения для PGS SSD
+	ssdValue := calculateSSD(userInputValuesPrivateCloudStandalone)
 
 	// Создание буфера для хранения файла в памяти
 	buf := new(bytes.Buffer)
-	if err := f.Write(buf); err != nil {
+	if err := newFile.Write(buf); err != nil {
 		log.Fatalf("Ошибка при записи в буфер: %v", err)
 	}
 
@@ -201,15 +223,12 @@ func sendSizingResultsPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64,
 		Bytes: buf.Bytes(),
 	}
 
+	// отправка файла в чат
 	doc := tgbotapi.NewDocument(chatID, fbytes)
 	if _, err := bot.Send(doc); err != nil {
 		log.Printf("Ошибка отправки %s файла, err: %v", fbytes.Name, err)
 		return
 	}
-
-	// Расчет значения для PGS SSD
-	ssdValue := calculateSSD(userInputValuesPrivateCloudStandalone)
-
 	// Отправка результата пользователю
 	resultMsg := fmt.Sprintf(
 		"Результаты расчета сайзинга для продукта Частное Облако Standalone:\n\n"+
@@ -269,7 +288,7 @@ func validateInput(input string, max int) bool {
 	return num > 0 && num <= max
 }
 
-func newfile(sheetName string) (*excelize.File, error) {
+func newExcelFile(sheetName string) (*excelize.File, error) {
 	f := excelize.NewFile()
 
 	index, err := f.NewSheet(sheetName)
@@ -299,17 +318,19 @@ func newfile(sheetName string) (*excelize.File, error) {
 
 	err = f.SetCellDefault(sheetName, "A3", "COS")
 	err = f.SetCellDefault(sheetName, "A4", "PGS")
+	err = f.SetCellDefault(sheetName, "A5", "PSN")
 
 	err = f.SetCellDefault(sheetName, "B2", "оператор")
 	err = f.SetCellDefault(sheetName, "B3", "все роли")
 	err = f.SetCellDefault(sheetName, "B4", "все роли")
+	err = f.SetCellDefault(sheetName, "B5", "все роли")
 
 	top := excelize.Border{Type: "top", Style: 1, Color: "000000"}
 	left := excelize.Border{Type: "left", Style: 1, Color: "000000"}
 	right := excelize.Border{Type: "right", Style: 1, Color: "000000"}
 	bottom := excelize.Border{Type: "bottom", Style: 1, Color: "000000"}
 
-	err = f.MergeCell(sheetName, "A5", "B5")
+	err = f.MergeCell(sheetName, "A6", "B6")
 	if err != nil {
 		return nil, err
 	}
@@ -389,21 +410,29 @@ func newfile(sheetName string) (*excelize.File, error) {
 	if err != nil {
 		return nil, err
 	}
+	err = f.SetCellStyle(sheetName, "A6", "G6", row2)
+	if err != nil {
+		return nil, err
+	}
 
-	err = f.SetCellValue(sheetName, "A5", "Итого")
+	err = f.SetCellValue(sheetName, "A6", "Итого")
 
-	err = f.SetCellDefault(sheetName, "C2", " 1")
-	err = f.SetCellDefault(sheetName, "D2", " 1")
-	err = f.SetCellDefault(sheetName, "E2", " 4")
-	err = f.SetCellDefault(sheetName, "f2", " 50")
-	err = f.SetCellDefault(sheetName, "C3", " 1")
-	err = f.SetCellDefault(sheetName, "D3", " 8")
-	err = f.SetCellDefault(sheetName, "E3", " 20")
-	err = f.SetCellDefault(sheetName, "f3", " 100")
-	err = f.SetCellDefault(sheetName, "C4", " 1")
-	err = f.SetCellDefault(sheetName, "D4", " 8")
-	err = f.SetCellDefault(sheetName, "E4", " 20")
-	err = f.SetCellDefault(sheetName, "F4", " 140")
+	// err = f.SetCellDefault(sheetName, "C2", " 1")
+	// err = f.SetCellDefault(sheetName, "D2", " 1")
+	// err = f.SetCellDefault(sheetName, "E2", " 4")
+	// err = f.SetCellDefault(sheetName, "f2", " 50")
+	// err = f.SetCellDefault(sheetName, "C3", " 1")
+	// err = f.SetCellDefault(sheetName, "D3", " 8")
+	// err = f.SetCellDefault(sheetName, "E3", " 20")
+	// err = f.SetCellDefault(sheetName, "f3", " 100")
+	// err = f.SetCellDefault(sheetName, "C4", " 1")
+	// err = f.SetCellDefault(sheetName, "D4", " 8")
+	// err = f.SetCellDefault(sheetName, "E4", " 20")
+	// err = f.SetCellDefault(sheetName, "F4", " 140")
+	// err = f.SetCellDefault(sheetName, "C5", " 1")
+	// err = f.SetCellDefault(sheetName, "D5", " 8")
+	// err = f.SetCellDefault(sheetName, "E5", " 20")
+	// err = f.SetCellDefault(sheetName, "F5", " 140")
 
 	if err != nil {
 		log.Println("errs", err)
