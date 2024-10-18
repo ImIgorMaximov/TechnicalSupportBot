@@ -187,6 +187,12 @@ func sendSizingResultsPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64,
 		return
 	}
 
+	err = configurePCS(newFile)
+	if err != nil {
+		log.Println("configurePCS", err)
+		return
+	}
+
 	err = newFile.SetCellValue(sheetName, "B2", operatorVM)
 	err = newFile.SetCellValue(sheetName, "C2", operatorCPU)
 	err = newFile.SetCellValue(sheetName, "D2", operatorRAM)
@@ -288,25 +294,28 @@ func validateInput(input string, max int) bool {
 }
 
 func newExcelFile(sheetName string) (*excelize.File, error) {
-	f := excelize.NewFile()
+	return excelize.NewFile(), nil
+}
 
+func configurePCS(f *excelize.File) error {
 	index, err := f.NewSheet(sheetName)
 	if err != nil {
 		log.Fatalf("Ошибка при создании sheet: %v", err)
-		return nil, err
+		return err
 	}
-	defer f.Close()
 
 	f.SetActiveSheet(index)
 
 	err = f.SetColWidth(sheetName, "A", "G", 12)
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 
 	err = f.SetCellDefault(sheetName, "A1", "Компонент")
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 	err = f.SetCellDefault(sheetName, "B1", "Кол-во VM")
 	err = f.SetCellDefault(sheetName, "C1", "CPU, vCPU")
@@ -335,7 +344,8 @@ func newExcelFile(sheetName string) (*excelize.File, error) {
 	})
 	err = f.SetCellStyle(sheetName, "A5", "B5", style)
 	if err != nil {
-		return nil, err
+		log.Println("set style:", err)
+		return err
 	}
 
 	rowStyle, err := f.NewStyle(&excelize.Style{
@@ -355,11 +365,12 @@ func newExcelFile(sheetName string) (*excelize.File, error) {
 	})
 	if err != nil {
 		log.Fatal("rowstyle: ", err)
-		return nil, err
+		return err
 	}
 	err = f.SetCellStyle(sheetName, "A1", "F1", rowStyle)
 	if err != nil {
-		return nil, err
+		log.Println(err)
+		return err
 	}
 
 	row1, err := f.NewStyle(&excelize.Style{
@@ -378,6 +389,9 @@ func newExcelFile(sheetName string) (*excelize.File, error) {
 			Horizontal: "left",
 		},
 	})
+	if err != nil {
+		return err
+	}
 	row2, err := f.NewStyle(&excelize.Style{
 		Border: []excelize.Border{top, left, right, bottom},
 		Font: &excelize.Font{
@@ -388,50 +402,37 @@ func newExcelFile(sheetName string) (*excelize.File, error) {
 			Horizontal: "left",
 		},
 	})
-
 	if err != nil {
 		log.Fatal("rowstyle: ", err)
-		return nil, err
+		return err
 	}
+
 	err = f.SetCellStyle(sheetName, "A2", "F2", row2)
 	if err != nil {
-		return nil, err
+		log.Println(err)
+		return err
 	}
 	err = f.SetCellStyle(sheetName, "A3", "F3", row1)
 	if err != nil {
-		return nil, err
+		log.Println(err)
+		return err
 	}
 	err = f.SetCellStyle(sheetName, "A4", "F4", row2)
 	if err != nil {
-		return nil, err
+		log.Println(err)
+		return err
 	}
 	err = f.SetCellStyle(sheetName, "A5", "F5", row1)
 	if err != nil {
-		return nil, err
+		log.Println(err)
+		return err
 	}
 
 	err = f.SetCellValue(sheetName, "A5", "Итого")
-
-	// err = f.SetCellDefault(sheetName, "C2", " 1")
-	// err = f.SetCellDefault(sheetName, "D2", " 1")
-	// err = f.SetCellDefault(sheetName, "E2", " 4")
-	// err = f.SetCellDefault(sheetName, "f2", " 50")
-	// err = f.SetCellDefault(sheetName, "C3", " 1")
-	// err = f.SetCellDefault(sheetName, "D3", " 8")
-	// err = f.SetCellDefault(sheetName, "E3", " 20")
-	// err = f.SetCellDefault(sheetName, "f3", " 100")
-	// err = f.SetCellDefault(sheetName, "C4", " 1")
-	// err = f.SetCellDefault(sheetName, "D4", " 8")
-	// err = f.SetCellDefault(sheetName, "E4", " 20")
-	// err = f.SetCellDefault(sheetName, "F4", " 140")
-	// err = f.SetCellDefault(sheetName, "C5", " 1")
-	// err = f.SetCellDefault(sheetName, "D5", " 8")
-	// err = f.SetCellDefault(sheetName, "E5", " 20")
-	// err = f.SetCellDefault(sheetName, "F5", " 140")
 
 	if err != nil {
 		log.Println("errs", err)
 	}
 
-	return f, nil
+	return nil
 }
