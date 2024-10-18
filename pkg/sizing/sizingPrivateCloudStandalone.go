@@ -175,11 +175,11 @@ func sendSizingResultsPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64,
 	pgsSSD := calculateSSD(userInputValuesPrivateCloudStandalone)
 	pgsHDD, _ := f.GetCellValue("Standalone", "G17")
 
-	resultVM, _ := f.GetCellValue("Standalone", "C19")
-	resultCPU, _ := f.GetCellValue("Standalone", "D19")
-	resultRAM, _ := f.GetCellValue("Standalone", "E19")
-	resultSSD, _ := f.GetCellValue("Standalone", "F19")
-	resultHDD, _ := f.GetCellValue("Standalone", "G19")
+	resultVM, _ := f.GetCellFormula("Standalone", "C19")
+	resultCPU, _ := f.GetCellFormula("Standalone", "D19")
+	resultRAM, _ := f.GetCellFormula("Standalone", "E19")
+	resultSSD, err := f.GetCellFormula("Standalone", "F19")
+	resultHDD, _ := f.GetCellFormula("Standalone", "G19")
 
 	newFile, err := newExcelFile(sheetName)
 	if err != nil {
@@ -187,29 +187,29 @@ func sendSizingResultsPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64,
 		return
 	}
 
-	err = newFile.SetCellValue(sheetName, "C2", operatorVM)
-	err = newFile.SetCellValue(sheetName, "D2", operatorCPU)
-	err = newFile.SetCellValue(sheetName, "E2", operatorRAM)
-	err = newFile.SetCellValue(sheetName, "F2", operatorSSD)
-	err = newFile.SetCellValue(sheetName, "G2", operatorHDD)
+	err = newFile.SetCellValue(sheetName, "B2", operatorVM)
+	err = newFile.SetCellValue(sheetName, "C2", operatorCPU)
+	err = newFile.SetCellValue(sheetName, "D2", operatorRAM)
+	err = newFile.SetCellValue(sheetName, "E2", operatorSSD)
+	err = newFile.SetCellValue(sheetName, "F2", operatorHDD)
 
-	err = newFile.SetCellValue(sheetName, "C3", coVM)
-	err = newFile.SetCellValue(sheetName, "D3", coCPU)
-	err = newFile.SetCellValue(sheetName, "E3", coRAM)
-	err = newFile.SetCellValue(sheetName, "F3", coSSD)
-	err = newFile.SetCellValue(sheetName, "G3", coHDD)
+	err = newFile.SetCellValue(sheetName, "B3", coVM)
+	err = newFile.SetCellValue(sheetName, "C3", coCPU)
+	err = newFile.SetCellValue(sheetName, "D3", coRAM)
+	err = newFile.SetCellValue(sheetName, "E3", coSSD)
+	err = newFile.SetCellValue(sheetName, "F3", coHDD)
 
-	err = newFile.SetCellValue(sheetName, "C4", pgsVM)
-	err = newFile.SetCellValue(sheetName, "D4", pgsCPU)
-	err = newFile.SetCellValue(sheetName, "E4", pgsRAM)
-	err = newFile.SetCellValue(sheetName, "F4", pgsSSD)
-	err = newFile.SetCellValue(sheetName, "G4", pgsHDD)
+	err = newFile.SetCellValue(sheetName, "B4", pgsVM)
+	err = newFile.SetCellValue(sheetName, "C4", pgsCPU)
+	err = newFile.SetCellValue(sheetName, "D4", pgsRAM)
+	err = newFile.SetCellValue(sheetName, "E4", pgsSSD)
+	err = newFile.SetCellValue(sheetName, "F4", pgsHDD)
 
-	err = f.SetCellValue(sheetName, "C6", resultVM)
-	err = f.SetCellValue(sheetName, "D6", resultCPU)
-	err = f.SetCellValue(sheetName, "E6", resultRAM)
-	err = f.SetCellValue(sheetName, "F6", resultSSD)
-	err = f.SetCellValue(sheetName, "G6", resultHDD)
+	err = f.SetCellFormula(sheetName, "B6", resultVM)
+	err = f.SetCellFormula(sheetName, "C6", resultCPU)
+	err = f.SetCellFormula(sheetName, "D6", resultRAM)
+	err = f.SetCellFormula(sheetName, "E6", resultSSD)
+	err = f.SetCellFormula(sheetName, "F6", resultHDD)
 
 	// Создание буфера для хранения файла в памяти
 	buf := new(bytes.Buffer)
