@@ -308,11 +308,11 @@ func newExcelFile(sheetName string) (*excelize.File, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = f.SetCellDefault(sheetName, "C1", "Кол-во VM")
-	err = f.SetCellDefault(sheetName, "D1", "CPU, vCPU")
-	err = f.SetCellDefault(sheetName, "E1", "RAM, GB")
-	err = f.SetCellDefault(sheetName, "F1", "SSD, GB")
-	err = f.SetCellDefault(sheetName, "G1", "HDD, GB")
+	err = f.SetCellDefault(sheetName, "B1", "Кол-во VM")
+	err = f.SetCellDefault(sheetName, "C1", "CPU, vCPU")
+	err = f.SetCellDefault(sheetName, "D1", "RAM, GB")
+	err = f.SetCellDefault(sheetName, "E1", "SSD, GB")
+	err = f.SetCellDefault(sheetName, "F1", "HDD, GB")
 
 	err = f.SetCellDefault(sheetName, "A2", "Operator")
 	err = f.SetCellDefault(sheetName, "A3", "CO")
@@ -323,10 +323,10 @@ func newExcelFile(sheetName string) (*excelize.File, error) {
 	right := excelize.Border{Type: "right", Style: 1, Color: "000000"}
 	bottom := excelize.Border{Type: "bottom", Style: 1, Color: "000000"}
 
-	err = f.MergeCell(sheetName, "A6", "B6")
-	if err != nil {
-		return nil, err
-	}
+	// err = f.MergeCell(sheetName, "A6", "B6")
+	// if err != nil {
+	// 	return nil, err
+	// }
 	style, err := f.NewStyle(&excelize.Style{
 		Border: []excelize.Border{top, left, right, bottom},
 		Alignment: &excelize.Alignment{
@@ -357,7 +357,7 @@ func newExcelFile(sheetName string) (*excelize.File, error) {
 		log.Fatal("rowstyle: ", err)
 		return nil, err
 	}
-	err = f.SetCellStyle(sheetName, "A1", "G1", rowStyle)
+	err = f.SetCellStyle(sheetName, "A1", "F1", rowStyle)
 	if err != nil {
 		return nil, err
 	}
@@ -374,6 +374,9 @@ func newExcelFile(sheetName string) (*excelize.File, error) {
 			Color:        "000000",
 			ColorIndexed: index,
 		},
+		Alignment: &excelize.Alignment{
+			Horizontal: "left",
+		},
 	})
 	row2, err := f.NewStyle(&excelize.Style{
 		Border: []excelize.Border{top, left, right, bottom},
@@ -381,34 +384,33 @@ func newExcelFile(sheetName string) (*excelize.File, error) {
 			Color:        "000000",
 			ColorIndexed: index,
 		},
+		Alignment: &excelize.Alignment{
+			Horizontal: "left",
+		},
 	})
 
 	if err != nil {
 		log.Fatal("rowstyle: ", err)
 		return nil, err
 	}
-	err = f.SetCellStyle(sheetName, "A2", "G2", row2)
+	err = f.SetCellStyle(sheetName, "A2", "F2", row2)
 	if err != nil {
 		return nil, err
 	}
-	err = f.SetCellStyle(sheetName, "A3", "G3", row1)
+	err = f.SetCellStyle(sheetName, "A3", "F3", row1)
 	if err != nil {
 		return nil, err
 	}
-	err = f.SetCellStyle(sheetName, "A4", "G4", row2)
+	err = f.SetCellStyle(sheetName, "A4", "F4", row2)
 	if err != nil {
 		return nil, err
 	}
-	err = f.SetCellStyle(sheetName, "A5", "G5", row1)
-	if err != nil {
-		return nil, err
-	}
-	err = f.SetCellStyle(sheetName, "A6", "G6", row2)
+	err = f.SetCellStyle(sheetName, "A5", "F5", row1)
 	if err != nil {
 		return nil, err
 	}
 
-	err = f.SetCellValue(sheetName, "A6", "Итого")
+	err = f.SetCellValue(sheetName, "A5", "Итого")
 
 	// err = f.SetCellDefault(sheetName, "C2", " 1")
 	// err = f.SetCellDefault(sheetName, "D2", " 1")
