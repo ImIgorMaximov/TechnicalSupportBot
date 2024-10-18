@@ -1,6 +1,7 @@
 package sizing
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"log"
@@ -161,6 +162,20 @@ func sendSizingResultsPSNStandalone(bot *tgbotapi.BotAPI, chatID int64, f *excel
 	psnCPU, _ := f.GetCellValue("Standalone", "D18")
 	psnRAM, _ := f.GetCellValue("Standalone", "E18")
 	psnSSD, _ := f.GetCellValue("Standalone", "F18")
+	psnHDD, _ := f.GetCellValue("Standalone", "G18")
+
+	resultVM, _ := f.GetCellValue("Standalone", "C19")
+	resultCPU, _ := f.GetCellValue("Standalone", "D19")
+	resultRAM, _ := f.GetCellValue("Standalone", "E19")
+	resultSSD, _ := f.GetCellValue("Standalone", "F19")
+	resultHDD, _ := f.GetCellValue("Standalone", "G19")
+
+	// calculate cells value manually
+	// i_psnVM, _ := strconv.Atoi(psnVM)
+	// i_psnCPU, _ := strconv.Atoi(psnCPU)
+	// i_psnRAM, _ := strconv.Atoi(psnRAM)
+	// i_psnSSD, _ := strconv.Atoi(psnSSD)
+	// i_psnHDD, _ := strconv.Atoi(psnHDD)
 
 	// Расчет значения для SSD
 	// ssdValue := calculateSSD(userInputValuesPSNStandalone)
@@ -182,6 +197,13 @@ func sendSizingResultsPSNStandalone(bot *tgbotapi.BotAPI, chatID int64, f *excel
 	err = newFile.SetCellValue(sheetPSNS, "C2", psnCPU)
 	err = newFile.SetCellValue(sheetPSNS, "D2", psnRAM)
 	err = newFile.SetCellValue(sheetPSNS, "E2", psnSSD)
+	err = newFile.SetCellValue(sheetPSNS, "F2", psnHDD)
+
+	err = newFile.SetCellValue(sheetPSNS, "B3", resultVM)
+	err = newFile.SetCellValue(sheetPSNS, "C3", resultCPU)
+	err = newFile.SetCellValue(sheetPSNS, "D3", resultRAM)
+	err = newFile.SetCellValue(sheetPSNS, "E3", resultSSD)
+	err = newFile.SetCellValue(sheetPSNS, "F3", resultHDD)
 
 	// Создание буфера для хранения файла в памяти
 	buf := new(bytes.Buffer)
