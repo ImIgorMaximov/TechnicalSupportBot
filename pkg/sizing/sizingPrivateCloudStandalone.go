@@ -136,6 +136,13 @@ func calculateAndSendSizingPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID i
 		return
 	}
 
+	// Сохранение изменений
+	if err := f.Save(); err != nil {
+		sendErrorMessage(bot, chatID, "Произошла ошибка при сохранении файла.")
+		log.Println("Ошибка сохранения файла:", err)
+		return
+	}
+
 	// Извлечение результатов
 	sendSizingResultsPrivateCloudStandalone(bot, chatID, f, userInputValuesPrivateCloudStandalone)
 }
@@ -150,6 +157,11 @@ func fillExcelFilePrivateCloudStandalone(f *excelize.File, userInputValuesPrivat
 	err = f.SetCellValue(sheetName, "F6", userInputValuesPrivateCloudStandalone[1])  // Кол-во активных пользователей
 	err = f.SetCellValue(sheetName, "F7", userInputValuesPrivateCloudStandalone[2])  // Кол-во редактируемых документов
 	err = f.SetCellValue(sheetName, "D8", userInputValuesPrivateCloudStandalone[3])  // Дисковая квота пользователя
+
+	// Расчет значения для PGS SSD
+	pgsSSD := calculateSSD(userInputValuesPrivateCloudStandalone)
+	err = f.SetCellValue(sheetName, "F17", pgsSSD)
+
 	return err
 }
 
@@ -171,15 +183,38 @@ func sendSizingResultsPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64,
 	pgsVM, _ := f.GetCellValue("Standalone", "C17")
 	pgsCPU, _ := f.GetCellValue("Standalone", "D17")
 	pgsRAM, _ := f.GetCellValue("Standalone", "E17")
-	// Расчет значения для PGS SSD
-	pgsSSD := calculateSSD(userInputValuesPrivateCloudStandalone)
+	pgsSSD, _ := f.GetCellValue("Standalone", "F17")
 	pgsHDD, _ := f.GetCellValue("Standalone", "G17")
 
-	resultVM, _ := f.GetCellFormula("Standalone", "C19")
-	resultCPU, _ := f.GetCellFormula("Standalone", "D19")
-	resultRAM, _ := f.GetCellFormula("Standalone", "E19")
-	resultSSD, err := f.GetCellFormula("Standalone", "F19")
-	resultHDD, _ := f.GetCellFormula("Standalone", "G19")
+	resultVM, _ := f.GetCellValue("Standalone", "C19")
+	resultCPU, _ := f.GetCellValue("Standalone", "D19")
+	resultRAM, _ := f.GetCellValue("Standalone", "E19")
+	resultSSD, _ := f.GetCellValue("Standalone", "F19")
+	resultHDD, _ := f.GetCellValue("Standalone", "G19")
+
+	// calculate cells value manually
+	// i_operatorVM, _ := strconv.Atoi(operatorVM)
+	// i_operatorCPU, _ := strconv.Atoi(operatorCPU)
+	// i_operatorRAM, _ := strconv.Atoi(operatorRAM)
+	// i_operatorSSD, _ := strconv.Atoi(operatorSSD)
+	// i_operatorHDD, _ := strconv.Atoi(operatorHDD)
+
+	// i_coVM, _ := strconv.Atoi(coVM)
+	// i_coCPU, _ := strconv.Atoi(coCPU)
+	// i_coRAM, _ := strconv.Atoi(coRAM)
+	// i_coSSD, _ := strconv.Atoi(coSSD)
+	// i_coHDD, _ := strconv.Atoi(coHDD)
+
+	// i_pgsVM, _ := strconv.Atoi(pgsVM)
+	// i_pgsCPU, _ := strconv.Atoi(pgsCPU)
+	// i_pgsRAM, _ := strconv.Atoi(pgsRAM)
+	// i_pgsHDD, _ := strconv.Atoi(pgsHDD)
+
+	// resultVM := strconv.Itoa(i_operatorVM + i_coVM + i_pgsVM)
+	// resultCPU := strconv.Itoa(i_operatorCPU + i_coCPU + i_pgsCPU)
+	// resultRAM := strconv.Itoa(i_operatorRAM + i_coRAM + i_pgsRAM)
+	// resultSSD := strconv.Itoa(i_operatorSSD + i_coSSD + pgsSSD)
+	// resultHDD := strconv.Itoa(i_operatorHDD + i_coHDD + i_pgsHDD)
 
 	newFile, err := newExcelFile()
 	if err != nil {
@@ -211,11 +246,11 @@ func sendSizingResultsPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64,
 	err = newFile.SetCellValue(sheetName, "E4", pgsSSD)
 	err = newFile.SetCellValue(sheetName, "F4", pgsHDD)
 
-	err = f.SetCellFormula(sheetName, "B6", resultVM)
-	err = f.SetCellFormula(sheetName, "C6", resultCPU)
-	err = f.SetCellFormula(sheetName, "D6", resultRAM)
-	err = f.SetCellFormula(sheetName, "E6", resultSSD)
-	err = f.SetCellFormula(sheetName, "F6", resultHDD)
+	err = newFile.SetCellValue(sheetName, "B5", resultVM)
+	err = newFile.SetCellValue(sheetName, "C5", resultCPU)
+	err = newFile.SetCellValue(sheetName, "D5", resultRAM)
+	err = newFile.SetCellValue(sheetName, "E5", resultSSD)
+	err = newFile.SetCellValue(sheetName, "F5", resultHDD)
 
 	// Создание буфера для хранения файла в памяти
 	buf := new(bytes.Buffer)
