@@ -165,6 +165,41 @@ func sendSizingResultsPSNStandalone(bot *tgbotapi.BotAPI, chatID int64, f *excel
 	// Расчет значения для SSD
 	// ssdValue := calculateSSD(userInputValuesPSNStandalone)
 
+	newFile, err := newExcelFile()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	sheetPSNS := "PSNS"
+	err = configurePSN(newFile, sheetPSNS)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	err = newFile.SetCellValue(sheetPSNS, "B2", psnVM)
+	err = newFile.SetCellValue(sheetPSNS, "C2", psnCPU)
+	err = newFile.SetCellValue(sheetPSNS, "D2", psnRAM)
+	err = newFile.SetCellValue(sheetPSNS, "E2", psnSSD)
+
+	// Создание буфера для хранения файла в памяти
+	buf := new(bytes.Buffer)
+	if err := newFile.Write(buf); err != nil {
+		log.Fatalf("Ошибка при записи в буфер: %v", err)
+	}
+
+	fbytes := tgbotapi.FileBytes{
+		Name:  "sizing.xlsx",
+		Bytes: buf.Bytes(),
+	}
+
+	// отправка файла в чат
+	doc := tgbotapi.NewDocument(chatID, fbytes)
+	if _, err := bot.Send(doc); err != nil {
+		log.Printf("Ошибка отправки %s файла, err: %v", fbytes.Name, err)
+		return
+	}
 	// Отправка результата пользователю
 	resultMsg := fmt.Sprintf(
 		"Результаты расчета сайзинга для продукта Почта Standalone:\n\n"+
