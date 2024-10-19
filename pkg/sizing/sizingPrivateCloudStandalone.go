@@ -224,7 +224,7 @@ func sendSizingResultsPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64,
 	}
 
 	fbytes := tgbotapi.FileBytes{
-		Name:  "sizing.xlsx",
+		Name:  "sizingPrivateCloud.xlsx",
 		Bytes: buf.Bytes(),
 	}
 
