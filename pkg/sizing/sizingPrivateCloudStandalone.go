@@ -530,26 +530,6 @@ func configurePSN(f *excelize.File, sheetname string) error {
 		log.Println(err)
 		return err
 	}
-
-	row1, err := f.NewStyle(&excelize.Style{
-		Border: []excelize.Border{top, left, right, bottom},
-		Fill: excelize.Fill{
-			Type:    "pattern",
-			Pattern: 1,
-			Color:   []string{"b4c7dc"},
-			Shading: 1,
-		},
-		Font: &excelize.Font{
-			Color:        "000000",
-			ColorIndexed: index,
-		},
-		Alignment: &excelize.Alignment{
-			Horizontal: "left",
-		},
-	})
-	if err != nil {
-		return err
-	}
 	row2, err := f.NewStyle(&excelize.Style{
 		Border: []excelize.Border{top, left, right, bottom},
 		Font: &excelize.Font{
@@ -568,22 +548,6 @@ func configurePSN(f *excelize.File, sheetname string) error {
 	err = f.SetCellStyle(sheetname, "A2", "F2", row2)
 	if err != nil {
 		log.Println(err)
-		return err
-	}
-	// err = f.SetCellStyle(sheetname, "A3", "F3", row1)
-	// if err != nil {
-	// 	log.Println(err)
-	// 	return err
-	// }
-	err = f.SetCellStyle(sheetname, "A3", "F3", row1)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	err = f.SetCellValue(sheetname, "A3", "Итого")
-	if err != nil {
-		log.Println("errs", err)
 		return err
 	}
 
