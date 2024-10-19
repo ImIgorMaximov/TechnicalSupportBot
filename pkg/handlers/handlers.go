@@ -90,7 +90,7 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 
 	state := sm.GetState(chatID)
 
-	if state.Type != "" {
+	if state.Type != "" && state.Action == "sizing" {
 		// Проверка на выход в Главное меню
 		// при вводе параметров на расчет сайзинга
 
