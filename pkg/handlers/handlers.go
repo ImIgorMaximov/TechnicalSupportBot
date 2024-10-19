@@ -253,7 +253,7 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 			log.Printf("После вызова HandleUserInputPrivateCloudStandalone. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 
 		} else if state.Action == "deploy" {
-			sm.SetState(chatID, state.Current, "standalone")
+			// sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s, Действие: %s", state.Current, state.Previous, state.Action)
 			deployment.SendStandaloneRequirementsPrivateCloud(bot, chatID)
@@ -288,7 +288,7 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 			log.Printf("После вызова HandleUserInputPSNStandalone. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 
 		} else if state.Action == "deploy" {
-			sm.SetState(chatID, state.Current, "standalone")
+			// sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s. Отправка пакетов для самостоятельной загрузки.", state.Current, state.Previous)
 			deployment.SendStandaloneRequirementsPSN(bot, chatID)
@@ -297,7 +297,7 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 		}
 	} else if state.Product == "squadus" {
 		if state.Action == "deploy" {
-			sm.SetState(chatID, state.Current, "standalone")
+			// sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s. Отправка пакетов для самостоятельной загрузки.", state.Current, state.Previous)
 			deployment.SendStandaloneRequirementsSquadus(bot, chatID)
@@ -306,7 +306,7 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 		}
 	} else if state.Product == "mailion" {
 		if state.Action == "deploy" {
-			sm.SetState(chatID, state.Current, "standalone")
+			// sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s. Отправка пакетов для самостоятельной загрузки.", state.Current, state.Previous)
 			deployment.SendStandaloneRequirementsMailion(bot, chatID)
