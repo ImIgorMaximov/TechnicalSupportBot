@@ -186,35 +186,36 @@ func sendSizingResultsPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64,
 	pgsSSD, _ := f.GetCellValue("Standalone", "F17")
 	pgsHDD, _ := f.GetCellValue("Standalone", "G17")
 
-	resultVM, _ := f.GetCellValue("Standalone", "C19")
-	resultCPU, _ := f.GetCellValue("Standalone", "D19")
-	resultRAM, _ := f.GetCellValue("Standalone", "E19")
-	resultSSD, _ := f.GetCellValue("Standalone", "F19")
-	resultHDD, _ := f.GetCellValue("Standalone", "G19")
+	// resultVM, _ := f.GetCellValue("Standalone", "C19")
+	// resultCPU, _ := f.GetCellValue("Standalone", "D19")
+	// resultRAM, _ := f.GetCellValue("Standalone", "E19")
+	// resultSSD, _ := f.GetCellValue("Standalone", "F19")
+	// resultHDD, _ := f.GetCellValue("Standalone", "G19")
 
 	// calculate cells value manually
-	// i_operatorVM, _ := strconv.Atoi(operatorVM)
-	// i_operatorCPU, _ := strconv.Atoi(operatorCPU)
-	// i_operatorRAM, _ := strconv.Atoi(operatorRAM)
-	// i_operatorSSD, _ := strconv.Atoi(operatorSSD)
-	// i_operatorHDD, _ := strconv.Atoi(operatorHDD)
+	i_operatorVM, _ := strconv.Atoi(operatorVM)
+	i_operatorCPU, _ := strconv.Atoi(operatorCPU)
+	i_operatorRAM, _ := strconv.Atoi(operatorRAM)
+	i_operatorSSD, _ := strconv.Atoi(operatorSSD)
+	i_operatorHDD, _ := strconv.Atoi(operatorHDD)
 
-	// i_coVM, _ := strconv.Atoi(coVM)
-	// i_coCPU, _ := strconv.Atoi(coCPU)
-	// i_coRAM, _ := strconv.Atoi(coRAM)
-	// i_coSSD, _ := strconv.Atoi(coSSD)
-	// i_coHDD, _ := strconv.Atoi(coHDD)
+	i_coVM, _ := strconv.Atoi(coVM)
+	i_coCPU, _ := strconv.Atoi(coCPU)
+	i_coRAM, _ := strconv.Atoi(coRAM)
+	i_coSSD, _ := strconv.Atoi(coSSD)
+	i_coHDD, _ := strconv.Atoi(coHDD)
 
-	// i_pgsVM, _ := strconv.Atoi(pgsVM)
-	// i_pgsCPU, _ := strconv.Atoi(pgsCPU)
-	// i_pgsRAM, _ := strconv.Atoi(pgsRAM)
-	// i_pgsHDD, _ := strconv.Atoi(pgsHDD)
+	i_pgsVM, _ := strconv.Atoi(pgsVM)
+	i_pgsCPU, _ := strconv.Atoi(pgsCPU)
+	i_pgsRAM, _ := strconv.Atoi(pgsRAM)
+	i_pgsSSD, _ := strconv.Atoi(pgsSSD)
+	i_pgsHDD, _ := strconv.Atoi(pgsHDD)
 
-	// resultVM := strconv.Itoa(i_operatorVM + i_coVM + i_pgsVM)
-	// resultCPU := strconv.Itoa(i_operatorCPU + i_coCPU + i_pgsCPU)
-	// resultRAM := strconv.Itoa(i_operatorRAM + i_coRAM + i_pgsRAM)
-	// resultSSD := strconv.Itoa(i_operatorSSD + i_coSSD + pgsSSD)
-	// resultHDD := strconv.Itoa(i_operatorHDD + i_coHDD + i_pgsHDD)
+	resultVM := strconv.Itoa(i_operatorVM + i_coVM + i_pgsVM)
+	resultCPU := strconv.Itoa(i_operatorCPU + i_coCPU + i_pgsCPU)
+	resultRAM := strconv.Itoa(i_operatorRAM + i_coRAM + i_pgsRAM)
+	resultSSD := strconv.Itoa(i_operatorSSD + i_coSSD + i_pgsSSD)
+	resultHDD := strconv.Itoa(i_operatorHDD + i_coHDD + i_pgsHDD)
 
 	newFile, err := newExcelFile()
 	if err != nil {
@@ -529,26 +530,6 @@ func configurePSN(f *excelize.File, sheetname string) error {
 		log.Println(err)
 		return err
 	}
-
-	row1, err := f.NewStyle(&excelize.Style{
-		Border: []excelize.Border{top, left, right, bottom},
-		Fill: excelize.Fill{
-			Type:    "pattern",
-			Pattern: 1,
-			Color:   []string{"b4c7dc"},
-			Shading: 1,
-		},
-		Font: &excelize.Font{
-			Color:        "000000",
-			ColorIndexed: index,
-		},
-		Alignment: &excelize.Alignment{
-			Horizontal: "left",
-		},
-	})
-	if err != nil {
-		return err
-	}
 	row2, err := f.NewStyle(&excelize.Style{
 		Border: []excelize.Border{top, left, right, bottom},
 		Font: &excelize.Font{
@@ -567,22 +548,6 @@ func configurePSN(f *excelize.File, sheetname string) error {
 	err = f.SetCellStyle(sheetname, "A2", "F2", row2)
 	if err != nil {
 		log.Println(err)
-		return err
-	}
-	// err = f.SetCellStyle(sheetname, "A3", "F3", row1)
-	// if err != nil {
-	// 	log.Println(err)
-	// 	return err
-	// }
-	err = f.SetCellStyle(sheetname, "A3", "F3", row1)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	err = f.SetCellValue(sheetname, "A3", "Итого")
-	if err != nil {
-		log.Println("errs", err)
 		return err
 	}
 
