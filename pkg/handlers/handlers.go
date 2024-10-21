@@ -45,8 +45,43 @@ func (sm *StateManager) SetState(chatID int64, previous, current string) {
 	state.Current = current
 }
 
+func (sm *StateManager) SetType(chatID int64, newType string) {
+	state := sm.GetState(chatID)
+	state.Type = newType
+}
+
 // HandleUpdate обрабатывает входящие сообщения от пользователей
 func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager) {
+
+	// Проверка нажатий на кнопки (CallbackQuery)
+	if update.CallbackQuery != nil {
+		chatID := update.CallbackQuery.Message.Chat.ID
+		data := update.CallbackQuery.Data
+
+		log.Printf("Нажата кнопка с данными: %s для chatID %d", data, chatID)
+
+		// Определяем состояние и передаем данные нажатой кнопки в соответствующий обработчик
+		state := sm.GetState(chatID)
+
+		switch state.Type {
+		case "squadus":
+			sizing.HandleUserSelection(chatID, data, bot)
+
+		}
+
+		// Убираем индикатор загрузки кнопки после её нажатия
+		callback := tgbotapi.NewCallback(update.CallbackQuery.ID, "")
+
+		if _, err := bot.Request(callback); err != nil {
+			log.Println("Ошибка при ответе на CallbackQuery:", err)
+		}
+
+	}
+
+	if update.Message == nil {
+		return
+	}
+
 	chatID := update.Message.Chat.ID
 	text := update.Message.Text
 
@@ -54,10 +89,25 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 
 	state := sm.GetState(chatID)
 
+	if state.Type != "" && state.Action == "sizing" {
+		// Проверку для выхода в Главное меню при вводе параметров на расчет сайзинга
+
+		if text == "/start" {
+			sm.SetType(chatID, "")
+			goto handleCommands
+		}
+		switch state.Type {
+		case "standalone":
+			handleStandalone(bot, chatID, sm, text)
+			return
+		}
+	}
+
+handleCommands:
 	switch text {
 	case "/start", "В главное меню":
-		sendWelcomeMessage(bot, chatID)
 		sm.SetState(chatID, state.Current, "start")
+		sendWelcomeMessage(bot, chatID)
 
 	case "Инструкции по продуктам":
 		state.Action = "instr"
@@ -109,8 +159,8 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 	case "Связаться с инженером тех. поддержки":
 		sendSupportEngineerContact(bot, chatID)
 
-	case "Standalone":
-		handleStandalone(bot, chatID, sm)
+	case "Standalone", "Повторить расчет":
+		handleStandalone(bot, chatID, sm, text)
 
 	case "Cluster":
 		handleCluster(bot, chatID, sm)
@@ -152,26 +202,47 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 		sendUnzippingISO(bot, chatID)
 
 	default:
+
 		sendWelcomeMessage(bot, chatID)
 		sm.SetState(chatID, state.Current, "start")
 	}
 }
 
 // handleStandalone обрабатывает запрос на Standalone
-func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
+func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text string) {
 	state := sm.GetState(chatID)
-	log.Printf("handleStandalone: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
+	log.Printf("handleStandalone: chatID %d, Текущее состояние: %s, Предыдущее состояние: %s", chatID, state.Current, state.Previous)
 
 	// Обработка для перехода от состояния privateCloud
 	if state.Product == "privateCloud" {
 		if state.Action == "sizing" {
-			sm.SetState(chatID, state.Current, "standalone")
-			state.Type = "standalone"
-			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s, Действие: %s", state.Current, state.Previous, state.Action)
+			if state.Current == "privateCloud" {
+				sm.SetState(chatID, state.Current, "standalone")
+			}
+			// изменение состояния для перерасчета
+			if state.Previous == "awaitingStorageQuotaPrivateCloud" &&
+				state.Current == "В главное меню" {
+				sm.SetState(chatID, state.Current, "standalone")
+			}
+			sm.SetType(chatID, "standalone")
+			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s", state.Current, state.Previous)
 
-			sizing.HandleUserInput(bot, chatID, &state.Current)
+			state.Previous = state.Current
+			sizing.HandleUserInputPrivateCloudStandalone(bot, chatID, &state.Current, text)
 
-			log.Printf("После вызова HandleUserInput. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
+			// внес изменение: добавил новое завершающее состояние
+			// если расчет закончен, только тогда выходим из функции
+			// (баг был когда валидация не проходит то статус все равно оставался на awaitingStorageQuotaPrivateCloud
+			// и при попытке ввести правильный параметр перекидывал на главное меню
+			// не начав расчет)
+			if state.Current == "calculationDone" {
+				state.Current = "В главное меню"
+				sm.SetType(chatID, "")
+				log.Printf("Предыдущее состояние: %s, выполнение функции прекращено.", state.Previous)
+				return
+			}
+			log.Printf("После вызова HandleUserInputPrivateCloudStandalone. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
+
 		} else if state.Action == "deploy" {
 			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
@@ -180,12 +251,33 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 			sm.SetState(chatID, state.Current, "reqPrivateCloud")
 			log.Printf("После вызова SendStandaloneRequirementsPrivateCloud. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
 		}
+
 	} else if state.Product == "mail" {
 		if state.Action == "sizing" {
-			sm.SetState(chatID, state.Current, "standalone")
-			state.Type = "standalone"
+			if state.Current == "mail" {
+				sm.SetState(chatID, state.Current, "standalone")
+			}
+			// изменение состояния для перерасчета
+			if state.Previous == "awaitingSpamCoefficientMail" &&
+				state.Current == "В главное меню" {
+				sm.SetState(chatID, state.Current, "standalone")
+			}
+			sm.SetType(chatID, "standalone")
+			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s", state.Current, state.Previous)
+
+			state.Previous = state.Current
 			log.Printf("Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
-			sizing.HandleSizingMailStandalone(bot, chatID)
+			sizing.HandleUserInputPSNStandalone(bot, chatID, &state.Current, text)
+
+			// Если предыдущее состояние равно awaitingSpamCoefficientMail, выходим из функции
+			if state.Current == "calculationDone" {
+				state.Current = "В главное меню"
+				sm.SetType(chatID, "")
+				log.Printf("Предыдущее состояние: %s, выполнение функции прекращено.", state.Previous)
+				return
+			}
+			log.Printf("После вызова HandleUserInputPSNStandalone. Текущее состояние: %s, Предыдущее состояние: %s.", state.Current, state.Previous)
+
 		} else if state.Action == "deploy" {
 			sm.SetState(chatID, state.Current, "standalone")
 			state.Type = "standalone"
@@ -283,9 +375,14 @@ func handleSquadus(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		sendInstructions(bot, chatID)
 		sm.SetState(chatID, state.Current, "squadus")
 		log.Printf("Переключение состояния на squadus после инструкции: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
-	} else if state.Action == "deploy" || state.Current == "sizing" {
+	} else if state.Action == "deploy" {
 		sendDeploymentOptions(bot, chatID)
 		sm.SetState(chatID, state.Current, "squadus")
+		log.Printf("Переключение состояния на squadus после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
+	} else if state.Action == "sizing" {
+		sizing.SizingSquadus(bot, chatID)
+		sm.SetState(chatID, state.Current, "squadus")
+		sm.SetType(chatID, "squadus")
 		log.Printf("Переключение состояния на squadus после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
 	}
 }

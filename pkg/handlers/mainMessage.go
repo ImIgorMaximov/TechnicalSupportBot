@@ -81,12 +81,6 @@ func sendRoleDescriptionsPrivateCloudCluster2k(bot *tgbotapi.BotAPI, chatID int6
 	bot.Send(msg)
 }
 
-func SendClusterRangeKeyboard(bot *tgbotapi.BotAPI, chatID int64) {
-	msg := tgbotapi.NewMessage(chatID, "Выберите диапазон пользователей для кластера:")
-	msg.ReplyMarkup = keyboards.GetUserKeyboard()
-	bot.Send(msg)
-}
-
 func sendUnzippingISO(bot *tgbotapi.BotAPI, chatID int64) {
 	unzippingISO := "Сопоставьте контрольную сумму с сайта и скаченного образа .iso для MD5: \n" +
 		"md5sum /path/to/file.iso \n" +
@@ -104,11 +98,11 @@ func sendUnzippingISO(bot *tgbotapi.BotAPI, chatID int64) {
 func sendSupportEngineerContact(bot *tgbotapi.BotAPI, chatID int64) {
 	errorMessage := "Направьте описание проблемы или вопроса инженеру \nТГ: @IgorMaksimov2000\nПочта: igor.maksimov@myoffice.team \n\n" +
 		"Формат сообщения должен включать: \n" +
-		"1. Описание ошибки/вопроса.\n" +
-		"2. Выводы команд pip3 list и ansible --version. (Выполненные в корневой директории инсталляции, например, /root/install_pgs) \n" +
+		"1. Описание ошибки/вопроса c приложением скриншотов.\n" +
+		"2. Вывод команд pip3 list и ansible --version. (Выполненные в корневой директории инсталляции, например, /root/install_pgs) \n" +
 		"3. Конфигурационные файлы, которые были использованы при инсталляции. (Например, hosts.yml для PGS, hosts.yml/main.yml для CO) \n" +
-		"4. Логи ошибок (Например, для развертывания СО сервера это будет файл deploy_co.log). \n\n" +
-		"Спасибо! Инженер ответит вам в течение 10 минут. \n"
+		"4. Логи ошибок (Например, при развертывания СО сервера это будет файл deploy_co.log). \n\n" +
+		"Спасибо!\n"
 	msg := tgbotapi.NewMessage(chatID, errorMessage)
 	bot.Send(msg)
 }
