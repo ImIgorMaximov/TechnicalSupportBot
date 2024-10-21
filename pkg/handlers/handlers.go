@@ -70,7 +70,6 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 		}
 
 		// Убираем индикатор загрузки кнопки после её нажатия
-
 		callback := tgbotapi.NewCallback(update.CallbackQuery.ID, "")
 
 		if _, err := bot.Request(callback); err != nil {
@@ -79,9 +78,6 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 
 	}
 
-	// перед тем как обработать сообщения
-	// иначе будем пытаться обработать пустой (nil) message
-	// и будет краш приложения (т.е. panic)
 	if update.Message == nil {
 		return
 	}
@@ -93,14 +89,9 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 
 	state := sm.GetState(chatID)
 
-	if state.Type != "" {
-		// добавил проверку, потому что когда задаешь параметры
-		// и захочется на главное меню, невозможно выйти
-		// возващает не валидный ввод
-		//
-		// или предлагаю другой вариант:
-		// вынести из switch case /start выше,
-		// сразу же после объявления "text"
+	if state.Type != "" && state.Action == "sizing" {
+		// Проверку для выхода в Главное меню при вводе параметров на расчет сайзинга
+
 		if text == "/start" {
 			sm.SetType(chatID, "")
 			goto handleCommands

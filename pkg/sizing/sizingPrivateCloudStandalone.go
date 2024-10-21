@@ -275,7 +275,7 @@ func sendSizingResultsPrivateCloudStandalone(bot *tgbotapi.BotAPI, chatID int64,
 		"Результаты расчета сайзинга для продукта Частное Облако Standalone:\n\n"+
 			"ВМ Operator: кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %s ГБ;\n"+
 			"Компонент CO: кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %s ГБ;\n"+
-			"Компонент PGS: кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %d ГБ.",
+			"Компонент PGS: кол-во ВМ - %s, CPU - %s, RAM - %s ГБ, SSD - %s ГБ.",
 		operatorVM, operatorCPU, operatorRAM, operatorSSD,
 		coVM, coCPU, coRAM, coSSD,
 		pgsVM, pgsCPU, pgsRAM, pgsSSD,
