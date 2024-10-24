@@ -164,6 +164,7 @@ func sendSizingResultsPSNStandalone(bot *tgbotapi.BotAPI, chatID int64, f *excel
 	psnRAM, _ := f.GetCellValue("Standalone", "E18")
 	// Расчет значения для SSD
 	psnSSD := calculateSSDPSN(userInputValuesPSNStandalone)
+	psnHDD, _ := f.GetCellValue("Standalone", "G18")
 
 	// Расчет значения для SSD
 	// ssdValue := calculateSSD(userInputValuesPSNStandalone)
@@ -185,6 +186,7 @@ func sendSizingResultsPSNStandalone(bot *tgbotapi.BotAPI, chatID int64, f *excel
 	err = newFile.SetCellValue(sheetPSN, "C2", psnCPU)
 	err = newFile.SetCellValue(sheetPSN, "D2", psnRAM)
 	err = newFile.SetCellValue(sheetPSN, "E2", psnSSD)
+	err = newFile.SetCellValue(sheetPSN, "F2", psnHDD)
 
 	// Создание буфера для хранения файла в памяти
 	buf := new(bytes.Buffer)
