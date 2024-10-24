@@ -92,7 +92,7 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 	if state.Type != "" && state.Action == "sizing" {
 		// Проверку для выхода в Главное меню при вводе параметров на расчет сайзинга
 
-		if text == "/start" {
+		if text == "/start" || text == "Назад" {
 			sm.SetType(chatID, "")
 			goto handleCommands
 		}
