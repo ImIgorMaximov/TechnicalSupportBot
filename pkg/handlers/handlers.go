@@ -22,32 +22,38 @@ type State struct {
 // StateManager управляет состояниями пользователей
 type StateManager struct {
 	states map[int64]*State
-	mu     sync.Mutex
+	mu     *sync.RWMutex
 }
 
 // NewStateManager создает новый StateManager
 func NewStateManager() *StateManager {
-	return &StateManager{states: make(map[int64]*State)}
+	return &StateManager{
+		states: make(map[int64]*State),
+		mu:     &sync.RWMutex{},
+	}
 }
 
 // GetState возвращает текущее состояние пользователя
 func (sm *StateManager) GetState(chatID int64) *State {
-	sm.mu.Lock()
-	defer sm.mu.Unlock()
+	sm.mu.RLock()
 	state, exists := sm.states[chatID]
+	sm.mu.RUnlock()
+
 	if !exists {
+		sm.mu.Lock()
 		state = &State{}
 		sm.states[chatID] = state
+		sm.mu.Unlock()
 	}
 	return state
 }
 
 // SetState устанавливает новое состояние пользователя
 func (sm *StateManager) SetState(chatID int64, previous, current string) {
+	state := sm.GetState(chatID)
+
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
-
-	state := sm.GetState(chatID)
 	state.Previous = previous
 	state.Current = current
 }
