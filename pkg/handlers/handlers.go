@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"log"
+	"sync"
 	"technicalSupportBot/pkg/deployment"
 	"technicalSupportBot/pkg/instructions"
 	"technicalSupportBot/pkg/sizing"
@@ -21,6 +22,7 @@ type State struct {
 // StateManager управляет состояниями пользователей
 type StateManager struct {
 	states map[int64]*State
+	mu     sync.Mutex
 }
 
 // NewStateManager создает новый StateManager
@@ -30,6 +32,8 @@ func NewStateManager() *StateManager {
 
 // GetState возвращает текущее состояние пользователя
 func (sm *StateManager) GetState(chatID int64) *State {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
 	state, exists := sm.states[chatID]
 	if !exists {
 		state = &State{}
@@ -40,12 +44,18 @@ func (sm *StateManager) GetState(chatID int64) *State {
 
 // SetState устанавливает новое состояние пользователя
 func (sm *StateManager) SetState(chatID int64, previous, current string) {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+
 	state := sm.GetState(chatID)
 	state.Previous = previous
 	state.Current = current
 }
 
 func (sm *StateManager) SetType(chatID int64, newType string) {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+
 	state := sm.GetState(chatID)
 	state.Type = newType
 }
