@@ -24,6 +24,7 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		if state.Previous == "standalone" {
 			sendWelcomeMessage(bot, chatID)
 			sm.SetState(chatID, state.Current, "start")
+			sm.SetType(chatID, "")
 			updatedState := sm.GetState(chatID)
 			log.Printf("После выполнения кнопки Назад sendWelcomeMessage. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 		} else {
