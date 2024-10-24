@@ -100,6 +100,9 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 		case "standalone":
 			handleStandalone(bot, chatID, sm, text)
 			return
+		case "mailion":
+			handleMailion(bot, chatID, sm, text)
+			return
 		}
 	}
 
@@ -130,8 +133,8 @@ handleCommands:
 	case "Squadus":
 		handleSquadus(bot, chatID, sm)
 
-	case "Mailion":
-		handleMailion(bot, chatID, sm)
+	case "Mailion", "Повторить расчет сайзинга":
+		handleMailion(bot, chatID, sm, text)
 
 	case "Почта":
 		handleMail(bot, chatID, sm)
@@ -351,7 +354,7 @@ func handleMail(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 }
 
 // handleMailion обрабатывает запрос на Mailion
-func handleMailion(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
+func handleMailion(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text string) {
 	state := sm.GetState(chatID)
 	state.Product = "mailion"
 	log.Printf("handleMailion: chatID %d, previousState %s, currentState %s, productState %s", chatID, state.Previous, state.Current, state.Product)
@@ -359,10 +362,29 @@ func handleMailion(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		sendInstructions(bot, chatID)
 		sm.SetState(chatID, state.Current, "mailion")
 		log.Printf("Переключение состояния на mailion после инструкции: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
-	} else if state.Action == "deploy" || state.Current == "sizing" {
+	} else if state.Action == "deploy" {
 		sendDeploymentOptions(bot, chatID)
 		sm.SetState(chatID, state.Current, "mailion")
 		log.Printf("Переключение состояния на mailion после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
+	} else if state.Action == "sizing" {
+		if text == "Mailion" {
+			sm.SetState(chatID, state.Current, "mailion")
+		}
+		if state.Previous == "awaitingDiskQuotaMailion" &&
+			state.Current == "В главное меню" {
+			sm.SetState(chatID, state.Current, "mailion")
+		}
+		sm.SetType(chatID, "mailion")
+		sizing.HandleUserInputMailion(bot, chatID, &state.Current, text)
+		log.Printf("Переключение состояния на mailion после выбора развертывания или сайзинга: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
+
+		if state.Current == "calculation done" {
+			state.Previous = "awaitingDiskQuotaMailion"
+			state.Current = "В главное меню"
+			sm.SetType(chatID, "")
+			log.Printf("Предыдущее состояние: %s, выполнение функции прекращено.", state.Previous)
+			return
+		}
 	}
 }
 

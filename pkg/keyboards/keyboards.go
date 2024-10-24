@@ -72,6 +72,20 @@ func GetDeploymentOptionsKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	)
 }
 
+func GetMainMenuKeyboardForMailion() tgbotapi.ReplyKeyboardMarkup {
+	return tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Повторить расчет сайзинга"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("В главное меню"),
+		),
+	)
+}
+
 func GetInstallationGuideKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
