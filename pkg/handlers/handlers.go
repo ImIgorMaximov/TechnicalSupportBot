@@ -59,10 +59,10 @@ func (sm *StateManager) SetState(chatID int64, previous, current string) {
 }
 
 func (sm *StateManager) SetType(chatID int64, newType string) {
-	sm.mu.Lock()
-	defer sm.mu.Unlock()
 
 	state := sm.GetState(chatID)
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
 	state.Type = newType
 }
 
