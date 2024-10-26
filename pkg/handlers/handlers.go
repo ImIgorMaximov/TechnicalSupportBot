@@ -222,8 +222,10 @@ handleCommands:
 
 	default:
 
-		sendWelcomeMessage(bot, chatID)
-		sm.SetState(chatID, state.Current, "start")
+		msg := tgbotapi.NewMessage(chatID, "Неверная команда. Выберите кнопку из списка или введите /start для перенаправления в главное меню.")
+		if _, err := bot.Send(msg); err != nil {
+			log.Println("Ошибка при отправке сообщения о неверной команде:", err)
+		}
 	}
 }
 
