@@ -36,7 +36,7 @@ func main() {
 	updates := bot.GetUpdatesChan(u)
 
 	// Используем WaitGroup для синхронизации горутин
-	var wg sync.WaitGroup
+	var wg = &sync.WaitGroup{}
 
 	// Основной цикл обработки обновлений
 	for update := range updates {
