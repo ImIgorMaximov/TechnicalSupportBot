@@ -7,7 +7,7 @@ import (
 )
 
 func SendInstallationGuideMailion(bot *tgbotapi.BotAPI, chatID int64) {
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/4ee/1327bfyo3dap1r7fdgccha3i0wcfi9lt/Mailion_1.9_Installation_Guide.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/e16/9uzqg7r0zek2rfa4x63zfstxdwph3y1a/Mailion_1.9_Installation_Guide.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard()
 	bot.Send(msg)
 }

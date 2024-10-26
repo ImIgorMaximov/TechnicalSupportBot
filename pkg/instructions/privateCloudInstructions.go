@@ -19,20 +19,20 @@ func SendInstallationGuideOptionsPrivateCloud(bot *tgbotapi.BotAPI, chatID int64
 
 func SendPGSInstallationGuide(bot *tgbotapi.BotAPI, chatID int64) {
 
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/7d2/nlof37tjayp6yhqedq8xkrour82m1wef/MyOffice_PGS_3.1_Installation_Guide.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/e55/4zbxzq7p4g4zeb3et5k793ouzvksdmqi/MyOffice_PGS_3.1_Installation_Guide.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard()
 	bot.Send(msg)
 }
 
 func SendCOInstallationGuide(bot *tgbotapi.BotAPI, chatID int64) {
 
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/05c/137yo7qojdz3hm5k46ngil1nf0opt52p/MyOffice_Private_Cloud_3.0_CO_Installation_Guide.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/afc/8f0559sw11uoy033r8tuwvfimimnrlt9/MyOffice_CO_3.1_Installation_Guide.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard()
 	bot.Send(msg)
 }
 
 func SendAdminGuidePrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/7d5/pibun6pza2j67c2cf9oz6dbiqtmw0aly/MyOffice_CO_PGS_3.1_Admin_Guide.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/06a/s042042xdt7la4pn4wa17hukf13l4ohr/MyOffice_CO_PGS_3.1_Admin_Guide.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard()
 	bot.Send(msg)
 }
