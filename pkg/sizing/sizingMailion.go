@@ -41,7 +41,12 @@ func HandleUserInputMailion(bot *tgbotapi.BotAPI, chatID int64, state *string, t
 		log.Printf("Обработка состояния: %s.", currentStateMailion)
 		currentStateMailion = "awaitingMaxUserMailion"
 		userInputValuesMailion[chatID] = []string{} // Инициализация мапы для пользователя
-		HandleNextInputMailion(bot, chatID, "", "Введите максимальное количество пользователей (например, 500):", "awaitingMaxUserMailion")
+
+		msg := tgbotapi.NewMessage(chatID, "Введите максимальное количество пользователей (например, 500), или нажмите 'Назад':")
+		msg.ReplyMarkup = keyboards.GetBackKeyboard()
+		if _, err := bot.Send(msg); err != nil {
+			log.Printf("Ошибка при отправке сообщения: %s", err)
+		}
 
 	case "awaitingMaxUserMailion":
 		log.Printf("Обработка состояния: %s.", currentStateMailion)

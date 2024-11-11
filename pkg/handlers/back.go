@@ -258,6 +258,13 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад SendCOConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
+	case "awaitingMaxUserMailion":
+		sendProduct(bot, chatID)
+		sm.SetState(chatID, "start", "sizing")
+		sm.SetType(chatID, "")
+		updatedState:=sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад sendProduct. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
 	default:
 		log.Printf("Состояние: %s. Неизвестное состояние, отправка приветственного сообщения и переход на начальный экран.", state.Current)
 		sendWelcomeMessage(bot, chatID)
