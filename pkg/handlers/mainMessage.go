@@ -1,3 +1,21 @@
+/*
+Package handlers предоставляет функции для обработки различных команд и кнопок, используемых в техническом боте поддержки.
+
+Функции пакета предназначены для взаимодействия с пользователями в Telegram, помогая им выполнять задачи, связанные с установкой и поддержкой продуктов.
+Каждая функция предоставляет пользователям информацию о процессе установки, настройке окружения и управлении сертификатами, а также дает возможность напрямую связаться с инженерами поддержки для решения более сложных вопросов.
+
+Основные функции пакета включают:
+- Отправка приветственного сообщения и навигации по меню.
+- Предоставление инструкций по установке и настройке продуктов.
+- Консультации по проверке сертификатов и конфигурационным файлам.
+- Поддержка пользователей при возникновении ошибок и нестандартных ситуаций.
+
+Этот пакет разработан с учетом удобства использования, чтобы пользователи могли быстро получать нужную информацию, оставаться в курсе процессов развертывания и иметь легкий доступ к поддержке.
+
+Автор: Максимов Игорь
+Email: imigormaximov@gmail.com
+*/
+
 package handlers
 
 import (
@@ -10,6 +28,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+// sendWelcomeMessage отправляет приветственное сообщение с основным меню.
 func sendWelcomeMessage(bot *tgbotapi.BotAPI, chatID int64) {
 
 	welcomeMessage := "Добро пожаловать в чат бот тех. поддержки МойОфис! :) " +
@@ -23,6 +42,7 @@ func sendWelcomeMessage(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// sendProduct отправляет сообщение с выбором продукта.
 func sendProduct(bot *tgbotapi.BotAPI, chatID int64) {
 
 	chooseProductMessage := "Выберите продукт:"
@@ -31,6 +51,7 @@ func sendProduct(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// sendDeploymentOptions отправляет сообщение с выбором типа установки.
 func sendDeploymentOptions(bot *tgbotapi.BotAPI, chatID int64) {
 
 	deploymentMessage := "Выберите тип инсталляции:"
@@ -39,6 +60,7 @@ func sendDeploymentOptions(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// sendInstructions отправляет сообщение с подсказками по инструкциям.
 func sendInstructions(bot *tgbotapi.BotAPI, chatID int64) {
 
 	chooseFunction := "Что подсказать? \n" +
@@ -50,6 +72,7 @@ func sendInstructions(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// sendIsCertificates отправляет инструкции по проверке сертификатов.
 func sendIsCertificates(bot *tgbotapi.BotAPI, chatID int64) {
 	isCertificates := "Проверка сертификата сервера (server.crt): \n" +
 		"openssl x509 -in server.crt -text -noout \n" +
@@ -61,6 +84,7 @@ func sendIsCertificates(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// sendRoleDescriptionsPrivateCloudCluster2k отправляет описание ролей для кластеров.
 func sendRoleDescriptionsPrivateCloudCluster2k(bot *tgbotapi.BotAPI, chatID int64) {
 	isCertificates := "Описание ролей: \n" +
 		"Operator - сервер, с которого производится установка всех компонентов;\n\n" +
@@ -81,6 +105,7 @@ func sendRoleDescriptionsPrivateCloudCluster2k(bot *tgbotapi.BotAPI, chatID int6
 	bot.Send(msg)
 }
 
+// sendUnzippingISO отправляет инструкции по разархивированию образа ISO.
 func sendUnzippingISO(bot *tgbotapi.BotAPI, chatID int64) {
 	unzippingISO := "Сопоставьте контрольную сумму с сайта и скаченного образа .iso для MD5: \n" +
 		"md5sum /path/to/file.iso \n" +
@@ -95,6 +120,7 @@ func sendUnzippingISO(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// sendSupportEngineerContact отправляет контактную информацию для связи с инженером поддержки.
 func sendSupportEngineerContact(bot *tgbotapi.BotAPI, chatID int64) {
 	errorMessage := "Направьте описание проблемы или вопроса инженеру \nТГ: @IgorMaksimov2000\nПочта: igor.maksimov@myoffice.team \n\n" +
 		"Формат сообщения должен включать: \n" +
@@ -107,6 +133,7 @@ func sendSupportEngineerContact(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// sendStandaloneDownloadPackages отправляет инструкции для установки необходимых пакетов на отдельной машине.
 func sendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
 	standaloneDownloadPackages := "Вся установка и настройка будет производиться на машине operator на примере системы Astra Linux Special Edition 1.7 «Орел» (базовый);\n" +
 		"На ВМ c ролью operator обновите систему: \n" +
@@ -124,11 +151,13 @@ func sendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// sendUnknownCommandMessage отправляет сообщение в случае ввода неизвестной команды.
 func sendUnknownCommandMessage(bot *tgbotapi.BotAPI, chatID int64) {
 	msg := tgbotapi.NewMessage(chatID, "Неизвестная команда. Пожалуйста, выберите действие из меню.")
 	bot.Send(msg)
 }
 
+// sendConfigFile отправляет конфигурационный файл пользователю с сервера.
 func sendConfigFile(bot *tgbotapi.BotAPI, chatID int64, filePath, fileName string) {
 	// Проверяем, существует ли файл
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
@@ -161,6 +190,7 @@ func sendConfigFile(bot *tgbotapi.BotAPI, chatID int64, filePath, fileName strin
 	}
 }
 
+// formatSizingResults форматирует результаты сайзинга в текстовый вид для отправки пользователю.
 func formatSizingResults(results map[string]map[string]string) string {
 	var sb strings.Builder
 	for component, data := range results {

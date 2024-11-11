@@ -1,3 +1,35 @@
+/*
+Package keyboards содержит функции для создания и управления клавиатурами, используемыми в Telegram-боте.
+
+Функции пакета позволяют генерировать различные клавиатуры для удобного взаимодействия пользователей с ботом.
+Эти клавиатуры предлагают такие опции, как навигация по продуктам, инструкции по установке, конфигурации, и связь с инженером тех. поддержки.
+
+Функции:
+- GetMainKeyboard: Основное меню с основными действиями.
+- GetProductKeyboard: Клавиатура выбора продукта.
+- GetInstructionsKeyboard: Клавиатура для доступа к инструкциям.
+- GetDeploymentOptionsKeyboard: Выбор опций развертывания.
+- GetMainMenuKeyboardForMailion: Меню для Mailion.
+- GetInstallationGuideKeyboard: Выбор руководства по установке для различных компонентов.
+- GetStandaloneNextStepKeyboard: Следующий шаг для развертывания.
+- GetUnzippingISOKeyboard: Опция для распаковки ISO.
+- GetCOInstallation: Клавиатура для установки CO.
+- GetFinishKeyboard: Финальная клавиатура с завершением и обратной связью.
+- GetIsCertificatesKeyboard: Опции проверки сертификатов.
+- GetPGSStandaloneConfig: Клавиатура для конфигурации PGS.
+- GetPSNStandaloneConfig: Клавиатура для конфигурации PSN.
+- GetCOStandaloneConfigKeyboard: Конфигурация для CO.
+- GetSquadusStandaloneConfigKeyboard: Конфигурация для Squadus.
+- GetMailionStandaloneConfigKeyboard: Конфигурация для Mailion.
+- GetBackKeyboard: Кнопка "Назад".
+- GetMainMenuKeyboard: Основное меню.
+- GetMainMenuWithPrivateCloudCluster2kRolesKeyboard: Меню с описанием ролей для частного облака.
+- GetUserKeyboard: Выбор количества пользователей.
+
+Автор: Максимов Игорь
+Email: imigormaximov@gmail.com
+*/
+
 package keyboards
 
 import (

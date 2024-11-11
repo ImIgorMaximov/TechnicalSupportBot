@@ -1,3 +1,16 @@
+/*
+Package handlers предоставляет функции для обработки различных команд и кнопок, используемых в техническом боте поддержки.
+
+Функции пакета предназначены для взаимодействия с пользователями в Telegram, помогая им управлять процессами установки и конфигурации различных продуктов.
+В частности, функция HandleBackButton обрабатывает нажатие кнопки "Назад", изменяя состояние в зависимости от текущего шага пользователя в процессе установки.
+
+Функция динамически реагирует на текущее состояние пользователя и возвращает его на предыдущий шаг.
+Это позволяет пользователю легко вернуться к предыдущим шагам, сохраняя контекст установки и необходимые инструкции.
+
+Автор: Максимов Игорь
+Email: imigormaximov@gmail.com
+*/
+
 package handlers
 
 import (
@@ -8,8 +21,10 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-// HandleBackButton обрабатывает нажатие кнопки "Назад"
+// HandleBackButton обрабатывает нажатие кнопки "Назад" и меняет состояние в зависимости от текущего состояния пользователя.
 func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
+
+	// Получаем текущее состояние пользователя
 	state := sm.GetState(chatID)
 	if state == nil {
 		log.Printf("Состояние для chatID %d не найдено", chatID)
@@ -20,6 +35,7 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 
 	switch state.Current {
 
+	// Если текущее состояние связано с продуктом, возвращаемся в Главное меню
 	case "privateCloud", "squadus", "mailion", "mail":
 		if state.Previous == "standalone" {
 			sendWelcomeMessage(bot, chatID)
@@ -33,12 +49,15 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 			updatedState := sm.GetState(chatID)
 			log.Printf("После выполнения кнопки Назад sendProduct. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 		}
+
+	// Если текущее состояние - тип инсталляции, то возвращаемся к выбору продуктов
 	case "standalone", "cluster":
 		sendProduct(bot, chatID)
 		sm.SetState(chatID, state.Current, state.Product)
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад sendProduct. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
+	// Если текущее состояние - инструкции, то возвращаемся к типу инсталляции
 	case "reqPrivateCloud", "reqPsn", "reqSquadus", "reqMailion":
 		sendDeploymentOptions(bot, chatID)
 		sm.SetState(chatID, state.Current, state.Type)

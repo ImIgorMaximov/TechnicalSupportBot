@@ -1,3 +1,16 @@
+/*
+Package handlers предоставляет функции для обработки различных команд и кнопок, используемых в техническом боте поддержки.
+
+Функции пакета предназначены для взаимодействия с пользователями в Telegram, помогая им управлять процессами установки и конфигурации различных продуктов.
+В частности, функция HandleUpdate отвечает за обработку входящих сообщений и команд от пользователей, поддерживая разные сценарии и состояния, такие как инструкции, развертывание, и расчет сайзинга продуктов.
+
+Функция HandleUpdate использует данные, переданные пользователем, чтобы корректно настроить ответы на команды и кнопки, поддерживая динамическое управление состояниями.
+Эта гибкость позволяет боту поддерживать пользователей на каждом этапе, обеспечивая удобный интерфейс для возврата на предыдущие шаги и получения необходимой информации.
+
+Автор: Максимов Игорь
+Email: imigormaximov@gmail.com
+*/
+
 package handlers
 
 import (
@@ -12,17 +25,17 @@ import (
 
 // State представляет состояние пользователя
 type State struct {
-	Previous string
-	Current  string
-	Product  string
-	Action   string
-	Type     string
+	Previous string // предыдущее состояние
+	Current  string // текущее состояние
+	Product  string // выбранный продукт
+	Action   string // выбранное действие
+	Type     string // тип действия или продукта
 }
 
 // StateManager управляет состояниями пользователей
 type StateManager struct {
-	states map[int64]*State
-	mu     *sync.RWMutex
+	states map[int64]*State // состояния по идентификаторам чатов
+	mu     *sync.RWMutex    // мьютекс для потокобезопасного доступа
 }
 
 // NewStateManager создает новый StateManager
@@ -58,6 +71,7 @@ func (sm *StateManager) SetState(chatID int64, previous, current string) {
 	state.Current = current
 }
 
+// Устанавливает тип действия пользователя
 func (sm *StateManager) SetType(chatID int64, newType string) {
 
 	state := sm.GetState(chatID)
@@ -94,6 +108,7 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 
 	}
 
+	// Если сообщение пустое, прерываем обработку
 	if update.Message == nil {
 		return
 	}
@@ -103,6 +118,7 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, sm *StateManager
 
 	log.Printf("Получено сообщение от chatID %d: %s", chatID, text)
 
+	// Получаем текущее состояние пользователя
 	state := sm.GetState(chatID)
 
 	if state.Type != "" && state.Action == "sizing" {
@@ -251,11 +267,7 @@ func handleStandalone(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager, text
 			state.Previous = state.Current
 			sizing.HandleUserInputPrivateCloudStandalone(bot, chatID, &state.Current, text)
 
-			// внес изменение: добавил новое завершающее состояние
-			// если расчет закончен, только тогда выходим из функции
-			// (баг был когда валидация не проходит то статус все равно оставался на awaitingStorageQuotaPrivateCloud
-			// и при попытке ввести правильный параметр перекидывал на главное меню
-			// не начав расчет)
+			// Если расчет закончен, только тогда выходим из функции
 			if state.Current == "calculationDone" {
 				state.Current = "В главное меню"
 				sm.SetType(chatID, "")
@@ -427,6 +439,7 @@ func handleSquadus(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	}
 }
 
+// handlePrivateKeyInsert обрабатывает запрос на инструкции по добавлению публичных ключей
 func handlePrivateKeyInsert(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 	state := sm.GetState(chatID)
 
@@ -451,7 +464,7 @@ func handleSystemRequirements(bot *tgbotapi.BotAPI, chatID int64, sm *StateManag
 	log.Printf("handleSystemRequirements: chatID %d, previousState %s, currentState %s", chatID, state.Previous, state.Current)
 
 	if state.Current == "privateCloud" {
-		instructions.SendSystemRequirementsPivateCloud(bot, chatID)
+		instructions.SendSystemRequirementsPrivateCloud(bot, chatID)
 		state.Current = "requirementsPrivateCloud"
 	} else if state.Current == "squadus" {
 		instructions.SendSystemRequirementsSquadus(bot, chatID)
