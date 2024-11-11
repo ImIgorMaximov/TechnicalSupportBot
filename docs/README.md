@@ -103,19 +103,19 @@ pkg/sizing/
 
 Клонируйте репозиторий:
 
-git clone https://github.com/yourusername/TechnicalSupportBot.git
+    git clone https://github.com/ImIgorMaximov/TechnicalSupportBot
 
 Перейдите в директорию проекта:
 
-cd TechnicalSupportBot
+    cd TechnicalSupportBot
 
 Установите зависимости:
 
-go mod tidy
+    go mod tidy
 
 Установите переменную окружения с токеном бота:
 
-export TELEGRAM_BOT_TOKEN="your-telegram-bot-token"
+    export TELEGRAM_BOT_TOKEN="your-telegram-bot-token"
 
 Запустите бота:
 
