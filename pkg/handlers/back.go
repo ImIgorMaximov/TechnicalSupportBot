@@ -228,6 +228,18 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад SendStandalonePGSConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
+	case "dnsCO":
+		deployment.SendPGSDeploy(bot, chatID)
+		sm.SetState(chatID, state.Current, "pgsDeploy")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendPGSDeploy. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "certificatesAndKeysCO":
+		deployment.SendDNSOptionsCO(bot, chatID)
+		sm.SetState(chatID, state.Current, "dnsCO")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendDNSOptionsCO. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
 	case "squadusDeploy":
 		deployment.SendStandaloneSquadusConfigure(bot, chatID)
 		sm.SetState(chatID, state.Current, "squadusConfigure")
@@ -247,8 +259,14 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		log.Printf("После выполнения кнопки Назад SendStandalonePSNConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	case "coInstallation":
-		deployment.SendPGSDeploy(bot, chatID)
-		sm.SetState(chatID, state.Current, "pgsDeploy")
+		deployment.SendCertificatesAndKeysCO(bot, chatID)
+		sm.SetState(chatID, state.Current, "certificatesAndKeysCO")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад SendPGSDeploy. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "coConfigure":
+		deployment.SendCOInstallation(bot, chatID)
+		sm.SetState(chatID, state.Current, "coInstallation")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад SendPGSDeploy. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
@@ -257,6 +275,13 @@ func HandleBackButton(bot *tgbotapi.BotAPI, chatID int64, sm *StateManager) {
 		sm.SetState(chatID, state.Current, "coConfigure")
 		updatedState := sm.GetState(chatID)
 		log.Printf("После выполнения кнопки Назад SendCOConfigure. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
+
+	case "awaitingMaxUserMailion":
+		sendProduct(bot, chatID)
+		sm.SetState(chatID, "start", "sizing")
+		sm.SetType(chatID, "")
+		updatedState := sm.GetState(chatID)
+		log.Printf("После выполнения кнопки Назад sendProduct. Текущее состояние: %s, Предыдущее состояние: %s.", updatedState.Current, updatedState.Previous)
 
 	default:
 		log.Printf("Состояние: %s. Неизвестное состояние, отправка приветственного сообщения и переход на начальный экран.", state.Current)

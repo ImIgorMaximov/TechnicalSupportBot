@@ -41,13 +41,17 @@ func HandleUserInputMailion(bot *tgbotapi.BotAPI, chatID int64, state *string, t
 		log.Printf("Обработка состояния: %s.", currentStateMailion)
 		currentStateMailion = "awaitingMaxUserMailion"
 		userInputValuesMailion[chatID] = []string{} // Инициализация мапы для пользователя
-		HandleNextInputMailion(bot, chatID, "", "Введите максимальное количество пользователей (например, 500):", "awaitingMaxUserMailion")
+		msg := tgbotapi.NewMessage(chatID, "Введите максимальное количество пользователей (например, 500), или нажмите 'Назад':")
+		msg.ReplyMarkup = keyboards.GetBackKeyboard()
+		if _, err := bot.Send(msg); err != nil {
+			log.Printf("Ошибка при отправке сообщения: %s", err)
+		}
 
 	case "awaitingMaxUserMailion":
 		log.Printf("Обработка состояния: %s.", currentStateMailion)
 
 		if ok := validateInput(text, mailionMaxUser); !ok {
-			msg := tgbotapi.NewMessage(chatID, "Некорректный ввод. Пожалуйста, введите числа в диапазоне от 1 до 1400000.")
+			msg := tgbotapi.NewMessage(chatID, "Некорректный ввод. Пожалуйста, введите числа в диапазоне от 1 до 140000.")
 			bot.Send(msg)
 			return
 		}
@@ -167,7 +171,7 @@ func determinePDFFileMailion(maxUsers, quota int) (string, error) {
 		return "/home/admin-msk/MyOfficeConfig/sizing_mailion_140000_20GB.pdf", nil
 	}
 
-	return "", errors.New("не удалось подобрать нужный сайзинг для введённых данных. Обратитесь к инженеру или технической поддежке.")
+	return "", errors.New("Не удалось подобрать нужный сайзинг для введённых данных. Обратитесь к инженеру или технической поддежке.")
 }
 
 // Функция для отправки PDF файла пользователю

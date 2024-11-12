@@ -14,6 +14,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"technicalSupportBot/pkg/keyboards"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -50,6 +51,14 @@ func SizingSquadus(bot *tgbotapi.BotAPI, chatID int64) {
 
 	// Отправляем сообщение пользователю
 	if _, err := bot.Send(msg); err != nil {
+		log.Println("Ошибка отправки сообщения:", err)
+	}
+	backMsg := tgbotapi.MessageConfig{
+		BaseChat: tgbotapi.BaseChat{ChatID: chatID, ReplyToMessageID: msg.ReplyToMessageID, ReplyMarkup: keyboards.GetBackKeyboard()},
+		Text:     "Нажмите 'Назад', чтобы вернуться в предыдущее меню.",
+	}
+	backMsg.ReplyMarkup = keyboards.GetBackKeyboard()
+	if _, err := bot.Send(backMsg); err != nil {
 		log.Println("Ошибка отправки сообщения:", err)
 	}
 }
