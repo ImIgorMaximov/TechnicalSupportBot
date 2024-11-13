@@ -37,7 +37,7 @@ func SendStandaloneRequirementsPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) 
 		"Нажмите далее для продолжения. :)\n"
 
 	msg := tgbotapi.NewMessage(chatID, requirements)
-	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboard()
+	msg.ReplyMarkup = keyboards.GetStandaloneNextStepKeyboardWithIntegrationAD()
 	bot.Send(msg)
 }
 
@@ -284,6 +284,6 @@ func SendCODeploy(bot *tgbotapi.BotAPI, chatID int64) {
 		"ansible-playbook playbooks/main.yml --diff\n\n" +
 		"Ожидаем результат! При возниковении ошибок или вопросов обращайтесь к инженеру!\n"
 	msg := tgbotapi.NewMessage(chatID, deploy)
-	msg.ReplyMarkup = keyboards.GetFinishKeyboard()
+	msg.ReplyMarkup = keyboards.GetFinishKeyboardWithIntegrationAD()
 	bot.Send(msg)
 }

@@ -146,6 +146,23 @@ func GetStandaloneNextStepKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	)
 }
 
+func GetStandaloneNextStepKeyboardWithIntegrationAD() tgbotapi.ReplyKeyboardMarkup {
+	return tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Далее"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Интеграция с AD/aldPro"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Назад"),
+		),
+	)
+}
+
 func GetUnzippingISOKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
@@ -169,6 +186,9 @@ func GetCOInstallation() tgbotapi.ReplyKeyboardMarkup {
 			tgbotapi.NewKeyboardButton("Установка CO"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Интеграция с AD/aldPro"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
@@ -182,6 +202,23 @@ func GetCOInstallation() tgbotapi.ReplyKeyboardMarkup {
 
 func GetFinishKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Назад"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("В главное меню"),
+		),
+	)
+}
+
+func GetFinishKeyboardWithIntegrationAD() tgbotapi.ReplyKeyboardMarkup {
+	return tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Интеграция с AD/aldPro"),
+		),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Связаться с инженером тех. поддержки"),
 		),

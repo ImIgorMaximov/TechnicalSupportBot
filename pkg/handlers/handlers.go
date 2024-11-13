@@ -194,6 +194,9 @@ handleCommands:
 	case "Связаться с инженером тех. поддержки":
 		sendSupportEngineerContact(bot, chatID)
 
+	case "Интеграция с AD/aldPro":
+		sendIntegrationAD(bot, chatID)
+
 	case "Standalone", "Повторить расчет":
 		handleStandalone(bot, chatID, sm, text)
 

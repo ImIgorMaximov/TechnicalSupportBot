@@ -151,6 +151,52 @@ func sendStandaloneDownloadPackages(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
+// sendStandaloneDownloadPackages отправляет инструкции для установки необходимых пакетов на отдельной машине.
+func sendIntegrationAD(bot *tgbotapi.BotAPI, chatID int64) {
+	integrationAD := "После успешной установки PGS для настройки интеграции AD/aldPro необходимо произвести следующие действия: \n\n" +
+		"1. Открыть доступ к компоненту Keycloak из внешней сети: \n\n" +
+		"docker service update --publish-add published=8091,target=8080 pgs-keycloak_keycloak\n\n" +
+		"2. Перезапустить сервисы pgs_aristoteles и pgs_euclid: \n\n" +
+		"docker restart pgs_aristoteles pgs_euclid \n\n" +
+		"3. Открыть веб-интерфейс Keycloak: \n" +
+		"(адрес по умолчанию http://<ENV>.<DEFAULT_DOMAIN>:8091/auth) \n" +
+		"4. Выбрать тенант (или realm), для которого нужна интеграция. \n" +
+		"5. Нажать User Federation. \n" +
+		"6. Из выпадающего меню выбрать провайдера LDAP (Add provider) с именем pgsldapnew. \n" +
+		"7. Заполнить атрибуты. Пример заполнения указан в скриншоте. \n" +
+		"8. Нажать Save и Synchronize all users. \n" +
+		"9. Проверить отображение пользователей в админ панели. \n\n" +
+		"** В aldPro вместо sAMAccountName используется person. \n" +
+		"Для проверки корректности указанных фильтров выполните команду на сервере: \n\n" +
+		"curl -u \"bind_user@domain:bind_password\" 'ldap://dc.domain.tld/OU=Пользователи,DC=domain,dc=tld??sub?(mail=user@domain.tld) \n"
+	// Отправка сообщения с текстом
+	msg := tgbotapi.NewMessage(chatID, integrationAD)
+	_, err := bot.Send(msg)
+	if err != nil {
+		log.Printf("Не удалось отправить сообщение: %v", err)
+	}
+
+	// Открытие файла с фото
+	file, err := os.Open("/home/admin-msk/MyOfficeConfig/integrationAD.png")
+	if err != nil {
+		log.Printf("Не удалось открыть файл с фото: %v", err)
+		return
+	}
+	defer file.Close()
+
+	// Создание объекта для загрузки фото
+	photo := tgbotapi.NewPhoto(chatID, tgbotapi.FileReader{
+		Name:   "integrationAD.png", // имя файла, как будет показано в чате
+		Reader: file,
+	})
+
+	// Отправка фото
+	_, err = bot.Send(photo)
+	if err != nil {
+		log.Printf("Не удалось отправить фото: %v", err)
+	}
+}
+
 // sendUnknownCommandMessage отправляет сообщение в случае ввода неизвестной команды.
 func sendUnknownCommandMessage(bot *tgbotapi.BotAPI, chatID int64) {
 	msg := tgbotapi.NewMessage(chatID, "Неизвестная команда. Пожалуйста, выберите действие из меню.")
