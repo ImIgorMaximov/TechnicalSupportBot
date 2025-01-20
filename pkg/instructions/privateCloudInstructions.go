@@ -38,7 +38,7 @@ func SendInstallationGuideOptionsPrivateCloud(bot *tgbotapi.BotAPI, chatID int64
 // SendPGSInstallationGuide отправляет ссылку на руководство по установке для компонента PGS
 func SendPGSInstallationGuide(bot *tgbotapi.BotAPI, chatID int64) {
 
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/e55/4zbxzq7p4g4zeb3et5k793ouzvksdmqi/MyOffice_PGS_3.1_Installation_Guide.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/f52/sufu1ghwgj67ijbjm1f687wh2ilxqn9p/MyOffice_PGS_3.2_Installation_Guide.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard() // Кнопка "Назад"
 	bot.Send(msg)
 }
@@ -46,21 +46,21 @@ func SendPGSInstallationGuide(bot *tgbotapi.BotAPI, chatID int64) {
 // SendCOInstallationGuide отправляет ссылку на руководство по установке для компонента CO
 func SendCOInstallationGuide(bot *tgbotapi.BotAPI, chatID int64) {
 
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/afc/8f0559sw11uoy033r8tuwvfimimnrlt9/MyOffice_CO_3.1_Installation_Guide.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/ce5/am8asvyiqtjidcr2gemxomz8jzx4cmsu/MyOffice_CO_3.2_Installation_Guide.pdf\n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard() // Кнопка "Назад"
 	bot.Send(msg)
 }
 
 // SendAdminGuidePrivateCloud отправляет ссылку на руководство администратора для Частного облака
 func SendAdminGuidePrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/06a/s042042xdt7la4pn4wa17hukf13l4ohr/MyOffice_CO_PGS_3.1_Admin_Guide.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/613/obf108djhiqbidd152e83mtf34bsdcdn/MyOffice_CO_PGS_3.2_Admin_Guide.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard() // Кнопка "Назад"
 	bot.Send(msg)
 }
 
 // SendSystemRequirementsPrivateCloud отправляет ссылку на руководство по системным требованиям для Частного облака
 func SendSystemRequirementsPrivateCloud(bot *tgbotapi.BotAPI, chatID int64) {
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/8c0/aa0g1jhk9phcxh0229zq1fli11qlrtpb/MyOffice_CO_PGS_3.1_System_Requirements.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/10e/dvwlyrgao6e24wo4irrrad4z7fe5ihuu/MyOffice_Private_Cloud_3.2_System_Requirements.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard() // Кнопка "Назад"
 	bot.Send(msg)
 }

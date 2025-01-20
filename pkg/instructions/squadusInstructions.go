@@ -23,21 +23,21 @@ import (
 
 // SendInstallationGuideSquadus отправляет ссылку на руководство по установке для Squadus.
 func SendInstallationGuideSquadus(bot *tgbotapi.BotAPI, chatID int64) {
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/bc1/z5yney5pfjweu2txsq9djfstpwmcalbb/Squadus_Server_Web_1.6.2_Installation_Guide.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/c47/c4c49ho2urls22lzqf0nga11994r8sg8/Squadus_Server_Web_1.7_Installation_Guide.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard() // Кнопка "Назад"
 	bot.Send(msg)
 }
 
 // SendAdminGuideSquadus отправляет ссылку на руководство администратора для Squadus.
 func SendAdminGuideSquadus(bot *tgbotapi.BotAPI, chatID int64) {
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/a79/blk4bkyttb9kussakcp3oos668k18ht0/Squadus_1.6_Admin_Guide.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/c47/c4c49ho2urls22lzqf0nga11994r8sg8/Squadus_Server_Web_1.7_Installation_Guide.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard() // Кнопка "Назад"
 	bot.Send(msg)
 }
 
 // SendSystemRequirementsSquadus отправляет ссылку на системные требования для Squadus.
 func SendSystemRequirementsSquadus(bot *tgbotapi.BotAPI, chatID int64) {
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/02d/a825sft1g3vyrw8b8nsiqahnbx3gx2iu/Squadus_1.6_System_Requirements.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/dc3/s31vijv7w8c1jr54l3bneuutr5q4a964/Squadus_1.7_System_Requirements.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard() // Кнопка "Назад"
 	bot.Send(msg)
 }

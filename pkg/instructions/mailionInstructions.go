@@ -23,21 +23,21 @@ import (
 
 // SendInstallationGuideMailion отправляет ссылку на руководство по установке Mailion
 func SendInstallationGuideMailion(bot *tgbotapi.BotAPI, chatID int64) {
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/e16/9uzqg7r0zek2rfa4x63zfstxdwph3y1a/Mailion_1.9_Installation_Guide.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/b56/elzc5aji5b1ggizqw32mf2hkdj61537y/Mailion_2.0_Installation_Guide.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard() // Кнопка "Назад"
 	bot.Send(msg)
 }
 
 // SendAdminGuideMailion отправляет ссылку на руководство по администрированию Mailion
 func SendAdminGuideMailion(bot *tgbotapi.BotAPI, chatID int64) {
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/6a4/lht8xpd3zc13bzlbaz4rvj5u7cpr85v3/Mailion_1.9_Admin_Guide.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/cc3/ydr4czrrxc2335sn15pqsvlqbkft0fuq/Mailion_2.0_Admin_Guide.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard() // Кнопка "Назад"
 	bot.Send(msg)
 }
 
 // SendSystemRequirementsMailion отправляет ссылку на руководство по системным требованиям для Mailion
 func SendSystemRequirementsMailion(bot *tgbotapi.BotAPI, chatID int64) {
-	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/f74/b753ow0h94l8gh6s59wg4n11ckhcyzbf/Mailion_1.9_System_Requirements.pdf \n")
+	msg := tgbotapi.NewMessage(chatID, "https://support.myoffice.ru/upload/iblock/f38/jy5nm1ehb709mh2hu79qrtd7jy230k83/Mailion_2.0_System_Requirements.pdf \n")
 	msg.ReplyMarkup = keyboards.GetBackKeyboard() // Кнопка "Назад"
 	bot.Send(msg)
 }
